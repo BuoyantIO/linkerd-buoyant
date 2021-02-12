@@ -13,7 +13,7 @@ on:
 jobs:
 
   go_unit_tests:
-    name: Go unit tests
+    name: Go Unit Tests
     runs-on: ubuntu-18.04
     container:
       image: golang:1.15.8
@@ -23,70 +23,81 @@ jobs:
     - name: Test
       run: go test -race -v ./...
 
-  release:
-    if: startsWith(github.ref, 'refs/tags')
-    needs: go_unit_tests
-    name: Upload Release Assets
+  go_lint:
+    name: Go Lint
     runs-on: ubuntu-18.04
     container:
       image: golang:1.15.8
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
+    - uses: actions/checkout@v2
 
-      - run: echo "tag=${GITHUB_REF##*/}" >> $GITHUB_ENV
+    - name: Lint
+      run: bin/lint
 
-      - name: Build project
-        run: |
-          CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -mod=readonly -o linkerd-buoyant-${{ env.tag }}-linux-amd64
-          CGO_ENABLED=0 GOOS=linux GOARCH=arm64 go build -mod=readonly -o linkerd-buoyant-${{ env.tag }}-linux-arm64
-          CGO_ENABLED=0 GOOS=darwin             go build -mod=readonly -o linkerd-buoyant-${{ env.tag }}-darwin
-          CGO_ENABLED=0 GOOS=windows            go build -mod=readonly -o linkerd-buoyant-${{ env.tag }}-windows
+  release:
+    if: startsWith(github.ref, 'refs/tags')
+    needs: go_unit_tests
+    name: Release
+    runs-on: ubuntu-18.04
+    container:
+      image: golang:1.15.8
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v2
 
-      - name: Create Release
-        id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: ${{ github.ref }}
-          release_name: Release ${{ github.ref }}
-          draft: false
-          prerelease: false
+    - run: echo "tag=${GITHUB_REF##*/}" >> $GITHUB_ENV
 
-      - name: Upload Release Asset (linux-amd64)
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./linkerd-buoyant-${{ env.tag }}-linux-amd64
-          asset_name: linkerd-buoyant-${{ env.tag }}-linux-amd64
-          asset_content_type: application/octet-stream
-      - name: Upload Release Asset (linux-arm64)
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./linkerd-buoyant-${{ env.tag }}-linux-arm64
-          asset_name: linkerd-buoyant-${{ env.tag }}-linux-arm64
-          asset_content_type: application/octet-stream
-      - name: Upload Release Asset (darwin)
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./linkerd-buoyant-${{ env.tag }}-darwin
-          asset_name: linkerd-buoyant-${{ env.tag }}-darwin
-          asset_content_type: application/octet-stream
-      - name: Upload Release Asset (windows)
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./linkerd-buoyant-${{ env.tag }}-windows
-          asset_name: linkerd-buoyant-${{ env.tag }}-windows
-          asset_content_type: application/octet-stream
+    - name: Build Project
+      run: |
+        CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -mod=readonly -o linkerd-buoyant-${{ env.tag }}-linux-amd64
+        CGO_ENABLED=0 GOOS=linux GOARCH=arm64 go build -mod=readonly -o linkerd-buoyant-${{ env.tag }}-linux-arm64
+        CGO_ENABLED=0 GOOS=darwin             go build -mod=readonly -o linkerd-buoyant-${{ env.tag }}-darwin
+        CGO_ENABLED=0 GOOS=windows            go build -mod=readonly -o linkerd-buoyant-${{ env.tag }}-windows
+
+    - name: Create Release
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ github.ref }}
+        release_name: Release ${{ github.ref }}
+        draft: false
+        prerelease: false
+
+    - name: Upload Release Asset (linux-amd64)
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./linkerd-buoyant-${{ env.tag }}-linux-amd64
+        asset_name: linkerd-buoyant-${{ env.tag }}-linux-amd64
+        asset_content_type: application/octet-stream
+    - name: Upload Release Asset (linux-arm64)
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./linkerd-buoyant-${{ env.tag }}-linux-arm64
+        asset_name: linkerd-buoyant-${{ env.tag }}-linux-arm64
+        asset_content_type: application/octet-stream
+    - name: Upload Release Asset (darwin)
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./linkerd-buoyant-${{ env.tag }}-darwin
+        asset_name: linkerd-buoyant-${{ env.tag }}-darwin
+        asset_content_type: application/octet-stream
+    - name: Upload Release Asset (windows)
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./linkerd-buoyant-${{ env.tag }}-windows
+        asset_name: linkerd-buoyant-${{ env.tag }}-windows
+        asset_content_type: application/octet-stream
