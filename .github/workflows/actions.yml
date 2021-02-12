@@ -13,6 +13,7 @@ on:
 jobs:
 
   go_unit_tests:
+    name: Go unit tests
     runs-on: ubuntu-18.04
     container:
       image: golang:1.15.8
@@ -23,7 +24,7 @@ jobs:
       run: go test -race -v ./...
 
   release:
-    if: startsWith(github.ref, 'refs/tags/stable') || startsWith(github.ref, 'refs/tags/edge')
+    if: startsWith(github.ref, 'refs/tags/edge')
     name: Upload Release Asset
     runs-on: ubuntu-18.04
     container:
