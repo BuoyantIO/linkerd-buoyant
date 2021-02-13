@@ -41,6 +41,7 @@ upgrade, and delete functionality`,
 	root.PersistentFlags().MarkHidden("bcloud-server")
 
 	root.AddCommand(newCmdInstall())
+	root.AddCommand(newCmdUninstall())
 
 	return root
 }

@@ -7,10 +7,8 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/buoyantio/linkerd-buoyant/pkg/k8s"
 	"github.com/spf13/cobra"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"k8s.io/client-go/kubernetes"
-	"k8s.io/client-go/tools/clientcmd"
 )
 
 func newCmdInstall() *cobra.Command {
@@ -33,7 +31,7 @@ Buoyant Cloud and outputs it.`,
   linkerd buoyant install | kubectl apply -f -
 
   # Install onto a specific cluster
-  linkerd buoyant --context test-cluster install | kubectl apply -f -`,
+  linkerd buoyant --context test-cluster install | kubectl --context test-cluster apply -f -`,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return install(cmd.Context())
 		},
@@ -43,66 +41,45 @@ Buoyant Cloud and outputs it.`,
 }
 
 func install(ctx context.Context) error {
-	clientConfig := clientcmd.NewNonInteractiveDeferredLoadingClientConfig(
-		&clientcmd.ClientConfigLoadingRules{ExplicitPath: kubeconfig},
-		&clientcmd.ConfigOverrides{CurrentContext: kubecontext})
-
-	r, err := clientConfig.RawConfig()
-	if err != nil {
-		return err
-	}
-	currentContext := r.CurrentContext
-
-	config, err := clientConfig.ClientConfig()
+	client, currentContext, err := k8s.New(kubeconfig, kubecontext)
 	if err != nil {
 		return err
 	}
 
-	clientset, err := kubernetes.NewForConfig(config)
+	agent, err := k8s.GetAgent(ctx, client, bcloudServer)
 	if err != nil {
 		return err
 	}
 
-	// TODO: handle case where agent is not present
-	bcloudID, err := clientset.
-		CoreV1().
-		Secrets("buoyant-cloud").
-		Get(ctx, "buoyant-cloud-id", metav1.GetOptions{})
-	if err != nil {
-		return err
+	if agent == nil {
+		// TODO: handle case where agent is not present
+		// TODO: detect browser available
+		fmt.Fprintf(os.Stderr,
+			"Opening linkerd-buoyant agent setup at:\n%s/connect-cluster?linkerd-buoyant=ABC123\n",
+			bcloudServer,
+		)
+	} else {
+		// TODO: handle 400s/500s
+		resp, err := http.Get(agent.URL)
+		if err != nil {
+			return err
+		}
+		defer resp.Body.Close()
+		body, err := ioutil.ReadAll(resp.Body)
+		if err != nil {
+			return err
+		}
+
+		fmt.Fprintf(os.Stdout, "%s\n", body)
+
+		fmt.Fprintf(os.Stderr,
+			"linkerd-buoyant agent '%s' (%s) found on cluster '%s'.\n",
+			agent.Name, agent.Version, currentContext,
+		)
+		fmt.Fprintf(os.Stderr, "Upgrading to v0.0.28...\n\n") // TODO: retrieve for latest version string from buoyant.cloud
+
+		fmt.Fprintf(os.Stderr, "Agent manifest available at:\n%s\n", agent.URL)
 	}
-
-	bcloudDeploy, err := clientset.
-		AppsV1().
-		Deployments("buoyant-cloud").
-		Get(ctx, "buoyant-cloud-agent", metav1.GetOptions{})
-	if err != nil {
-		return err
-	}
-
-	u := fmt.Sprintf(
-		"%s/agent/buoyant-cloud-k8s-%s-%s-%s.yml",
-		bcloudServer, bcloudID.Data["name"], bcloudID.Data["id"], bcloudID.Data["downloadKey"],
-	)
-	resp, err := http.Get(u)
-	if err != nil {
-		return err
-	}
-	defer resp.Body.Close()
-	body, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		return err
-	}
-
-	fmt.Fprintf(os.Stdout, "%s\n", body)
-
-	fmt.Fprintf(os.Stderr,
-		"linkerd-buoyant agent '%s' (%s) found on cluster '%s'.\n",
-		bcloudID.Data["name"], bcloudDeploy.GetAnnotations()["buoyant.cloud/version"], currentContext,
-	)
-	fmt.Fprintf(os.Stderr, "Upgrading to v0.0.28...\n\n") // TODO: retrieve for latest version string from buoyant.cloud
-
-	fmt.Fprintf(os.Stderr, "Agent manifest available at:\n%s\n\n", u)
 
 	return nil
 }
