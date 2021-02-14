@@ -2,12 +2,18 @@ package cmd
 
 import (
 	"context"
+	"crypto/sha1"
+	"encoding/base64"
+	"encoding/binary"
 	"fmt"
 	"io/ioutil"
+	"math/rand"
 	"net/http"
 	"os"
+	"time"
 
 	"github.com/buoyantio/linkerd-buoyant/pkg/k8s"
+	"github.com/pkg/browser"
 	"github.com/spf13/cobra"
 )
 
@@ -41,7 +47,7 @@ Buoyant Cloud and outputs it.`,
 }
 
 func install(ctx context.Context) error {
-	client, currentContext, err := k8s.New(kubeconfig, kubecontext)
+	client, err := k8s.New(kubeconfig, kubecontext)
 	if err != nil {
 		return err
 	}
@@ -51,35 +57,117 @@ func install(ctx context.Context) error {
 		return err
 	}
 
-	if agent == nil {
-		// TODO: handle case where agent is not present
-		// TODO: detect browser available
-		fmt.Fprintf(os.Stderr,
-			"Opening linkerd-buoyant agent setup at:\n%s/connect-cluster?linkerd-buoyant=ABC123\n",
-			bcloudServer,
-		)
+	var agentURL string
+	if agent != nil {
+		// existing agent on cluster
+		agentURL = agent.URL
+
+		printVerbosef("Agent found on cluster, latest manifest URL:\n%s", agentURL)
 	} else {
-		// TODO: handle 400s/500s
-		resp, err := http.Get(agent.URL)
-		if err != nil {
-			return err
-		}
-		defer resp.Body.Close()
-		body, err := ioutil.ReadAll(resp.Body)
+		// new agent
+		agentURL, err = newAgentURL()
 		if err != nil {
 			return err
 		}
 
-		fmt.Fprintf(os.Stdout, "%s\n", body)
-
-		fmt.Fprintf(os.Stderr,
-			"linkerd-buoyant agent '%s' (%s) found on cluster '%s'.\n",
-			agent.Name, agent.Version, currentContext,
-		)
-		fmt.Fprintf(os.Stderr, "Upgrading to v0.0.28...\n\n") // TODO: retrieve for latest version string from buoyant.cloud
-
-		fmt.Fprintf(os.Stderr, "Agent manifest available at:\n%s\n", agent.URL)
+		printVerbosef("No agent found on cluster, new manifest URL:\n%s", agentURL)
 	}
 
+	resp, err := http.Get(agentURL)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode != http.StatusOK {
+		fmt.Fprintf(os.Stderr,
+			"Unexpected HTTP status code %d for URL:\n%s\n",
+			resp.StatusCode, agentURL,
+		)
+		return fmt.Errorf("failed to retrieve agent manifest from %s", agentURL)
+	}
+
+	if resp.Header.Get("Content-type") != "text/yaml" {
+		return fmt.Errorf("unexpected Content-Type '%s' from %s", resp.Header.Get("Content-type"), agentURL)
+	}
+
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return err
+	}
+
+	// output the YAML manifest, this is the only thing that outputs to stdout
+	fmt.Fprintf(os.Stdout, "%s\n", body)
+
+	fmt.Fprintf(os.Stderr, "Agent manifest available at:\n%s\n", agentURL)
+
 	return nil
+}
+
+func newAgentURL() (string, error) {
+	agentUID := genUniqueID()
+
+	connectURL := fmt.Sprintf("%s/connect-cluster?linkerd-buoyant=%s", bcloudServer, agentUID)
+	err := browser.OpenURL(connectURL)
+	if err == nil {
+		fmt.Fprintf(os.Stderr, "Opening linkerd-buoyant agent setup at:\n%s\n", connectURL)
+	} else {
+		fmt.Fprintf(os.Stderr, "Visit this URL to set up linkerd-buoyant agent:\n%s\n\n", connectURL)
+	}
+
+	// start polling
+	fmt.Fprintf(os.Stderr, "Waiting for agent setup completion...\n")
+
+	// don't automatically follow redirect, we want to capture the manifest URL
+	client := &http.Client{
+		CheckRedirect: func(req *http.Request, via []*http.Request) error {
+			return http.ErrUseLastResponse
+		},
+	}
+
+	connectAgentURL := fmt.Sprintf("%s/connect-agent?linkerd-buoyant=%s", bcloudServer, agentUID)
+	printVerbosef("Polling: %s", connectAgentURL)
+
+	for {
+		resp, err := client.Get(connectAgentURL)
+		if err != nil {
+			return "", err
+		}
+		resp.Body.Close()
+
+		if resp.StatusCode == http.StatusAccepted {
+			// still polling
+			time.Sleep(time.Second)
+			continue
+		}
+
+		if resp.StatusCode != http.StatusPermanentRedirect {
+			return "", fmt.Errorf("setup failed, unexpected HTTP status code %d for URL %s", resp.StatusCode, connectAgentURL)
+		}
+
+		// successful 308, get the agent YAML URL
+		url, err := resp.Location()
+		if err != nil {
+			return "", err
+		}
+
+		printVerbosef("Agent setup completed, redirecting to: %s", url.String())
+
+		return url.String(), nil
+	}
+}
+
+// genUniqueID makes a random 16 character ascii string.
+func genUniqueID() string {
+	timeBytes := new([8]byte)[0:8]
+	binary.BigEndian.PutUint64(timeBytes, uint64(time.Now().UnixNano()))
+
+	randBytes := new([8]byte)[0:8]
+	binary.BigEndian.PutUint64(randBytes, uint64(rand.Int63()))
+
+	hasher := sha1.New()
+	hasher.Write([]byte("linkerd x buoyant == <3"))
+	hasher.Write(timeBytes)
+	hasher.Write(randBytes)
+
+	return base64.URLEncoding.EncodeToString(hasher.Sum(nil))[0:16]
 }

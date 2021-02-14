@@ -33,7 +33,7 @@ linkerd-buoyant extension.`,
 }
 
 func uninstall(ctx context.Context) error {
-	client, currentContext, err := k8s.New(kubeconfig, kubecontext)
+	client, err := k8s.New(kubeconfig, kubecontext)
 	if err != nil {
 		return err
 	}
@@ -44,12 +44,11 @@ func uninstall(ctx context.Context) error {
 	}
 
 	if len(resources) == 0 {
-		fmt.Fprintf(os.Stderr,
-			"No linkerd-buoyant resources found on cluster '%s'.\n",
-			currentContext,
-		)
+		fmt.Fprintf(os.Stderr, "No linkerd-buoyant resources found on cluster.\n")
 		return nil
 	}
+
+	printVerbosef("Found %d resources for deletion", len(resources))
 
 	// retrieve agent prior to deletion
 	agent, _ := k8s.GetAgent(ctx, client, bcloudServer)
@@ -61,16 +60,7 @@ func uninstall(ctx context.Context) error {
 
 	// if agent is present, output its name and URL for posterity
 	if agent != nil {
-		fmt.Fprintf(os.Stderr,
-			"\nDeleting linkerd-buoyant agent '%s' from cluster '%s'.\n\n",
-			agent.Name, currentContext,
-		)
 		fmt.Fprintf(os.Stderr, "Agent manifest will remain available at:\n%s\n", agent.URL)
-	} else {
-		fmt.Fprintf(os.Stderr,
-			"\nDeleting linkerd-buoyant agent from cluster '%s'.\n",
-			currentContext,
-		)
 	}
 
 	return nil
