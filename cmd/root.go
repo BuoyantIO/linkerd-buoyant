@@ -5,6 +5,7 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/fatih/color"
 	"github.com/spf13/cobra"
 	"k8s.io/client-go/util/homedir"
 
@@ -17,6 +18,11 @@ var (
 	kubeconfig   string
 	verbose      bool
 	bcloudServer string
+
+	// special handling for Windows, on all other platforms these resolve to
+	// os.Stdout and os.Stderr, thanks to https://github.com/mattn/go-colorable
+	stdout = color.Output
+	stderr = color.Error
 )
 
 // Root returns the root linkerd-buoyant command. All subcommands hang off of
@@ -54,6 +60,7 @@ upgrade, and delete functionality`,
 	root.PersistentFlags().MarkHidden("linkerd-namespace")
 	root.PersistentFlags().MarkHidden("api-addr")
 
+	root.AddCommand(newCmdCheck())
 	root.AddCommand(newCmdInstall())
 	root.AddCommand(newCmdUninstall())
 
