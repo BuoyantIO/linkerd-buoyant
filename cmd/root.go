@@ -6,15 +6,12 @@ import (
 	"github.com/fatih/color"
 	"github.com/spf13/cobra"
 	"k8s.io/client-go/util/homedir"
-
-	// Load all the auth plugins for the cloud providers.
-	_ "k8s.io/client-go/plugin/pkg/client/auth"
 )
 
 // Root returns the root linkerd-buoyant command. All subcommands hang off of
 // this.
 func Root() *cobra.Command {
-	cfg := config{
+	cfg := &config{
 		// special handling for Windows, on all other platforms these resolve to
 		// os.Stdout and os.Stderr, thanks to https://github.com/mattn/go-colorable
 		stdout: color.Output,

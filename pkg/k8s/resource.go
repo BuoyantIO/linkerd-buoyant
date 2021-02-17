@@ -17,12 +17,6 @@ const (
 	PartOfVal = "buoyant-cloud"
 )
 
-// Resources returns all linkerd-buoyant resources required for deletion.
-// Specifically, these three resource types matching the label
-// app.kubernetes.io/part-of=buoyant-cloud:
-// - ClusterRole
-// - ClusterRoleBinding
-// - Namespace
 func (c *client) Resources(ctx context.Context) ([]string, error) {
 	labelSelector := fmt.Sprintf("%s=%s", PartOfKey, PartOfVal)
 	opts := metav1.ListOptions{LabelSelector: labelSelector}

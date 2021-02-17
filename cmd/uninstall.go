@@ -8,7 +8,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func newCmdUninstall(cfg config) *cobra.Command {
+func newCmdUninstall(cfg *config) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "uninstall [flags]",
 		Args:  cobra.NoArgs,
@@ -36,7 +36,7 @@ Agent.`,
 	return cmd
 }
 
-func uninstall(ctx context.Context, cfg config, client k8s.Client) error {
+func uninstall(ctx context.Context, cfg *config, client k8s.Client) error {
 	resources, err := client.Resources(ctx)
 	if err != nil {
 		return err

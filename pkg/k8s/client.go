@@ -14,15 +14,32 @@ import (
 type (
 	// Client defines the interface for linkerd-buoyant's Kubernetes client
 	Client interface {
+		// Namespace retrieves the buoyant-cloud Namespace.
 		Namespace(ctx context.Context) (*v1.Namespace, error)
+		// ClusterRole retrieves the buoyant-cloud-agent CR.
 		ClusterRole(ctx context.Context) (*rbacv1.ClusterRole, error)
+		// ClusterRoleBinding retrieves the buoyant-cloud-agent CRB.
 		ClusterRoleBinding(ctx context.Context) (*rbacv1.ClusterRoleBinding, error)
+		// Secret retrieves the buoyant-cloud-id Secret.
 		Secret(ctx context.Context) (*v1.Secret, error)
+		// ServiceAccount retrieves the buoyant-cloud-agent ServiceAccount.
 		ServiceAccount(ctx context.Context) (*v1.ServiceAccount, error)
+		// Deployment retrieves a Deployment by name in the buoyant-cloud namespace.
 		Deployment(ctx context.Context, name string) (*appsv1.Deployment, error)
+		// Pods retrieves a PodList by labelSelector from the buoyant-cloud
+		// namespace.
 		Pods(ctx context.Context, labelSelector string) (*v1.PodList, error)
 
+		// Agent retrieves the Buoyant Cloud Agent from Kubernetes, and returns the
+		// agent's name, version, and url. If Agent is not found, it will return a
+		// nil Agent with no error.
 		Agent(ctx context.Context) (*Agent, error)
+		// Resources returns all linkerd-buoyant resources required for deletion.
+		// Specifically, these three resource types matching the label
+		// app.kubernetes.io/part-of=buoyant-cloud:
+		// - ClusterRole
+		// - ClusterRoleBinding
+		// - Namespace
 		Resources(ctx context.Context) ([]string, error)
 	}
 
@@ -52,7 +69,6 @@ func New(kubeconfig, kubecontext, bcloudServer string) (Client, error) {
 	return &client{clientset, bcloudServer}, nil
 }
 
-// ClusterRoleBinding retrieves the buoyant-cloud Namespace.
 func (c *client) Namespace(ctx context.Context) (*v1.Namespace, error) {
 	return c.
 		CoreV1().
@@ -60,7 +76,6 @@ func (c *client) Namespace(ctx context.Context) (*v1.Namespace, error) {
 		Get(ctx, Namespace, metav1.GetOptions{})
 }
 
-// ClusterRoleBinding retrieves the buoyant-cloud-agent CR.
 func (c *client) ClusterRole(ctx context.Context) (*rbacv1.ClusterRole, error) {
 	return c.
 		RbacV1().
@@ -68,7 +83,6 @@ func (c *client) ClusterRole(ctx context.Context) (*rbacv1.ClusterRole, error) {
 		Get(ctx, AgentName, metav1.GetOptions{})
 }
 
-// ClusterRoleBinding retrieves the buoyant-cloud-agent CRB.
 func (c *client) ClusterRoleBinding(ctx context.Context) (*rbacv1.ClusterRoleBinding, error) {
 	return c.
 		RbacV1().
@@ -76,7 +90,6 @@ func (c *client) ClusterRoleBinding(ctx context.Context) (*rbacv1.ClusterRoleBin
 		Get(ctx, AgentName, metav1.GetOptions{})
 }
 
-// Secret retrieves the buoyant-cloud-id Secret from Kubernetes.
 func (c *client) Secret(ctx context.Context) (*v1.Secret, error) {
 	return c.
 		CoreV1().
@@ -84,7 +97,6 @@ func (c *client) Secret(ctx context.Context) (*v1.Secret, error) {
 		Get(ctx, agentSecret, metav1.GetOptions{})
 }
 
-// ClusterRoleBinding retrieves the buoyant-cloud-agent ServiceSccount.
 func (c *client) ServiceAccount(ctx context.Context) (*v1.ServiceAccount, error) {
 	return c.
 		CoreV1().
@@ -92,7 +104,6 @@ func (c *client) ServiceAccount(ctx context.Context) (*v1.ServiceAccount, error)
 		Get(ctx, AgentName, metav1.GetOptions{})
 }
 
-// Deployment retrieves the Deployment from Kubernetes.
 func (c *client) Deployment(ctx context.Context, name string) (*appsv1.Deployment, error) {
 	return c.
 		AppsV1().
@@ -100,7 +111,6 @@ func (c *client) Deployment(ctx context.Context, name string) (*appsv1.Deploymen
 		Get(ctx, name, metav1.GetOptions{})
 }
 
-// Pods retrieves pods from the buoyant-cloud namespace matching labelSelector.
 func (c *client) Pods(ctx context.Context, labelSelector string) (*v1.PodList, error) {
 	return c.
 		CoreV1().

@@ -20,7 +20,7 @@ import (
 // a browser window.
 type openURL func(url string) error
 
-func newCmdInstall(cfg config) *cobra.Command {
+func newCmdInstall(cfg *config) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "install [flags]",
 		Args:  cobra.NoArgs,
@@ -54,7 +54,7 @@ Buoyant Cloud and outputs it.`,
 	return cmd
 }
 
-func install(ctx context.Context, cfg config, client k8s.Client, openURL openURL) error {
+func install(ctx context.Context, cfg *config, client k8s.Client, openURL openURL) error {
 	agent, err := client.Agent(ctx)
 	if err != nil {
 		return err
@@ -106,7 +106,7 @@ func install(ctx context.Context, cfg config, client k8s.Client, openURL openURL
 	return nil
 }
 
-func newAgentURL(cfg config, openURL openURL) (string, error) {
+func newAgentURL(cfg *config, openURL openURL) (string, error) {
 	agentUID := genUniqueID()
 
 	connectURL := fmt.Sprintf("%s/connect-cluster?linkerd-buoyant=%s", cfg.bcloudServer, agentUID)

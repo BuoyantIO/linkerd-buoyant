@@ -10,7 +10,7 @@ import (
 
 func TestCheck(t *testing.T) {
 	expErr := errors.New("Invalid output type 'bad-output'. Supported output types are: table, json")
-	checkCfg := checkConfig{
+	checkCfg := &checkConfig{
 		output: "bad-output",
 	}
 

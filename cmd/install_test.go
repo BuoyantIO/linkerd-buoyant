@@ -42,7 +42,7 @@ func TestInstallNewAgent(t *testing.T) {
 
 	stdout := &bytes.Buffer{}
 	stderr := &bytes.Buffer{}
-	cfg := config{
+	cfg := &config{
 		stdout:       stdout,
 		stderr:       stderr,
 		bcloudServer: ts.URL,
@@ -89,7 +89,7 @@ func TestInstallExistingAgent(t *testing.T) {
 
 	stdout := &bytes.Buffer{}
 	stderr := &bytes.Buffer{}
-	cfg := config{
+	cfg := &config{
 		stdout:       stdout,
 		stderr:       stderr,
 		bcloudServer: ts.URL,
@@ -134,7 +134,7 @@ func TestInstallBadStatus(t *testing.T) {
 
 	stdout := &bytes.Buffer{}
 	stderr := &bytes.Buffer{}
-	cfg := config{
+	cfg := &config{
 		stdout:       stdout,
 		stderr:       stderr,
 		bcloudServer: ts.URL,

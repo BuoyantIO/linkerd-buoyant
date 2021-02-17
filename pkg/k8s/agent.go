@@ -28,8 +28,6 @@ type Agent struct {
 	URL     string
 }
 
-// GetAgent retrieves the linkerd-buoyant agent from Kubernetes, and returns the
-// agent's name, version, and url.
 func (c *client) Agent(ctx context.Context) (*Agent, error) {
 	var name, version, url string
 

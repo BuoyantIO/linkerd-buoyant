@@ -12,13 +12,13 @@ import (
 )
 
 type checkConfig struct {
-	config
+	*config
 	output string
 	wait   time.Duration
 }
 
-func newCmdCheck(cfg config) *cobra.Command {
-	checkCfg := checkConfig{config: cfg}
+func newCmdCheck(cfg *config) *cobra.Command {
+	checkCfg := &checkConfig{config: cfg}
 
 	cmd := &cobra.Command{
 		Use:   "check [flags]",
@@ -57,7 +57,7 @@ failure and exit with a non-zero exit code.`,
 	return cmd
 }
 
-func check(cfg checkConfig, client k8s.Client) error {
+func check(cfg *checkConfig, client k8s.Client) error {
 	if cfg.output != healthcheck.TableOutput && cfg.output != healthcheck.JSONOutput {
 		return fmt.Errorf(
 			"Invalid output type '%s'. Supported output types are: %s, %s",

@@ -13,7 +13,7 @@ func TestUninstall(t *testing.T) {
 	stdout := &bytes.Buffer{}
 	stderr := &bytes.Buffer{}
 
-	cfg := config{
+	cfg := &config{
 		stdout:       stdout,
 		stderr:       stderr,
 		bcloudServer: "http://example.com",

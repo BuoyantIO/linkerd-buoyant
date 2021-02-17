@@ -1,6 +1,18 @@
 # linkerd-buoyant
 
-Linkerd Buoyant extension is a CLI tool for managing the Buoyant Cloud Agent.
+The Linkerd Buoyant extension is a CLI tool for managing the Buoyant Cloud
+Agent.
+
+## Install
+
+To install the CLI, run:
+
+```bash
+curl https://buoyant.cloud/install | sh
+```
+
+Alternatively, you can download the CLI directly via the
+[releases page](https://github.com/BuoyantIO/linkerd-buoyant/releases).
 
 ## Usage
 

@@ -11,31 +11,31 @@ import (
 func TestVersion(t *testing.T) {
 	fixtures := []*struct {
 		testName string
-		cfg      versionConfig
+		cfg      *versionConfig
 		stdout   string
 		stderr   string
 	}{
 		{
 			"defaults",
-			versionConfig{},
+			&versionConfig{config: &config{}},
 			"CLI version:   undefined\nAgent version: fake-version\n",
 			"",
 		},
 		{
 			"short",
-			versionConfig{short: true},
+			&versionConfig{config: &config{}, short: true},
 			"undefined\nfake-version\n",
 			"",
 		},
 		{
-			"cliOnly",
-			versionConfig{cliOnly: true},
+			"cli",
+			&versionConfig{config: &config{}, cli: true},
 			"CLI version:   undefined\n",
 			"",
 		},
 		{
-			"short and cliOnly",
-			versionConfig{short: true, cliOnly: true},
+			"short and cli",
+			&versionConfig{config: &config{}, short: true, cli: true},
 			"undefined\n",
 			"",
 		},
