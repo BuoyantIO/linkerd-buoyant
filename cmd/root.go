@@ -1,8 +1,6 @@
 package cmd
 
 import (
-	"fmt"
-	"os"
 	"path/filepath"
 
 	"github.com/fatih/color"
@@ -13,25 +11,20 @@ import (
 	_ "k8s.io/client-go/plugin/pkg/client/auth"
 )
 
-var (
-	kubecontext  string
-	kubeconfig   string
-	verbose      bool
-	bcloudServer string
-
-	// special handling for Windows, on all other platforms these resolve to
-	// os.Stdout and os.Stderr, thanks to https://github.com/mattn/go-colorable
-	stdout = color.Output
-	stderr = color.Error
-)
-
 // Root returns the root linkerd-buoyant command. All subcommands hang off of
 // this.
 func Root() *cobra.Command {
+	cfg := config{
+		// special handling for Windows, on all other platforms these resolve to
+		// os.Stdout and os.Stderr, thanks to https://github.com/mattn/go-colorable
+		stdout: color.Output,
+		stderr: color.Error,
+	}
+
 	root := &cobra.Command{
 		Use:   "linkerd-buoyant",
 		Short: "Manage the Linkerd Buoyant extension",
-		Long: `This command manages the Linkerd Buoyant extension.
+		Long: `linkerd-buoyant manages the Buoyant Cloud Agent.
 
 It enables operational control over the Buoyant Cloud Agent, providing install,
 upgrade, and delete functionality`,
@@ -45,30 +38,27 @@ upgrade, and delete functionality`,
 		defaultKubeConfig = filepath.Join(home, ".kube", "config")
 	}
 
-	root.PersistentFlags().StringVar(&kubecontext, "context", "", "The name of the kubeconfig context to use")
-	root.PersistentFlags().StringVar(&kubeconfig, "kubeconfig", defaultKubeConfig, "Path to the kubeconfig file to use for CLI requests")
-	root.PersistentFlags().BoolVarP(&verbose, "verbose", "v", false, "Turn on debug logging")
+	// global flags
+	root.PersistentFlags().StringVar(&cfg.kubecontext, "context", "", "The name of the kubeconfig context to use")
+	root.PersistentFlags().StringVar(&cfg.kubeconfig, "kubeconfig", defaultKubeConfig, "Path to the kubeconfig file to use for CLI requests")
+	root.PersistentFlags().BoolVarP(&cfg.verbose, "verbose", "v", false, "Turn on debug logging")
 
-	// hidden
-	root.PersistentFlags().StringVar(&bcloudServer, "bcloud-server", "https://buoyant.cloud", "Buoyant Cloud server to retrieve manifests from (for testing)")
+	// hidden flags
+	root.PersistentFlags().StringVar(&cfg.bcloudServer, "bcloud-server", "https://buoyant.cloud", "Buoyant Cloud server to retrieve manifests from (for testing)")
 	root.PersistentFlags().MarkHidden("bcloud-server")
 
-	// hidden and unused, to satisfy linkerd extension interface
+	// hidden and unused flags, to satisfy linkerd extension interface
 	var apiAddr, l5dVersion string
 	root.PersistentFlags().StringVar(&apiAddr, "api-addr", "", "")
 	root.PersistentFlags().StringVarP(&l5dVersion, "linkerd-namespace", "l", "", "")
 	root.PersistentFlags().MarkHidden("linkerd-namespace")
 	root.PersistentFlags().MarkHidden("api-addr")
 
-	root.AddCommand(newCmdCheck())
-	root.AddCommand(newCmdInstall())
-	root.AddCommand(newCmdUninstall())
+	// add all subcommands
+	root.AddCommand(newCmdCheck(cfg))
+	root.AddCommand(newCmdInstall(cfg))
+	root.AddCommand(newCmdUninstall(cfg))
+	root.AddCommand(newCmdVersion(cfg))
 
 	return root
-}
-
-func printVerbosef(format string, a ...interface{}) {
-	if verbose {
-		fmt.Fprintf(os.Stderr, format+"\n", a...)
-	}
 }

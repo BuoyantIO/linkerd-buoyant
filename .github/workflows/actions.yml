@@ -14,7 +14,7 @@ jobs:
 
   go_unit_tests:
     name: Go Unit Tests
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-20.04
     container:
       image: golang:1.15.8
     steps:
@@ -25,7 +25,7 @@ jobs:
 
   go_lint:
     name: Go Lint
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-20.04
     container:
       image: golang:1.15.8
     steps:
@@ -40,7 +40,7 @@ jobs:
     - go_unit_tests
     - go_lint
     name: Release
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-20.04
     container:
       image: golang:1.15.8
     steps:
@@ -51,10 +51,12 @@ jobs:
 
     - name: Build Project
       run: |
-        CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -mod=readonly -o linkerd-buoyant-${{ env.tag }}-linux-amd64
-        CGO_ENABLED=0 GOOS=linux GOARCH=arm64 go build -mod=readonly -o linkerd-buoyant-${{ env.tag }}-linux-arm64
-        CGO_ENABLED=0 GOOS=darwin             go build -mod=readonly -o linkerd-buoyant-${{ env.tag }}-darwin
-        CGO_ENABLED=0 GOOS=windows            go build -mod=readonly -o linkerd-buoyant-${{ env.tag }}-windows
+        GO_FLAGS="-mod=readonly -ldflags \"-s -w -X github.com/buoyantio/linkerd-buoyant/pkg/version.Version=${{ env.tag }}\""
+
+        CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build "${GO_FLAGS}" -o linkerd-buoyant-${{ env.tag }}-linux-amd64
+        CGO_ENABLED=0 GOOS=linux GOARCH=arm64 go build "${GO_FLAGS}" -o linkerd-buoyant-${{ env.tag }}-linux-arm64
+        CGO_ENABLED=0 GOOS=darwin             go build "${GO_FLAGS}" -o linkerd-buoyant-${{ env.tag }}-darwin
+        CGO_ENABLED=0 GOOS=windows            go build "${GO_FLAGS}" -o linkerd-buoyant-${{ env.tag }}-windows
 
     - name: Create Release
       id: create_release

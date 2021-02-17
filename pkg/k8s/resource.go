@@ -6,13 +6,15 @@ import (
 
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
-	"k8s.io/client-go/kubernetes"
 	"k8s.io/kubectl/pkg/scheme"
 	"sigs.k8s.io/yaml"
 )
 
 const (
-	labelSelector = "app.kubernetes.io/part-of=buoyant-cloud"
+	// PartOfKey is the label key found on all Buoyant Cloud resources.
+	PartOfKey = "app.kubernetes.io/part-of"
+	// PartOfVal is the label value found on all Buoyant Cloud resources.
+	PartOfVal = "buoyant-cloud"
 )
 
 // Resources returns all linkerd-buoyant resources required for deletion.
@@ -21,11 +23,12 @@ const (
 // - ClusterRole
 // - ClusterRoleBinding
 // - Namespace
-func Resources(ctx context.Context, client kubernetes.Interface) ([]string, error) {
+func (c *client) Resources(ctx context.Context) ([]string, error) {
+	labelSelector := fmt.Sprintf("%s=%s", PartOfKey, PartOfVal)
 	opts := metav1.ListOptions{LabelSelector: labelSelector}
 	resources := []string{}
 
-	crList, err := client.RbacV1().ClusterRoles().List(ctx, opts)
+	crList, err := c.RbacV1().ClusterRoles().List(ctx, opts)
 	if err != nil {
 		return nil, err
 	}
@@ -38,7 +41,7 @@ func Resources(ctx context.Context, client kubernetes.Interface) ([]string, erro
 		resources = append(resources, string(y))
 	}
 
-	crbList, err := client.RbacV1().ClusterRoleBindings().List(ctx, opts)
+	crbList, err := c.RbacV1().ClusterRoleBindings().List(ctx, opts)
 	if err != nil {
 		return nil, err
 	}
@@ -51,7 +54,7 @@ func Resources(ctx context.Context, client kubernetes.Interface) ([]string, erro
 		resources = append(resources, string(y))
 	}
 
-	nsList, err := client.CoreV1().Namespaces().List(ctx, opts)
+	nsList, err := c.CoreV1().Namespaces().List(ctx, opts)
 	if err != nil {
 		return nil, err
 	}

@@ -5,15 +5,19 @@ import (
 	"fmt"
 
 	kerrors "k8s.io/apimachinery/pkg/api/errors"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"k8s.io/client-go/kubernetes"
 )
 
 const (
-	agentNamespace    = "buoyant-cloud"
-	agentName         = "buoyant-cloud-agent"
-	agentSecret       = "buoyant-cloud-id"
-	versionAnnotation = "buoyant.cloud/version"
+	// Namespace is the namespace where the Buoyant Cloud agent is installed.
+	Namespace = "buoyant-cloud"
+	// AgentName is the name of the Buoyant Cloud Agent deployment.
+	AgentName = "buoyant-cloud-agent"
+	// MetricsName is the name of the Buoyant Cloud Metrics deployment.
+	MetricsName = "buoyant-cloud-metrics"
+	// VersionLabel is the label key for the agent's version
+	VersionLabel = "app.kubernetes.io/version"
+
+	agentSecret = "buoyant-cloud-id"
 )
 
 // Agent represents the linkerd-buoyant agent. Any of these fields may not be
@@ -26,18 +30,15 @@ type Agent struct {
 
 // GetAgent retrieves the linkerd-buoyant agent from Kubernetes, and returns the
 // agent's name, version, and url.
-func GetAgent(ctx context.Context, client kubernetes.Interface, bcloudServer string) (*Agent, error) {
+func (c *client) Agent(ctx context.Context) (*Agent, error) {
 	var name, version, url string
 
-	secret, err := client.
-		CoreV1().
-		Secrets(agentNamespace).
-		Get(ctx, agentSecret, metav1.GetOptions{})
+	secret, err := c.Secret(ctx)
 	if err == nil {
 		name = string(secret.Data["name"])
 		url = fmt.Sprintf(
 			"%s/agent/buoyant-cloud-k8s-%s-%s-%s.yml",
-			bcloudServer, secret.Data["name"], secret.Data["id"], secret.Data["downloadKey"],
+			c.bcloudServer, secret.Data["name"], secret.Data["id"], secret.Data["downloadKey"],
 		)
 	} else if !kerrors.IsNotFound(err) {
 		return nil, err
@@ -46,12 +47,9 @@ func GetAgent(ctx context.Context, client kubernetes.Interface, bcloudServer str
 		return nil, nil
 	}
 
-	deploy, err := client.
-		AppsV1().
-		Deployments(agentNamespace).
-		Get(ctx, agentName, metav1.GetOptions{})
+	deploy, err := c.Deployment(ctx, AgentName)
 	if err == nil {
-		version = deploy.GetAnnotations()[versionAnnotation]
+		version = Version(deploy)
 	} else if !kerrors.IsNotFound(err) {
 		return nil, err
 	}

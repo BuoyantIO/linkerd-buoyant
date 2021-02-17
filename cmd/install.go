@@ -9,7 +9,6 @@ import (
 	"io/ioutil"
 	"math/rand"
 	"net/http"
-	"os"
 	"time"
 
 	"github.com/buoyantio/linkerd-buoyant/pkg/k8s"
@@ -17,7 +16,11 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func newCmdInstall() *cobra.Command {
+// openURL allows mocking the browser.OpenURL function, so our tests do not open
+// a browser window.
+type openURL func(url string) error
+
+func newCmdInstall(cfg config) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "install [flags]",
 		Args:  cobra.NoArgs,
@@ -39,20 +42,20 @@ Buoyant Cloud and outputs it.`,
   # Install onto a specific cluster
   linkerd buoyant --context test-cluster install | kubectl --context test-cluster apply -f -`,
 		RunE: func(cmd *cobra.Command, args []string) error {
-			return install(cmd.Context())
+			client, err := k8s.New(cfg.kubeconfig, cfg.kubecontext, cfg.bcloudServer)
+			if err != nil {
+				return err
+			}
+
+			return install(cmd.Context(), cfg, client, browser.OpenURL)
 		},
 	}
 
 	return cmd
 }
 
-func install(ctx context.Context) error {
-	client, err := k8s.New(kubeconfig, kubecontext)
-	if err != nil {
-		return err
-	}
-
-	agent, err := k8s.GetAgent(ctx, client, bcloudServer)
+func install(ctx context.Context, cfg config, client k8s.Client, openURL openURL) error {
+	agent, err := client.Agent(ctx)
 	if err != nil {
 		return err
 	}
@@ -62,15 +65,15 @@ func install(ctx context.Context) error {
 		// existing agent on cluster
 		agentURL = agent.URL
 
-		printVerbosef("Agent found on cluster, latest manifest URL:\n%s", agentURL)
+		cfg.printVerbosef("Agent found on cluster, latest manifest URL:\n%s", agentURL)
 	} else {
 		// new agent
-		agentURL, err = newAgentURL()
+		agentURL, err = newAgentURL(cfg, openURL)
 		if err != nil {
 			return err
 		}
 
-		printVerbosef("No agent found on cluster, new manifest URL:\n%s", agentURL)
+		cfg.printVerbosef("No agent found on cluster, new manifest URL:\n%s", agentURL)
 	}
 
 	resp, err := http.Get(agentURL)
@@ -79,7 +82,7 @@ func install(ctx context.Context) error {
 	}
 	defer resp.Body.Close()
 	if resp.StatusCode != http.StatusOK {
-		fmt.Fprintf(os.Stderr,
+		fmt.Fprintf(cfg.stderr,
 			"Unexpected HTTP status code %d for URL:\n%s\n",
 			resp.StatusCode, agentURL,
 		)
@@ -96,26 +99,26 @@ func install(ctx context.Context) error {
 	}
 
 	// output the YAML manifest, this is the only thing that outputs to stdout
-	fmt.Fprintf(os.Stdout, "%s\n", body)
+	fmt.Fprintf(cfg.stdout, "%s\n", body)
 
-	fmt.Fprintf(os.Stderr, "Agent manifest available at:\n%s\n", agentURL)
+	fmt.Fprintf(cfg.stderr, "Agent manifest available at:\n%s\n", agentURL)
 
 	return nil
 }
 
-func newAgentURL() (string, error) {
+func newAgentURL(cfg config, openURL openURL) (string, error) {
 	agentUID := genUniqueID()
 
-	connectURL := fmt.Sprintf("%s/connect-cluster?linkerd-buoyant=%s", bcloudServer, agentUID)
-	err := browser.OpenURL(connectURL)
+	connectURL := fmt.Sprintf("%s/connect-cluster?linkerd-buoyant=%s", cfg.bcloudServer, agentUID)
+	err := openURL(connectURL)
 	if err == nil {
-		fmt.Fprintf(os.Stderr, "Opening linkerd-buoyant agent setup at:\n%s\n", connectURL)
+		fmt.Fprintf(cfg.stderr, "Opening linkerd-buoyant agent setup at:\n%s\n", connectURL)
 	} else {
-		fmt.Fprintf(os.Stderr, "Visit this URL to set up linkerd-buoyant agent:\n%s\n\n", connectURL)
+		fmt.Fprintf(cfg.stderr, "Visit this URL to set up linkerd-buoyant agent:\n%s\n\n", connectURL)
 	}
 
 	// start polling
-	fmt.Fprintf(os.Stderr, "Waiting for agent setup completion...\n")
+	fmt.Fprintf(cfg.stderr, "Waiting for agent setup completion...\n")
 
 	// don't automatically follow redirect, we want to capture the manifest URL
 	client := &http.Client{
@@ -124,8 +127,8 @@ func newAgentURL() (string, error) {
 		},
 	}
 
-	connectAgentURL := fmt.Sprintf("%s/connect-agent?linkerd-buoyant=%s", bcloudServer, agentUID)
-	printVerbosef("Polling: %s", connectAgentURL)
+	connectAgentURL := fmt.Sprintf("%s/connect-agent?linkerd-buoyant=%s", cfg.bcloudServer, agentUID)
+	cfg.printVerbosef("Polling: %s", connectAgentURL)
 
 	for {
 		resp, err := client.Get(connectAgentURL)
@@ -150,7 +153,7 @@ func newAgentURL() (string, error) {
 			return "", err
 		}
 
-		printVerbosef("Agent setup completed, redirecting to: %s", url.String())
+		cfg.printVerbosef("Agent setup completed, redirecting to: %s", url.String())
 
 		return url.String(), nil
 	}

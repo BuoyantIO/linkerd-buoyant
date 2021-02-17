@@ -11,33 +11,40 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var (
-	checkOutput string
-	checkWait   time.Duration
-)
+type checkConfig struct {
+	config
+	output string
+	wait   time.Duration
+}
 
-func newCmdCheck() *cobra.Command {
+func newCmdCheck(cfg config) *cobra.Command {
+	checkCfg := checkConfig{config: cfg}
+
 	cmd := &cobra.Command{
 		Use:   "check [flags]",
 		Args:  cobra.NoArgs,
-		Short: "Output Kubernetes resources to check the linkerd-buoyant extension",
-		Long: `Output Kubernetes resources to check the linkerd-buoyant extension.
+		Short: "Check the Buoyant Cloud Agent installation for potential problems",
+		Long: `Check the Buoyant Cloud Agent installation for potential problems.
 
-This command provides all Kubernetes namespace-scoped and cluster-scoped
-resources (e.g services, deployments, RBACs, etc.) necessary to uninstall the
-linkerd-buoyant extension.`,
-		Example: `  # Default uninstall.
-  linkerd buoyant uninstall | kubectl delete -f -
-
-  # Unnstall from a specific cluster
-  linkerd buoyant --context test-cluster uninstall | kubectl delete --context test-cluster -f -`,
+The check command will perform a series of checks to validate that the
+linkerd-buoyant CLI and Buoyant Cloud Agent are configured correctly. If the
+command encounters a failure it will print additional information about the
+failure and exit with a non-zero exit code.`,
+		Example: `  # Default check.
+  linkerd-buoyant check
+`,
 		RunE: func(cmd *cobra.Command, args []string) error {
-			return check()
+			client, err := k8s.New(checkCfg.kubeconfig, checkCfg.kubecontext, checkCfg.bcloudServer)
+			if err != nil {
+				return err
+			}
+
+			return check(checkCfg, client)
 		},
 	}
 
-	cmd.Flags().StringVarP(&checkOutput, "output", "o", healthcheck.TableOutput, "Output format. One of: table, json")
-	cmd.Flags().DurationVar(&checkWait, "wait", 10*time.Second, "Maximum allowed time for all tests to pass")
+	cmd.Flags().StringVarP(&checkCfg.output, "output", "o", healthcheck.TableOutput, "Output format. One of: table, json")
+	cmd.Flags().DurationVar(&checkCfg.wait, "wait", 1*time.Minute, "Maximum allowed time for all tests to pass")
 
 	// hidden and unused, to satisfy linkerd extension interface
 	var proxy bool
@@ -50,28 +57,23 @@ linkerd-buoyant extension.`,
 	return cmd
 }
 
-func check() error {
-	if checkOutput != healthcheck.TableOutput && checkOutput != healthcheck.JSONOutput {
+func check(cfg checkConfig, client k8s.Client) error {
+	if cfg.output != healthcheck.TableOutput && cfg.output != healthcheck.JSONOutput {
 		return fmt.Errorf(
 			"Invalid output type '%s'. Supported output types are: %s, %s",
-			checkOutput, healthcheck.TableOutput, healthcheck.JSONOutput,
+			cfg.output, healthcheck.TableOutput, healthcheck.JSONOutput,
 		)
-	}
-
-	client, err := k8s.New(kubeconfig, kubecontext)
-	if err != nil {
-		return err
 	}
 
 	hc := pkghealthcheck.NewHealthChecker(
 		client,
 		&healthcheck.Options{
-			RetryDeadline: time.Now().Add(checkWait),
+			RetryDeadline: time.Now().Add(cfg.wait),
 		},
 	)
 
 	hc.AppendCategories(hc.L5dBuoyantCategory())
-	success := healthcheck.RunChecks(stdout, stderr, hc, checkOutput)
+	success := healthcheck.RunChecks(cfg.stdout, cfg.stderr, hc, cfg.output)
 
 	if !success {
 		os.Exit(1)
