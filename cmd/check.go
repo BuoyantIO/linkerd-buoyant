@@ -49,10 +49,22 @@ failure and exit with a non-zero exit code.`,
 	// hidden and unused, to satisfy linkerd extension interface
 	var proxy bool
 	var namespace string
+	var impersonateGroup []string
+	var cniNamespace string
+	var cniEnabled bool
+	var preInstallOnly bool
 	cmd.Flags().BoolVar(&proxy, "proxy", false, "")
 	cmd.Flags().StringVarP(&namespace, "namespace", "n", "", "")
+	cmd.Flags().StringArrayVar(&impersonateGroup, "as-group", []string{}, "")
+	cmd.Flags().StringVarP(&cniNamespace, "cni-namespace", "", "", "")
+	cmd.Flags().BoolVar(&cniEnabled, "linkerd-cni-enabled", false, "")
+	cmd.Flags().BoolVar(&preInstallOnly, "pre", false, "")
 	cmd.Flags().MarkHidden("proxy")
 	cmd.Flags().MarkHidden("namespace")
+	cmd.Flags().MarkHidden("as-group")
+	cmd.Flags().MarkHidden("cni-namespace")
+	cmd.Flags().MarkHidden("linkerd-cni-enabled")
+	cmd.Flags().MarkHidden("pre")
 
 	return cmd
 }
