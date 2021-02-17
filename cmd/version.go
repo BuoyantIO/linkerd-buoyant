@@ -23,11 +23,14 @@ func newCmdVersion(cfg *config) *cobra.Command {
 		Args:  cobra.NoArgs,
 		Short: "Print the CLI and Agent version information",
 		RunE: func(cmd *cobra.Command, args []string) error {
+			if versionCfg.cli {
+				return versionCmd(cmd.Context(), versionCfg, nil)
+			}
+
 			client, err := k8s.New(cfg.kubeconfig, cfg.kubecontext, cfg.bcloudServer)
 			if err != nil {
 				return err
 			}
-
 			return versionCmd(cmd.Context(), versionCfg, client)
 		},
 	}
@@ -47,7 +50,7 @@ func versionCmd(
 		fmt.Fprintf(cfg.stdout, "CLI version:   %s\n", version.Version)
 	}
 
-	if cfg.cli {
+	if cfg.cli || client == nil {
 		return nil
 	}
 

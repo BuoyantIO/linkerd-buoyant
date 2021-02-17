@@ -10,6 +10,10 @@ on:
     branches:
     - main
 
+defaults:
+  run:
+    shell: bash
+
 jobs:
 
   go_unit_tests:
@@ -18,7 +22,8 @@ jobs:
     container:
       image: golang:1.15.8
     steps:
-    - uses: actions/checkout@v2
+    - name: Checkout Code
+      uses: actions/checkout@v2
 
     - name: Test
       run: go test -race -v ./...
@@ -29,35 +34,88 @@ jobs:
     container:
       image: golang:1.15.8
     steps:
-    - uses: actions/checkout@v2
+    - name: Checkout Code
+      uses: actions/checkout@v2
 
     - name: Lint
       run: bin/lint
 
-  release:
-    if: startsWith(github.ref, 'refs/tags')
-    needs:
-    - go_unit_tests
-    - go_lint
-    name: Release
+  build_cli:
+    name: Build CLI
     runs-on: ubuntu-20.04
+    strategy:
+      matrix:
+        include:
+        - platform: linux-amd64
+          goos: linux
+          goarch: amd64
+        - platform: linux-arm64
+          goos: linux
+          goarch: arm64
+        - platform: darwin
+          goos: darwin
+          goarch: ""
+        - platform: windows
+          goos: windows
+          goarch: ""
     container:
       image: golang:1.15.8
     steps:
     - name: Checkout Code
       uses: actions/checkout@v2
 
-    - run: echo "tag=${GITHUB_REF##*/}" >> $GITHUB_ENV
+    - name: Parse GITHUB_REF
+      run: echo "tag=${GITHUB_REF##*/}" >> $GITHUB_ENV
 
-    - name: Build Project
+    - name: Build CLI
+      run: CGO_ENABLED=0 GOOS=${{ matrix.goos }} GOARCH=${{ matrix.goarch }} go build -o linkerd-buoyant-${{ env.tag }}-${{ matrix.platform }} -mod=readonly -ldflags "-s -w -X github.com/buoyantio/linkerd-buoyant/pkg/version.Version=${{ env.tag }}"
+
+    - name: Upload CLI Executable
+      uses: actions/upload-artifact@v2
+      with:
+        name: linkerd-buoyant-${{ env.tag }}-${{ matrix.platform }}
+        path: linkerd-buoyant-${{ env.tag }}-${{ matrix.platform }}
+
+  smoke_test_cli:
+    name: Smoke Test CLI
+    needs:
+    - build_cli
+    strategy:
+      matrix:
+        include:
+        # no arm runner available, skip it
+        - platform: linux-amd64
+          os: ubuntu-20.04
+        - platform: darwin
+          os: macos-10.15
+        - platform: windows
+          os: windows-2019
+    runs-on: ${{ matrix.os }}
+    steps:
+    - name: Parse GITHUB_REF
+      run: echo "tag=${GITHUB_REF##*/}" >> $GITHUB_ENV
+
+    - name: Download CLI Executable
+      uses: actions/download-artifact@v2
+      with:
+        name: linkerd-buoyant-${{ env.tag }}-${{ matrix.platform }}
+
+    - name: Run CLI
       run: |
-        GO_FLAGS="-mod=readonly -ldflags \"-s -w -X github.com/buoyantio/linkerd-buoyant/pkg/version.Version=${{ env.tag }}\""
+        ls -R
+        chmod +x linkerd-buoyant-${{ env.tag }}-${{ matrix.platform }}
+        ./linkerd-buoyant-${{ env.tag }}-${{ matrix.platform }} version --cli
 
-        CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build "${GO_FLAGS}" -o linkerd-buoyant-${{ env.tag }}-linux-amd64
-        CGO_ENABLED=0 GOOS=linux GOARCH=arm64 go build "${GO_FLAGS}" -o linkerd-buoyant-${{ env.tag }}-linux-arm64
-        CGO_ENABLED=0 GOOS=darwin             go build "${GO_FLAGS}" -o linkerd-buoyant-${{ env.tag }}-darwin
-        CGO_ENABLED=0 GOOS=windows            go build "${GO_FLAGS}" -o linkerd-buoyant-${{ env.tag }}-windows
-
+  # everything below here for releases (tags)
+  create_release:
+    if: startsWith(github.ref, 'refs/tags')
+    name: Create Release
+    needs:
+    - go_unit_tests
+    - go_lint
+    - smoke_test_cli
+    runs-on: ubuntu-20.04
+    steps:
     - name: Create Release
       id: create_release
       uses: actions/create-release@v1
@@ -69,39 +127,26 @@ jobs:
         draft: false
         prerelease: false
 
-    - name: Upload Release Asset (linux-amd64)
+  upload_release_assets:
+    if: startsWith(github.ref, 'refs/tags')
+    name: Upload Release Assets
+    needs:
+    - create_release
+    strategy:
+      matrix:
+        include:
+        - platform: linux-amd64
+        - platform: linux-arm64
+        - platform: darwin
+        - platform: windows
+    runs-on: ubuntu-20.04
+    steps:
+    - name: Upload Release Asset
       uses: actions/upload-release-asset@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./linkerd-buoyant-${{ env.tag }}-linux-amd64
-        asset_name: linkerd-buoyant-${{ env.tag }}-linux-amd64
-        asset_content_type: application/octet-stream
-    - name: Upload Release Asset (linux-arm64)
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./linkerd-buoyant-${{ env.tag }}-linux-arm64
-        asset_name: linkerd-buoyant-${{ env.tag }}-linux-arm64
-        asset_content_type: application/octet-stream
-    - name: Upload Release Asset (darwin)
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./linkerd-buoyant-${{ env.tag }}-darwin
-        asset_name: linkerd-buoyant-${{ env.tag }}-darwin
-        asset_content_type: application/octet-stream
-    - name: Upload Release Asset (windows)
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./linkerd-buoyant-${{ env.tag }}-windows
-        asset_name: linkerd-buoyant-${{ env.tag }}-windows
+        asset_path: ./linkerd-buoyant-${{ env.tag }}-${{ matrix.platform }}
+        asset_name: linkerd-buoyant-${{ env.tag }}-${{ matrix.platform }}
         asset_content_type: application/octet-stream

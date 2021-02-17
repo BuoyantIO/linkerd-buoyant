@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"os"
 	"path/filepath"
 
 	"github.com/fatih/color"
@@ -32,7 +33,11 @@ upgrade, and delete functionality`,
 
 	defaultKubeConfig := ""
 	if home := homedir.HomeDir(); home != "" {
-		defaultKubeConfig = filepath.Join(home, ".kube", "config")
+		kubeconfig := filepath.Join(home, ".kube", "config")
+		_, err := os.Stat(kubeconfig)
+		if !os.IsNotExist(err) {
+			defaultKubeConfig = kubeconfig
+		}
 	}
 
 	// global flags
