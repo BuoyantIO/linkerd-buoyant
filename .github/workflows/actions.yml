@@ -49,15 +49,19 @@ jobs:
         - platform: linux-amd64
           goos: linux
           goarch: amd64
+          exe: ""
         - platform: linux-arm64
           goos: linux
           goarch: arm64
+          exe: ""
         - platform: darwin
           goos: darwin
           goarch: ""
+          exe: ""
         - platform: windows
           goos: windows
           goarch: ""
+          exe: .exe
     container:
       image: golang:1.15.8
     steps:
@@ -67,14 +71,17 @@ jobs:
     - name: Parse GITHUB_REF
       run: echo "tag=${GITHUB_REF##*/}" >> $GITHUB_ENV
 
+    - name: Generate linkerd-buoyant name
+      run: echo "linkerd-buoyant-bin=linkerd-buoyant-${{ env.tag }}-${{ matrix.platform }}${{ matrix.exe }}" >> $GITHUB_ENV
+
     - name: Build CLI
-      run: CGO_ENABLED=0 GOOS=${{ matrix.goos }} GOARCH=${{ matrix.goarch }} go build -o linkerd-buoyant-${{ env.tag }}-${{ matrix.platform }} -mod=readonly -ldflags "-s -w -X github.com/buoyantio/linkerd-buoyant/pkg/version.Version=${{ env.tag }}"
+      run: CGO_ENABLED=0 GOOS=${{ matrix.goos }} GOARCH=${{ matrix.goarch }} go build -o ${{ env.linkerd-buoyant-bin }} -mod=readonly -ldflags "-s -w -X github.com/buoyantio/linkerd-buoyant/pkg/version.Version=${{ env.tag }}"
 
     - name: Upload CLI Executable
       uses: actions/upload-artifact@v2
       with:
-        name: linkerd-buoyant-${{ env.tag }}-${{ matrix.platform }}
-        path: linkerd-buoyant-${{ env.tag }}-${{ matrix.platform }}
+        name: ${{ env.linkerd-buoyant-bin }}
+        path: ${{ env.linkerd-buoyant-bin }}
 
   smoke_test_cli:
     name: Smoke Test CLI
@@ -86,25 +93,31 @@ jobs:
         # no arm runner available, skip it
         - platform: linux-amd64
           os: ubuntu-20.04
+          exe: ""
         - platform: darwin
           os: macos-10.15
+          exe: ""
         - platform: windows
           os: windows-2019
+          exe: .exe
     runs-on: ${{ matrix.os }}
     steps:
     - name: Parse GITHUB_REF
       run: echo "tag=${GITHUB_REF##*/}" >> $GITHUB_ENV
 
+    - name: Generate linkerd-buoyant name
+      run: echo "linkerd-buoyant-bin=linkerd-buoyant-${{ env.tag }}-${{ matrix.platform }}${{ matrix.exe }}" >> $GITHUB_ENV
+
     - name: Download CLI Executable
       uses: actions/download-artifact@v2
       with:
-        name: linkerd-buoyant-${{ env.tag }}-${{ matrix.platform }}
+        name: ${{ env.linkerd-buoyant-bin }}
 
     - name: Run CLI
       run: |
         ls -R
-        chmod +x linkerd-buoyant-${{ env.tag }}-${{ matrix.platform }}
-        ./linkerd-buoyant-${{ env.tag }}-${{ matrix.platform }} version --cli
+        chmod +x ${{ env.linkerd-buoyant-bin }}
+        ./${{ env.linkerd-buoyant-bin }} version --cli
 
   # everything below here for releases (tags)
   create_release:
@@ -115,6 +128,8 @@ jobs:
     - go_lint
     - smoke_test_cli
     runs-on: ubuntu-20.04
+    outputs:
+      upload_url: ${{ steps.create_release.outputs.upload_url }}
     steps:
     - name: Create Release
       id: create_release
@@ -136,17 +151,32 @@ jobs:
       matrix:
         include:
         - platform: linux-amd64
+          exe: ""
         - platform: linux-arm64
+          exe: ""
         - platform: darwin
+          exe: ""
         - platform: windows
+          exe: .exe
     runs-on: ubuntu-20.04
     steps:
+    - name: Parse GITHUB_REF
+      run: echo "tag=${GITHUB_REF##*/}" >> $GITHUB_ENV
+
+    - name: Generate linkerd-buoyant name
+      run: echo "linkerd-buoyant-bin=linkerd-buoyant-${{ env.tag }}-${{ matrix.platform }}${{ matrix.exe }}" >> $GITHUB_ENV
+
+    - name: Download CLI Executable
+      uses: actions/download-artifact@v2
+      with:
+        name: ${{ env.linkerd-buoyant-bin }}
+
     - name: Upload Release Asset
       uses: actions/upload-release-asset@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ needs.create_release.outputs.upload_url }}
-        asset_path: ./linkerd-buoyant-${{ env.tag }}-${{ matrix.platform }}
-        asset_name: linkerd-buoyant-${{ env.tag }}-${{ matrix.platform }}
+        asset_path: ./${{ env.linkerd-buoyant-bin }}
+        asset_name: ${{ env.linkerd-buoyant-bin }}
         asset_content_type: application/octet-stream
