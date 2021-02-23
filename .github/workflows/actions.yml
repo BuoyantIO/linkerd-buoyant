@@ -54,6 +54,10 @@ jobs:
           goos: linux
           goarch: arm64
           exe: ""
+        - platform: linux-arm
+          goos: linux
+          goarch: arm
+          exe: ""
         - platform: darwin
           goos: darwin
           goarch: ""
@@ -153,6 +157,8 @@ jobs:
         - platform: linux-amd64
           exe: ""
         - platform: linux-arm64
+          exe: ""
+        - platform: linux-arm
           exe: ""
         - platform: darwin
           exe: ""
