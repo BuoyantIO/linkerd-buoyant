@@ -49,10 +49,13 @@ failure and exit with a non-zero exit code.`,
 	// hidden and unused, to satisfy linkerd extension interface
 	var proxy bool
 	var namespace string
+	var impersonateGroup []string
 	cmd.Flags().BoolVar(&proxy, "proxy", false, "")
 	cmd.Flags().StringVarP(&namespace, "namespace", "n", "", "")
+	cmd.Flags().StringArrayVar(&impersonateGroup, "as-group", []string{}, "")
 	cmd.Flags().MarkHidden("proxy")
 	cmd.Flags().MarkHidden("namespace")
+	cmd.Flags().MarkHidden("as-group")
 
 	return cmd
 }
