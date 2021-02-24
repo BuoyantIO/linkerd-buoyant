@@ -1,6 +1,8 @@
 # linkerd-buoyant
 
-![Actions](https://github.com/BuoyantIO/linkerd-buoyant/workflows/Actions/badge.svg?branch=main)
+[![Actions](https://github.com/BuoyantIO/linkerd-buoyant/actions/workflows/actions.yml/badge.svg)](https://github.com/BuoyantIO/linkerd-buoyant/actions/workflows/actions.yml)
+[![Go Report Card](https://goreportcard.com/badge/github.com/buoyantio/linkerd-buoyant)](https://goreportcard.com/report/github.com/buoyantio/linkerd-buoyant)
+[![GitHub license](https://img.shields.io/github/license/buoyantio/linkerd-buoyant.svg)](LICENSE)
 
 The Linkerd Buoyant extension is a CLI tool for managing the Buoyant Cloud
 Agent.

@@ -8,6 +8,7 @@ import (
 	rbacv1 "k8s.io/api/rbac/v1"
 )
 
+// MockClient provides a mock Kubernetes client for testing
 type MockClient struct {
 	MockNamespace          *v1.Namespace
 	MockClusterRole        *rbacv1.ClusterRole
@@ -21,31 +22,47 @@ type MockClient struct {
 	MockResources []string
 }
 
+// Namespace returns a mock Namespace object.
 func (m *MockClient) Namespace(ctx context.Context) (*v1.Namespace, error) {
 	return m.MockNamespace, nil
 }
+
+// ClusterRole returns a mock ClusterRole object.
 func (m *MockClient) ClusterRole(ctx context.Context) (*rbacv1.ClusterRole, error) {
 	return m.MockClusterRole, nil
 }
+
+// ClusterRoleBinding returns a mock ClusterRoleBinding object.
 func (m *MockClient) ClusterRoleBinding(ctx context.Context) (*rbacv1.ClusterRoleBinding, error) {
 	return m.MockClusterRoleBinding, nil
 }
+
+// Secret returns a mock Secret object.
 func (m *MockClient) Secret(ctx context.Context) (*v1.Secret, error) {
 	return m.MockSecret, nil
 }
+
+// ServiceAccount returns a mock ServiceAccount object.
 func (m *MockClient) ServiceAccount(ctx context.Context) (*v1.ServiceAccount, error) {
 	return m.MockServiceAccount, nil
 }
+
+// Deployment returns a mock Deployment object.
 func (m *MockClient) Deployment(ctx context.Context, name string) (*appsv1.Deployment, error) {
 	return m.MockDeployment, nil
 }
+
+// Pods returns a mock Pod List.
 func (m *MockClient) Pods(ctx context.Context, labelSelector string) (*v1.PodList, error) {
 	return m.MockPods, nil
 }
 
+// Agent returns a mock Buoyant Cloud Agent.
 func (m *MockClient) Agent(ctx context.Context) (*Agent, error) {
 	return m.MockAgent, nil
 }
+
+// Resources returns mock Buoyant Cloud Agent resources.
 func (m *MockClient) Resources(ctx context.Context) ([]string, error) {
 	return m.MockResources, nil
 }
