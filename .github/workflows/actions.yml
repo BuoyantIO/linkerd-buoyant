@@ -20,7 +20,7 @@ jobs:
     name: Go Unit Tests
     runs-on: ubuntu-20.04
     container:
-      image: golang:1.15.8
+      image: golang:1.16.0
     steps:
     - name: Checkout Code
       uses: actions/checkout@v2
@@ -32,7 +32,7 @@ jobs:
     name: Go Lint
     runs-on: ubuntu-20.04
     container:
-      image: golang:1.15.8
+      image: golang:1.16.0
     steps:
     - name: Checkout Code
       uses: actions/checkout@v2
@@ -67,7 +67,7 @@ jobs:
           goarch: ""
           exe: .exe
     container:
-      image: golang:1.15.8
+      image: golang:1.16.0
     steps:
     - name: Checkout Code
       uses: actions/checkout@v2

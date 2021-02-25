@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"fmt"
+	"net/http"
 	"os"
 	"time"
 
@@ -23,11 +24,11 @@ func newCmdCheck(cfg *config) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "check [flags]",
 		Args:  cobra.NoArgs,
-		Short: "Check the Buoyant Cloud Agent installation for potential problems",
-		Long: `Check the Buoyant Cloud Agent installation for potential problems.
+		Short: "Check the Buoyant Cloud agent installation for potential problems",
+		Long: `Check the Buoyant Cloud agent installation for potential problems.
 
 The check command will perform a series of checks to validate that the
-linkerd-buoyant CLI and Buoyant Cloud Agent are configured correctly. If the
+linkerd-buoyant CLI and Buoyant Cloud agent are configured correctly. If the
 command encounters a failure it will print additional information about the
 failure and exit with a non-zero exit code.`,
 		Example: `  # Default check.
@@ -60,7 +61,7 @@ failure and exit with a non-zero exit code.`,
 	return cmd
 }
 
-func check(cfg *checkConfig, client k8s.Client) error {
+func check(cfg *checkConfig, k8s k8s.Client) error {
 	if cfg.output != healthcheck.TableOutput && cfg.output != healthcheck.JSONOutput {
 		return fmt.Errorf(
 			"Invalid output type '%s'. Supported output types are: %s, %s",
@@ -69,10 +70,12 @@ func check(cfg *checkConfig, client k8s.Client) error {
 	}
 
 	hc := pkghealthcheck.NewHealthChecker(
-		client,
 		&healthcheck.Options{
 			RetryDeadline: time.Now().Add(cfg.wait),
 		},
+		k8s,
+		http.DefaultClient,
+		cfg.bcloudServer,
 	)
 
 	hc.AppendCategories(hc.L5dBuoyantCategory())

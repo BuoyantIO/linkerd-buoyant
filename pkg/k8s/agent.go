@@ -20,7 +20,7 @@ const (
 	agentSecret = "buoyant-cloud-id"
 )
 
-// Agent represents the linkerd-buoyant agent. Any of these fields may not be
+// Agent represents the Buoyant Cloud agent. Any of these fields may not be
 // present, depending on which resources are already on the cluster.
 type Agent struct {
 	Name    string

@@ -11,6 +11,7 @@ import (
 	"testing"
 
 	"github.com/buoyantio/linkerd-buoyant/pkg/k8s"
+	"github.com/buoyantio/linkerd-buoyant/pkg/version"
 )
 
 func TestInstallNewAgent(t *testing.T) {
@@ -24,7 +25,7 @@ func TestInstallNewAgent(t *testing.T) {
 			switch r.URL.Path {
 			case "/connect-agent":
 				connectRequests++
-				agentUID = r.URL.Query().Get("linkerd-buoyant")
+				agentUID = r.URL.Query().Get(version.LinkerdBuoyant)
 				if connectRequests == 1 {
 					w.WriteHeader(http.StatusAccepted)
 					return

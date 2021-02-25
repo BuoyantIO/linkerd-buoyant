@@ -57,12 +57,12 @@ func (m *MockClient) Pods(ctx context.Context, labelSelector string) (*v1.PodLis
 	return m.MockPods, nil
 }
 
-// Agent returns a mock Buoyant Cloud Agent.
+// Agent returns a mock Buoyant Cloud agent.
 func (m *MockClient) Agent(ctx context.Context) (*Agent, error) {
 	return m.MockAgent, nil
 }
 
-// Resources returns mock Buoyant Cloud Agent resources.
+// Resources returns mock Buoyant Cloud agent resources.
 func (m *MockClient) Resources(ctx context.Context) ([]string, error) {
 	return m.MockResources, nil
 }

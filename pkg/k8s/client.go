@@ -30,7 +30,7 @@ type (
 		// namespace.
 		Pods(ctx context.Context, labelSelector string) (*v1.PodList, error)
 
-		// Agent retrieves the Buoyant Cloud Agent from Kubernetes, and returns the
+		// Agent retrieves the Buoyant Cloud agent from Kubernetes, and returns the
 		// agent's name, version, and url. If Agent is not found, it will return a
 		// nil Agent with no error.
 		Agent(ctx context.Context) (*Agent, error)

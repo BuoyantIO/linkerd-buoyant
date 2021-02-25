@@ -2,9 +2,13 @@ package healthcheck
 
 import (
 	"bytes"
+	"encoding/json"
+	"net/http"
+	"net/http/httptest"
 	"testing"
 
 	"github.com/buoyantio/linkerd-buoyant/pkg/k8s"
+	"github.com/buoyantio/linkerd-buoyant/pkg/version"
 	"github.com/linkerd/linkerd2/pkg/healthcheck"
 	l5dk8s "github.com/linkerd/linkerd2/pkg/k8s"
 	appsv1 "k8s.io/api/apps/v1"
@@ -14,6 +18,22 @@ import (
 )
 
 func TestHealthChecker(t *testing.T) {
+	versionRsp := map[string]string{
+		version.LinkerdBuoyant: version.Version,
+	}
+
+	j, err := json.Marshal(versionRsp)
+	if err != nil {
+		t.Fatalf("JSON marshal failed with: %s", err)
+	}
+
+	ts := httptest.NewServer(http.HandlerFunc(
+		func(w http.ResponseWriter, r *http.Request) {
+			w.Write(j)
+		}),
+	)
+	defer ts.Close()
+
 	fixtures := []*struct {
 		testName string
 		hc       func() *HealthChecker
@@ -22,7 +42,14 @@ func TestHealthChecker(t *testing.T) {
 	}{
 		{
 			"Empty",
-			func() *HealthChecker { return NewHealthChecker(nil, &healthcheck.Options{}) },
+			func() *HealthChecker {
+				return NewHealthChecker(
+					&healthcheck.Options{},
+					nil,
+					ts.Client(),
+					ts.URL,
+				)
+			},
 			true,
 			"\nStatus check results are √\n",
 		},
@@ -30,10 +57,12 @@ func TestHealthChecker(t *testing.T) {
 			"Bad namespace",
 			func() *HealthChecker {
 				hc := NewHealthChecker(
+					&healthcheck.Options{},
 					&k8s.MockClient{
 						MockNamespace: &v1.Namespace{},
 					},
-					&healthcheck.Options{},
+					ts.Client(),
+					ts.URL,
 				)
 				hc.AppendCategories(hc.L5dBuoyantCategory())
 				return hc
@@ -65,10 +94,11 @@ Status check results are ×
 					Labels: map[string]string{
 						l5dk8s.LinkerdExtensionLabel: "buoyant",
 						k8s.PartOfKey:                k8s.PartOfVal,
-						k8s.VersionLabel:             "v0.0.28",
+						k8s.VersionLabel:             version.Version,
 					},
 				}
 				hc := NewHealthChecker(
+					&healthcheck.Options{},
 					&k8s.MockClient{
 						MockNamespace: &v1.Namespace{
 							ObjectMeta: objMeta,
@@ -106,7 +136,8 @@ Status check results are ×
 							},
 						},
 					},
-					&healthcheck.Options{},
+					ts.Client(),
+					ts.URL,
 				)
 				hc.AppendCategories(hc.L5dBuoyantCategory())
 				return hc

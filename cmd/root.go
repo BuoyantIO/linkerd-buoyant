@@ -4,6 +4,7 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/buoyantio/linkerd-buoyant/pkg/version"
 	"github.com/fatih/color"
 	"github.com/spf13/cobra"
 	"k8s.io/client-go/util/homedir"
@@ -20,12 +21,12 @@ func Root() *cobra.Command {
 	}
 
 	root := &cobra.Command{
-		Use:   "linkerd-buoyant",
+		Use:   version.LinkerdBuoyant,
 		Short: "Manage the Linkerd Buoyant extension",
-		Long: `linkerd-buoyant manages the Buoyant Cloud Agent.
+		Long: `linkerd-buoyant manages the Buoyant Cloud agent.
 
-It enables operational control over the Buoyant Cloud Agent, providing install,
-upgrade, and delete functionality`,
+It enables operational control over the Buoyant Cloud agent, providing install,
+upgrade, and delete functionality.`,
 		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
 			return nil
 		},

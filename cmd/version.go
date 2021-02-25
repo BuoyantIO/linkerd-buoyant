@@ -21,7 +21,7 @@ func newCmdVersion(cfg *config) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "version [flags]",
 		Args:  cobra.NoArgs,
-		Short: "Print the CLI and Agent version information",
+		Short: "Print the CLI and agent version information",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			if versionCfg.cli {
 				return versionCmd(cmd.Context(), versionCfg, nil)
@@ -56,11 +56,10 @@ func versionCmd(
 
 	agent, err := client.Agent(ctx)
 	if err != nil {
-		fmt.Fprintf(cfg.stderr, "Failed to get Agent version: %s\n", err)
-		return err
+		cfg.printVerbosef("Failed to get Agent version: %s\n", err)
 	}
 
-	agentVersion := "not found"
+	agentVersion := "unavailable"
 	if agent != nil {
 		agentVersion = agent.Version
 	}
