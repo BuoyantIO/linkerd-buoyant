@@ -15,7 +15,7 @@ import (
 
 const (
 	// categoryID identifies this extension to linkerd check.
-	categoryID healthcheck.CategoryID = k8s.Namespace
+	categoryID healthcheck.CategoryID = version.LinkerdBuoyant
 )
 
 // HealthChecker wraps Linkerd's main healthchecker, adding extra fields for

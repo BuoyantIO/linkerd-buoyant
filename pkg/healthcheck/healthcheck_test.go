@@ -68,8 +68,8 @@ func TestHealthChecker(t *testing.T) {
 				return hc
 			},
 			false,
-			`buoyant-cloud
--------------
+			`linkerd-buoyant
+---------------
 √ linkerd-buoyant can determine the latest version
 √ linkerd-buoyant cli is up-to-date
 √ buoyant-cloud Namespace exists
@@ -143,8 +143,8 @@ Status check results are ×
 				return hc
 			},
 			true,
-			`buoyant-cloud
--------------
+			`linkerd-buoyant
+---------------
 √ linkerd-buoyant can determine the latest version
 √ linkerd-buoyant cli is up-to-date
 √ buoyant-cloud Namespace exists
