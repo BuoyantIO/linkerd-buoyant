@@ -24,8 +24,8 @@ func newCmdInstall(cfg *config) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "install [flags]",
 		Args:  cobra.NoArgs,
-		Short: "Output Buoyant Cloud Agent manifest for installation",
-		Long: `Output Buoyant Cloud Agent manifest for installation.
+		Short: "Output Buoyant Cloud agent manifest for installation",
+		Long: `Output Buoyant Cloud agent manifest for installation.
 
 This command provides the Kubernetes configs necessary to install the Buoyant
 Cloud Agent.
@@ -101,7 +101,7 @@ func install(ctx context.Context, cfg *config, client k8s.Client, openURL openUR
 	// output the YAML manifest, this is the only thing that outputs to stdout
 	fmt.Fprintf(cfg.stdout, "%s\n", body)
 
-	fmt.Fprintf(cfg.stderr, "Agent manifest available at:\n%s\n", agentURL)
+	fmt.Fprintf(cfg.stderr, "Agent manifest available at:\n%s\n\n", agentURL)
 
 	return nil
 }
@@ -112,9 +112,9 @@ func newAgentURL(cfg *config, openURL openURL) (string, error) {
 	connectURL := fmt.Sprintf("%s/connect-cluster?linkerd-buoyant=%s", cfg.bcloudServer, agentUID)
 	err := openURL(connectURL)
 	if err == nil {
-		fmt.Fprintf(cfg.stderr, "Opening linkerd-buoyant agent setup at:\n%s\n", connectURL)
+		fmt.Fprintf(cfg.stderr, "Opening Buoyant Cloud agent setup at:\n%s\n", connectURL)
 	} else {
-		fmt.Fprintf(cfg.stderr, "Visit this URL to set up linkerd-buoyant agent:\n%s\n\n", connectURL)
+		fmt.Fprintf(cfg.stderr, "Visit this URL to set up the Buoyant Cloud agent:\n%s\n\n", connectURL)
 	}
 
 	// start polling

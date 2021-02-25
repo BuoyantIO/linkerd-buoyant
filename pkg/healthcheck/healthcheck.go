@@ -3,8 +3,10 @@ package healthcheck
 import (
 	"context"
 	"fmt"
+	"net/http"
 
 	"github.com/buoyantio/linkerd-buoyant/pkg/k8s"
+	"github.com/buoyantio/linkerd-buoyant/pkg/version"
 	"github.com/linkerd/linkerd2/pkg/healthcheck"
 	l5dk8s "github.com/linkerd/linkerd2/pkg/k8s"
 	appsv1 "k8s.io/api/apps/v1"
@@ -20,21 +22,29 @@ const (
 // linkerd-buoyant.
 type HealthChecker struct {
 	*healthcheck.HealthChecker
-	client  k8s.Client
-	ns      *v1.Namespace
+	k8s          k8s.Client
+	http         *http.Client
+	bcloudServer string
+
+	// these fields are used as caches between checks
 	version string
+	ns      *v1.Namespace
 }
 
 // NewHealthChecker returns an initialized HealthChecker for linkerd-buoyant.
 // The returned instance does not contain any linkerd-buoyant Categories.
 // Categories are to be explicitly added by using hc.AppendCategories
 func NewHealthChecker(
-	client k8s.Client,
 	options *healthcheck.Options,
+	k8s k8s.Client,
+	http *http.Client,
+	bcloudServer string,
 ) *HealthChecker {
 	return &HealthChecker{
 		HealthChecker: healthcheck.NewHealthChecker(nil, options),
-		client:        client,
+		k8s:           k8s,
+		http:          http,
+		bcloudServer:  bcloudServer,
 	}
 }
 
@@ -56,20 +66,26 @@ func (hc *HealthChecker) globalChecks() []healthcheck.Checker {
 		*healthcheck.NewChecker("linkerd-buoyant can determine the latest version").
 			Warning().
 			WithCheck(func(ctx context.Context) error {
-				// TODO: retrieve from https://buoyant.cloud/version.json
-				hc.version = "v0.0.28"
+				url := fmt.Sprintf("%s/version.json", hc.bcloudServer)
+				version, err := version.Get(ctx, hc.http, url)
+				if err != nil {
+					return err
+				}
+				hc.version = version
 				return nil
 			}),
 		*healthcheck.NewChecker("linkerd-buoyant cli is up-to-date").
 			Warning().
 			WithCheck(func(ctx context.Context) error {
-				// TODO: have version number built into this Go binary
+				if version.Version != hc.version {
+					return fmt.Errorf("CLI version is %s but the latest is %s", version.Version, hc.version)
+				}
 				return nil
 			}),
 		*healthcheck.NewChecker("buoyant-cloud Namespace exists").
 			Fatal().
 			WithCheck(func(ctx context.Context) error {
-				ns, err := hc.client.Namespace(ctx)
+				ns, err := hc.k8s.Namespace(ctx)
 				if err != nil {
 					return err
 				}
@@ -88,7 +104,7 @@ func (hc *HealthChecker) globalChecks() []healthcheck.Checker {
 		*healthcheck.NewChecker("buoyant-cloud-agent ClusterRole exists").
 			Fatal().
 			WithCheck(func(ctx context.Context) error {
-				cr, err := hc.client.ClusterRole(ctx)
+				cr, err := hc.k8s.ClusterRole(ctx)
 				if err != nil {
 					return err
 				}
@@ -97,7 +113,7 @@ func (hc *HealthChecker) globalChecks() []healthcheck.Checker {
 		*healthcheck.NewChecker("buoyant-cloud-agent ClusterRoleBinding exists").
 			Fatal().
 			WithCheck(func(ctx context.Context) error {
-				crb, err := hc.client.ClusterRoleBinding(ctx)
+				crb, err := hc.k8s.ClusterRoleBinding(ctx)
 				if err != nil {
 					return err
 				}
@@ -106,7 +122,7 @@ func (hc *HealthChecker) globalChecks() []healthcheck.Checker {
 		*healthcheck.NewChecker("buoyant-cloud-agent ServiceAccount exists").
 			Fatal().
 			WithCheck(func(ctx context.Context) error {
-				sa, err := hc.client.ServiceAccount(ctx)
+				sa, err := hc.k8s.ServiceAccount(ctx)
 				if err != nil {
 					return err
 				}
@@ -115,7 +131,7 @@ func (hc *HealthChecker) globalChecks() []healthcheck.Checker {
 		*healthcheck.NewChecker("buoyant-cloud-id Secret exists").
 			Fatal().
 			WithCheck(func(ctx context.Context) error {
-				secret, err := hc.client.Secret(ctx)
+				secret, err := hc.k8s.Secret(ctx)
 				if err != nil {
 					return err
 				}
@@ -133,7 +149,7 @@ func (hc *HealthChecker) deploymentChecks(name string) []healthcheck.Checker {
 			Fatal().
 			WithCheck(func(ctx context.Context) error {
 				var err error
-				deploy, err = hc.client.Deployment(ctx, name)
+				deploy, err = hc.k8s.Deployment(ctx, name)
 				if err != nil {
 					return err
 				}
@@ -142,7 +158,7 @@ func (hc *HealthChecker) deploymentChecks(name string) []healthcheck.Checker {
 		*healthcheck.NewChecker(fmt.Sprintf("%s Deployment is running", name)).
 			WithCheck(func(ctx context.Context) error {
 				labelSelector := fmt.Sprintf("app=%s", name)
-				pods, err := hc.client.Pods(ctx, labelSelector)
+				pods, err := hc.k8s.Pods(ctx, labelSelector)
 				if err != nil {
 					return err
 				}

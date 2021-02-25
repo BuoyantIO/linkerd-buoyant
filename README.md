@@ -12,7 +12,7 @@ Agent.
 To install the CLI, run:
 
 ```bash
-curl https://buoyant.cloud/install | sh
+curl -sL https://buoyant.cloud/install | sh
 ```
 
 Alternatively, you can download the CLI directly via the
@@ -22,20 +22,20 @@ Alternatively, you can download the CLI directly via the
 
 ```bash
 $ linkerd-buoyant
-linkerd-buoyant manages the Buoyant Cloud Agent.
+linkerd-buoyant manages the Buoyant Cloud agent.
 
-It enables operational control over the Buoyant Cloud Agent, providing install,
-upgrade, and delete functionality
+It enables operational control over the Buoyant Cloud agent, providing install,
+upgrade, and delete functionality.
 
 Usage:
   linkerd-buoyant [command]
 
 Available Commands:
-  check       Check the Buoyant Cloud Agent installation for potential problems
+  check       Check the Buoyant Cloud agent installation for potential problems
   help        Help about any command
-  install     Output Buoyant Cloud Agent manifest for installation
-  uninstall   Output Kubernetes resources to uninstall the Buoyant Cloud Agent
-  version     Print the CLI and Agent version information
+  install     Output Buoyant Cloud agent manifest for installation
+  uninstall   Output Kubernetes manifest to uninstall the Buoyant Cloud agent
+  version     Print the CLI and agent version information
 
 Flags:
       --context string      The name of the kubeconfig context to use

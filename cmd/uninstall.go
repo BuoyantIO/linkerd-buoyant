@@ -12,8 +12,8 @@ func newCmdUninstall(cfg *config) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "uninstall [flags]",
 		Args:  cobra.NoArgs,
-		Short: "Output Kubernetes resources to uninstall the Buoyant Cloud Agent",
-		Long: `Output Kubernetes resources to uninstall the Buoyant Cloud Agent.
+		Short: "Output Kubernetes manifest to uninstall the Buoyant Cloud agent",
+		Long: `Output Kubernetes manifest to uninstall the Buoyant Cloud agent.
 
 This command provides all Kubernetes namespace-scoped and cluster-scoped
 resources (e.g Namespace, RBACs, etc.) necessary to uninstall the Buoyant Cloud
@@ -62,7 +62,7 @@ func uninstall(ctx context.Context, cfg *config, client k8s.Client) error {
 
 	// if agent is present, output its name and URL for posterity
 	if agent != nil {
-		fmt.Fprintf(cfg.stderr, "Agent manifest will remain available at:\n%s\n", agent.URL)
+		fmt.Fprintf(cfg.stderr, "Agent manifest will remain available at:\n%s\n\n", agent.URL)
 	}
 
 	return nil
