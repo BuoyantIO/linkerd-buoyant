@@ -20,6 +20,8 @@ import (
 // a browser window.
 type openURL func(url string) error
 
+const maxPollingRetries = 3
+
 func newCmdInstall(cfg *config) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "install [flags]",
@@ -130,6 +132,8 @@ func newAgentURL(cfg *config, openURL openURL) (string, error) {
 	connectAgentURL := fmt.Sprintf("%s/connect-agent?linkerd-buoyant=%s", cfg.bcloudServer, agentUID)
 	cfg.printVerbosef("Polling: %s", connectAgentURL)
 
+	// only exit on 3 consecutive failures
+	retries := 0
 	for {
 		resp, err := client.Get(connectAgentURL)
 		if err != nil {
@@ -139,11 +143,17 @@ func newAgentURL(cfg *config, openURL openURL) (string, error) {
 
 		if resp.StatusCode == http.StatusAccepted {
 			// still polling
+			retries = 0
 			time.Sleep(time.Second)
 			continue
 		}
 
 		if resp.StatusCode != http.StatusPermanentRedirect {
+			retries++
+			if retries < maxPollingRetries {
+				continue
+			}
+
 			return "", fmt.Errorf("setup failed, unexpected HTTP status code %d for URL %s", resp.StatusCode, connectAgentURL)
 		}
 

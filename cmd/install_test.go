@@ -31,6 +31,11 @@ func TestInstallNewAgent(t *testing.T) {
 					return
 				}
 
+				if connectRequests == 2 {
+					w.WriteHeader(http.StatusBadGateway)
+					return
+				}
+
 				http.Redirect(w, r, "/agent-yaml-redirect", http.StatusPermanentRedirect)
 			case "/agent-yaml-redirect":
 				redirectRequests++
@@ -62,14 +67,54 @@ func TestInstallNewAgent(t *testing.T) {
 	if !strings.Contains(stderr.String(), expBrowserURL) {
 		t.Errorf("Expected stderr to contain [%s], Got: [%s]", expBrowserURL, stderr.String())
 	}
-	if totalRequests != 3 {
-		t.Errorf("Expected 3 total requests, called %d times", totalRequests)
+	if totalRequests != 4 {
+		t.Errorf("Expected 4 total requests, called %d times", totalRequests)
 	}
-	if connectRequests != 2 {
-		t.Errorf("Expected 2 /connect-agent requests, called %d times", connectRequests)
+	if connectRequests != 3 {
+		t.Errorf("Expected 3 /connect-agent requests, called %d times", connectRequests)
 	}
 	if redirectRequests != 1 {
 		t.Errorf("Expected 1 /agent-yaml-redirect request, called %d times", redirectRequests)
+	}
+}
+
+func TestInstalWithPollingFailures(t *testing.T) {
+	totalRequests := 0
+	connectRequests := 0
+	agentUID := "'"
+	ts := httptest.NewServer(http.HandlerFunc(
+		func(w http.ResponseWriter, r *http.Request) {
+			totalRequests++
+			switch r.URL.Path {
+			case "/connect-agent":
+				agentUID = r.URL.Query().Get(version.LinkerdBuoyant)
+				connectRequests++
+				w.WriteHeader(http.StatusBadGateway)
+			}
+		},
+	))
+	defer ts.Close()
+
+	stdout := &bytes.Buffer{}
+	stderr := &bytes.Buffer{}
+	cfg := &config{
+		stdout:       stdout,
+		stderr:       stderr,
+		bcloudServer: ts.URL,
+	}
+
+	client := &k8s.MockClient{}
+	err := install(context.TODO(), cfg, client, mockOpenURL)
+	expErr := fmt.Errorf("setup failed, unexpected HTTP status code 502 for URL %s/connect-agent?linkerd-buoyant=%s", ts.URL, agentUID)
+	if !reflect.DeepEqual(err, expErr) {
+		t.Errorf("Expected error: %s, Got: %s", expErr, err)
+	}
+
+	if totalRequests != maxPollingRetries {
+		t.Errorf("Expected %d total requests, called %d times", maxPollingRetries, totalRequests)
+	}
+	if connectRequests != maxPollingRetries {
+		t.Errorf("Expected %d /connect-agent requests, called %d times", maxPollingRetries, connectRequests)
 	}
 }
 
