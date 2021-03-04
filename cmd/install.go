@@ -20,6 +20,8 @@ import (
 // a browser window.
 type openURL func(url string) error
 
+const maxPollingRetries = 3
+
 func newCmdInstall(cfg *config) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "install [flags]",
@@ -148,7 +150,7 @@ func newAgentURL(cfg *config, openURL openURL) (string, error) {
 
 		if resp.StatusCode != http.StatusPermanentRedirect {
 			retries++
-			if retries < 3 {
+			if retries < maxPollingRetries {
 				continue
 			}
 

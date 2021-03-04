@@ -110,11 +110,11 @@ func TestInstalWithPollingFailures(t *testing.T) {
 		t.Errorf("Expected error: %s, Got: %s", expErr, err)
 	}
 
-	if totalRequests != 3 {
-		t.Errorf("Expected 3 total requests, called %d times", totalRequests)
+	if totalRequests != maxPollingRetries {
+		t.Errorf("Expected %d total requests, called %d times", maxPollingRetries, totalRequests)
 	}
-	if connectRequests != 3 {
-		t.Errorf("Expected 3 /connect-agent requests, called %d times", connectRequests)
+	if connectRequests != maxPollingRetries {
+		t.Errorf("Expected %d /connect-agent requests, called %d times", maxPollingRetries, connectRequests)
 	}
 }
 
