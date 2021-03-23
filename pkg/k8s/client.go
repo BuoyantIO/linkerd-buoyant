@@ -52,8 +52,11 @@ type (
 
 // New takes a kubeconfig and kubecontext and returns an initialized Client.
 func New(kubeconfig, kubecontext, bcloudServer string) (Client, error) {
+	rules := clientcmd.NewDefaultClientConfigLoadingRules()
+	rules.ExplicitPath = kubeconfig
+
 	clientConfig := clientcmd.NewNonInteractiveDeferredLoadingClientConfig(
-		&clientcmd.ClientConfigLoadingRules{ExplicitPath: kubeconfig},
+		rules,
 		&clientcmd.ConfigOverrides{CurrentContext: kubecontext})
 
 	config, err := clientConfig.ClientConfig()

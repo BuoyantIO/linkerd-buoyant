@@ -20,7 +20,7 @@ jobs:
     name: Go Unit Tests
     runs-on: ubuntu-20.04
     container:
-      image: golang:1.16.0
+      image: golang:1.16.2
     steps:
     - name: Checkout Code
       uses: actions/checkout@v2
@@ -32,7 +32,7 @@ jobs:
     name: Go Lint
     runs-on: ubuntu-20.04
     container:
-      image: golang:1.16.0
+      image: golang:1.16.2
     steps:
     - name: Checkout Code
       uses: actions/checkout@v2
@@ -58,16 +58,20 @@ jobs:
           goos: linux
           goarch: arm
           exe: ""
-        - platform: darwin
+        - platform: darwin-amd64
           goos: darwin
-          goarch: ""
+          goarch: amd64
+          exe: ""
+        - platform: darwin-arm64
+          goos: darwin
+          goarch: arm64
           exe: ""
         - platform: windows
           goos: windows
           goarch: ""
           exe: .exe
     container:
-      image: golang:1.16.0
+      image: golang:1.16.2
     steps:
     - name: Checkout Code
       uses: actions/checkout@v2
@@ -94,11 +98,11 @@ jobs:
     strategy:
       matrix:
         include:
-        # no arm runner available, skip it
+        # no arm runner available, skip linux-arm64, linux-arm, and darwin-arm64
         - platform: linux-amd64
           os: ubuntu-20.04
           exe: ""
-        - platform: darwin
+        - platform: darwin-amd64
           os: macos-10.15
           exe: ""
         - platform: windows
@@ -160,7 +164,9 @@ jobs:
           exe: ""
         - platform: linux-arm
           exe: ""
-        - platform: darwin
+        - platform: darwin-amd64
+          exe: ""
+        - platform: darwin-arm64
           exe: ""
         - platform: windows
           exe: .exe
