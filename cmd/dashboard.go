@@ -10,7 +10,6 @@ import (
 )
 
 func newCmdDashboard(cfg *config) *cobra.Command {
-
 	cmd := &cobra.Command{
 		Use:   "dashboard [flags]",
 		Args:  cobra.NoArgs,
@@ -31,7 +30,6 @@ func newCmdDashboard(cfg *config) *cobra.Command {
 func dashboardCmd(
 	ctx context.Context, cfg *config, client k8s.Client, openURL openURL,
 ) error {
-
 	agent, err := client.Agent(ctx)
 	if err != nil {
 		cfg.printVerbosef("Failed to get Agent: %s\n", err)
