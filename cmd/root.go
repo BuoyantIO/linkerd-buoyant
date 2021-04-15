@@ -62,6 +62,7 @@ upgrade, and delete functionality.`,
 	root.AddCommand(newCmdInstall(cfg))
 	root.AddCommand(newCmdUninstall(cfg))
 	root.AddCommand(newCmdVersion(cfg))
+	root.AddCommand(newCmdDashboard(cfg))
 
 	return root
 }
