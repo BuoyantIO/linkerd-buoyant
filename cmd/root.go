@@ -6,6 +6,7 @@ import (
 
 	"github.com/buoyantio/linkerd-buoyant/pkg/version"
 	"github.com/fatih/color"
+	"github.com/pkg/browser"
 	"github.com/spf13/cobra"
 	"k8s.io/client-go/util/homedir"
 )
@@ -62,7 +63,7 @@ upgrade, and delete functionality.`,
 	root.AddCommand(newCmdInstall(cfg))
 	root.AddCommand(newCmdUninstall(cfg))
 	root.AddCommand(newCmdVersion(cfg))
-	root.AddCommand(newCmdDashboard(cfg))
+	root.AddCommand(newCmdDashboard(cfg, browser.OpenURL))
 
 	return root
 }
