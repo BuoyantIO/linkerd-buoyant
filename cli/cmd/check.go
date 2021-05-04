@@ -6,8 +6,8 @@ import (
 	"os"
 	"time"
 
-	pkghealthcheck "github.com/buoyantio/linkerd-buoyant/pkg/healthcheck"
-	"github.com/buoyantio/linkerd-buoyant/pkg/k8s"
+	pkghealthcheck "github.com/buoyantio/linkerd-buoyant/cli/pkg/healthcheck"
+	"github.com/buoyantio/linkerd-buoyant/cli/pkg/k8s"
 	"github.com/linkerd/linkerd2/pkg/healthcheck"
 	"github.com/spf13/cobra"
 )

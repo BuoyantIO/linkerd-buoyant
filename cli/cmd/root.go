@@ -4,7 +4,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/buoyantio/linkerd-buoyant/pkg/version"
+	"github.com/buoyantio/linkerd-buoyant/cli/pkg/version"
 	"github.com/fatih/color"
 	"github.com/pkg/browser"
 	"github.com/spf13/cobra"

@@ -6,7 +6,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/buoyantio/linkerd-buoyant/pkg/k8s"
+	"github.com/buoyantio/linkerd-buoyant/cli/pkg/k8s"
 )
 
 func TestUninstall(t *testing.T) {

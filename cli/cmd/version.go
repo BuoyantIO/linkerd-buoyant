@@ -4,8 +4,8 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/buoyantio/linkerd-buoyant/pkg/k8s"
-	"github.com/buoyantio/linkerd-buoyant/pkg/version"
+	"github.com/buoyantio/linkerd-buoyant/cli/pkg/k8s"
+	"github.com/buoyantio/linkerd-buoyant/cli/pkg/version"
 	"github.com/spf13/cobra"
 )
 

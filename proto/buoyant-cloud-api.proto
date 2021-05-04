@@ -1,0 +1,102 @@
+syntax = "proto3";
+
+package buoyant.cloud;
+
+option go_package = "github.com/buoyantio/linkerd-buoyant/gen/bcloud";
+
+import "google/protobuf/timestamp.proto";
+
+//
+// shared messages
+//
+
+message Empty {}
+
+message Auth {
+  string agent_id = 1;
+  string agent_key = 2;
+}
+
+message Workload {
+  oneof workload {
+    DaemonSet daemonset = 1;
+    Deployment deployment = 2;
+    StatefulSet statefulset = 3;
+  }
+}
+
+message DaemonSet {
+  bytes daemon_set = 1;
+  repeated Pod pods = 2;
+}
+
+message Deployment {
+  bytes deployment = 1;
+  repeated ReplicaSet replica_sets = 2;
+}
+
+message StatefulSet {
+  bytes stateful_set = 1;
+  repeated Pod pods = 2;
+}
+
+message ReplicaSet {
+  bytes replica_set = 1;
+  repeated Pod pods = 2;
+}
+
+message Pod {
+  bytes pod = 1;
+}
+
+//
+// WorkloadStream messages
+//
+
+message WorkloadMessage {
+  oneof message {
+    Auth auth = 1;
+
+    AddWorkload added = 2;
+    UpdateWorkload updated = 3;
+    DeleteWorkload deleted = 4;
+    ListWorkloads list = 5;
+  }
+}
+
+message AddWorkload {
+  Workload workload = 1;
+}
+
+message DeleteWorkload {
+  Workload workload = 1;
+}
+
+message UpdateWorkload {
+  Workload old_workload = 1;
+  Workload new_workload = 2;
+  google.protobuf.Timestamp timestamp = 3;
+}
+
+message ListWorkloads {
+  repeated Workload workloads = 1;
+}
+
+//
+// AddEvent messages
+//
+
+message Event {
+  Auth auth = 1;
+  bytes event = 2;
+  Workload owner = 3;
+}
+
+//
+// API
+//
+
+service Api {
+  rpc WorkloadStream(stream WorkloadMessage) returns (Empty) {}
+  rpc AddEvent(Event) returns (Empty) {}
+}

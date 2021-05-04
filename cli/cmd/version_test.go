@@ -5,7 +5,7 @@ import (
 	"context"
 	"testing"
 
-	"github.com/buoyantio/linkerd-buoyant/pkg/k8s"
+	"github.com/buoyantio/linkerd-buoyant/cli/pkg/k8s"
 )
 
 func TestVersion(t *testing.T) {

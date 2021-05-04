@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/buoyantio/linkerd-buoyant/pkg/k8s"
+	"github.com/buoyantio/linkerd-buoyant/cli/pkg/k8s"
 	"github.com/spf13/cobra"
 )
 
