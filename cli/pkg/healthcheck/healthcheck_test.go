@@ -7,8 +7,8 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/buoyantio/linkerd-buoyant/pkg/k8s"
-	"github.com/buoyantio/linkerd-buoyant/pkg/version"
+	"github.com/buoyantio/linkerd-buoyant/cli/pkg/k8s"
+	"github.com/buoyantio/linkerd-buoyant/cli/pkg/version"
 	"github.com/linkerd/linkerd2/pkg/healthcheck"
 	l5dk8s "github.com/linkerd/linkerd2/pkg/k8s"
 	appsv1 "k8s.io/api/apps/v1"

@@ -4,10 +4,16 @@
 [![Go Report Card](https://goreportcard.com/badge/github.com/buoyantio/linkerd-buoyant)](https://goreportcard.com/report/github.com/buoyantio/linkerd-buoyant)
 [![GitHub license](https://img.shields.io/github/license/buoyantio/linkerd-buoyant.svg)](LICENSE)
 
-The Linkerd Buoyant extension is a CLI tool for managing the Buoyant Cloud
-Agent.
+The Linkerd Buoyant extension connects your
+[Linkerd](https://linkerd.io)-enabled Kubernetes cluster to
+[Buoyant Cloud](https://buoyant.cloud), the global platform health dashboard for
+Linkerd.
 
-## Install
+This repo consists of two components:
+- [`agent`](agent): Runs on your Kubernetes cluster.
+- [`cli`](cli): Runs locally or wherever you install the Linkerd CLI.
+
+## Install CLI
 
 To install the CLI, run:
 
@@ -18,7 +24,7 @@ curl -sL https://buoyant.cloud/install | sh
 Alternatively, you can download the CLI directly via the
 [releases page](https://github.com/BuoyantIO/linkerd-buoyant/releases).
 
-## Usage
+### Usage
 
 ```bash
 $ linkerd-buoyant
@@ -48,19 +54,49 @@ Use "linkerd-buoyant [command] --help" for more information about a command.
 
 ## Development
 
-Run locally:
+### Agent
+
+Build and run:
 ```bash
-go run main.go
+bin/go-run agent
+```
+
+Docker build:
+```bash
+docker buildx build -f agent/Dockerfile -t ghcr.io/buoyantio/linkerd-buoyant:latest .
+```
+
+### CLI
+
+Build and run:
+```bash
+bin/go-run cli
 ```
 
 Run with a version number:
 ```bash
-go run -ldflags "-s -w -X github.com/buoyantio/linkerd-buoyant/pkg/version.Version=vX.Y.Z" main.go version
+go run -ldflags "-s -w -X github.com/buoyantio/linkerd-buoyant/cli/pkg/version.Version=vX.Y.Z" cli/main.go version
 ```
 
 Test against a local server:
 ```bash
-go run main.go --bcloud-server http://localhost:8084
+bin/go-run cli --bcloud-server http://localhost:8084 check
+```
+
+### Protobuf
+
+The generated protobuf bindings in `gen` come from the `proto` directory in this
+repo. If you make changes there, re-generate them with:
+
+```bash
+bin/gen-proto
+```
+
+### Testing
+
+```bash
+go test -race -cover ./...
+bin/lint
 ```
 
 ## Release

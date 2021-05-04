@@ -5,7 +5,7 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/buoyantio/linkerd-buoyant/pkg/k8s"
+	"github.com/buoyantio/linkerd-buoyant/cli/pkg/k8s"
 )
 
 func TestCheck(t *testing.T) {

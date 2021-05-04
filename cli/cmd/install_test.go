@@ -10,8 +10,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/buoyantio/linkerd-buoyant/pkg/k8s"
-	"github.com/buoyantio/linkerd-buoyant/pkg/version"
+	"github.com/buoyantio/linkerd-buoyant/cli/pkg/k8s"
+	"github.com/buoyantio/linkerd-buoyant/cli/pkg/version"
 )
 
 func TestInstallNewAgent(t *testing.T) {

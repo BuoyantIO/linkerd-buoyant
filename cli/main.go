@@ -3,7 +3,7 @@ package main
 import (
 	"os"
 
-	"github.com/buoyantio/linkerd-buoyant/cmd"
+	"github.com/buoyantio/linkerd-buoyant/cli/cmd"
 
 	// Load all the auth plugins for the cloud providers.
 	_ "k8s.io/client-go/plugin/pkg/client/auth"
