@@ -93,10 +93,53 @@ message Event {
 }
 
 //
+// Linkerd Messages
+//
+
+message CertData {
+  bytes raw = 1;
+}
+
+message ControlPlaneCerts {
+  CertData issuer_crt_chain = 1;
+  CertData roots = 2;
+}
+
+message ProxyCerts {
+  CertData peer_crt_chain = 1;
+  CertData roots = 2;
+  string pod_name = 3;
+  string namespace = 4;
+  string workload_name = 5;
+}
+
+message WebhookCerts {
+  CertData crt_chain = 1;
+  string component_name = 2;
+}
+
+message CertificateInfo {
+    oneof info {
+    ControlPlaneCerts control_plane = 1;
+    ProxyCerts proxy = 2;
+    WebhookCerts webhook = 3;
+  }
+}
+
+message LinkerdMessage {
+  Auth auth = 1;
+  oneof message {
+    CertificateInfo crt_info = 2;
+  }
+}
+
+
+//
 // API
 //
 
 service Api {
   rpc WorkloadStream(stream WorkloadMessage) returns (Empty) {}
   rpc AddEvent(Event) returns (Empty) {}
+  rpc LinkerdInfo(LinkerdMessage) returns (Empty) {}
 }

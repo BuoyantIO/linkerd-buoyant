@@ -20,6 +20,7 @@ const _ = grpc.SupportPackageIsVersion7
 type ApiClient interface {
 	WorkloadStream(ctx context.Context, opts ...grpc.CallOption) (Api_WorkloadStreamClient, error)
 	AddEvent(ctx context.Context, in *Event, opts ...grpc.CallOption) (*Empty, error)
+	LinkerdInfo(ctx context.Context, in *LinkerdMessage, opts ...grpc.CallOption) (*Empty, error)
 }
 
 type apiClient struct {
@@ -73,12 +74,22 @@ func (c *apiClient) AddEvent(ctx context.Context, in *Event, opts ...grpc.CallOp
 	return out, nil
 }
 
+func (c *apiClient) LinkerdInfo(ctx context.Context, in *LinkerdMessage, opts ...grpc.CallOption) (*Empty, error) {
+	out := new(Empty)
+	err := c.cc.Invoke(ctx, "/buoyant.cloud.Api/LinkerdInfo", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // ApiServer is the server API for Api service.
 // All implementations must embed UnimplementedApiServer
 // for forward compatibility
 type ApiServer interface {
 	WorkloadStream(Api_WorkloadStreamServer) error
 	AddEvent(context.Context, *Event) (*Empty, error)
+	LinkerdInfo(context.Context, *LinkerdMessage) (*Empty, error)
 	mustEmbedUnimplementedApiServer()
 }
 
@@ -91,6 +102,9 @@ func (UnimplementedApiServer) WorkloadStream(Api_WorkloadStreamServer) error {
 }
 func (UnimplementedApiServer) AddEvent(context.Context, *Event) (*Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AddEvent not implemented")
+}
+func (UnimplementedApiServer) LinkerdInfo(context.Context, *LinkerdMessage) (*Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method LinkerdInfo not implemented")
 }
 func (UnimplementedApiServer) mustEmbedUnimplementedApiServer() {}
 
@@ -149,6 +163,24 @@ func _Api_AddEvent_Handler(srv interface{}, ctx context.Context, dec func(interf
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Api_LinkerdInfo_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(LinkerdMessage)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ApiServer).LinkerdInfo(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/buoyant.cloud.Api/LinkerdInfo",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ApiServer).LinkerdInfo(ctx, req.(*LinkerdMessage))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Api_ServiceDesc is the grpc.ServiceDesc for Api service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -159,6 +191,10 @@ var Api_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "AddEvent",
 			Handler:    _Api_AddEvent_Handler,
+		},
+		{
+			MethodName: "LinkerdInfo",
+			Handler:    _Api_LinkerdInfo_Handler,
 		},
 	},
 	Streams: []grpc.StreamDesc{

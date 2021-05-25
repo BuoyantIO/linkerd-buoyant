@@ -51,9 +51,6 @@ func TestWorkloadStream(t *testing.T) {
 	})
 
 	t.Run("sets auth info", func(t *testing.T) {
-		fakeID := "fake-id"
-		fakeKey := "fake-key"
-
 		fixtures := []*struct {
 			testName string
 			msgs     []*pb.WorkloadMessage

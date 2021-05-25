@@ -9,6 +9,11 @@ import (
 	"google.golang.org/grpc/metadata"
 )
 
+const (
+	fakeID  = "fake-id"
+	fakeKey = "fake-key"
+)
+
 // MockBcloudClient satisfies the bcloud.ApiClient and
 // bcloud.Api_WorkloadStreamClient interfaces, and saves all params and messages
 // passed to it.
@@ -17,10 +22,11 @@ type MockBcloudClient struct {
 	err error
 
 	// output
-	id       string
-	key      string
-	messages []*pb.WorkloadMessage
-	events   []*pb.Event
+	id              string
+	key             string
+	messages        []*pb.WorkloadMessage
+	events          []*pb.Event
+	linkerdMessages []*pb.LinkerdMessage
 
 	// protects messages and events
 	sync.Mutex
@@ -54,6 +60,18 @@ func (m *MockBcloudClient) Messages() []*pb.WorkloadMessage {
 	return messages
 }
 
+func (m *MockBcloudClient) LinkerdMessages() []*pb.LinkerdMessage {
+	m.Lock()
+	defer m.Unlock()
+
+	messages := make([]*pb.LinkerdMessage, len(m.linkerdMessages))
+	for i, m := range m.linkerdMessages {
+		messages[i] = m
+	}
+
+	return messages
+}
+
 //
 // bcloud.ApiClient methods
 //
@@ -73,6 +91,18 @@ func (m *MockBcloudClient) AddEvent(
 	m.id = event.GetAuth().GetAgentId()
 	m.key = event.GetAuth().GetAgentKey()
 	m.events = append(m.events, event)
+	return nil, m.err
+}
+
+func (m *MockBcloudClient) LinkerdInfo(
+	ctx context.Context, message *pb.LinkerdMessage, _ ...grpc.CallOption,
+) (*pb.Empty, error) {
+	m.Lock()
+	defer m.Unlock()
+
+	m.id = message.GetAuth().GetAgentId()
+	m.key = message.GetAuth().GetAgentKey()
+	m.linkerdMessages = append(m.linkerdMessages, message)
 	return nil, m.err
 }
 
