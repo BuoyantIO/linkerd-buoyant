@@ -133,7 +133,6 @@ message LinkerdMessage {
   }
 }
 
-
 //
 // API
 //
