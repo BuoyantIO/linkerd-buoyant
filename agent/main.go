@@ -159,7 +159,7 @@ func main() {
 	// wait for shutdown
 	<-stop
 	log.Info("shutting down")
-	//workloadHandler.Stop()
-	//linkerdInfoHandler.Stop()
+	workloadHandler.Stop()
+	linkerdInfoHandler.Stop()
 	close(shutdown)
 }
