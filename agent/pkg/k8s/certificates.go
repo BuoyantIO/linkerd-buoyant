@@ -163,8 +163,13 @@ func extractIssuerCertChain(pod *v1.Pod, container *v1.Container) (*pb.CertData,
 		return nil, err
 	}
 
+	// skip the end cert
 	certs := conn.ConnectionState().PeerCertificates
-	encodedCerts, err := encodeCertificatesPEM(certs...)
+	if len(certs) < 2 {
+		return nil, fmt.Errorf("expected to get at least 2 peer certs, got %d", len(certs))
+	}
+
+	encodedCerts, err := encodeCertificatesPEM(certs[1:]...)
 	if err != nil {
 		return nil, err
 	}
