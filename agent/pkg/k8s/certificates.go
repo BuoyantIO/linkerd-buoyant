@@ -11,16 +11,14 @@ import (
 	"time"
 
 	pb "github.com/buoyantio/linkerd-buoyant/gen/bcloud"
+	"github.com/linkerd/linkerd2/pkg/identity"
+	ldConsts "github.com/linkerd/linkerd2/pkg/k8s"
 	v1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/labels"
 )
 
 const (
-	controlPlaneComponentLabel   = "linkerd.io/control-plane-component"
 	identityComponentName        = "identity"
-	linkerdProxyContainerName    = "linkerd-proxy"
-	linkerdRootsEnvVarName       = "LINKERD2_PROXY_IDENTITY_TRUST_ANCHORS"
-	proxyAdminPortName           = "linkerd-admin"
 	linkerdNsEnvVarName          = "_l5d_ns"
 	linkerdTrustDomainEnvVarName = "_l5d_trustdomain"
 )
@@ -56,7 +54,7 @@ func (c *Client) GetControlPlaneCerts() (*pb.ControlPlaneCerts, error) {
 
 func (c *Client) getControlPlaneComponentPod(component string) (*v1.Pod, error) {
 	selector := labels.Set(map[string]string{
-		controlPlaneComponentLabel: component,
+		ldConsts.ControllerComponentLabel: component,
 	}).AsSelector()
 
 	pods, err := c.podLister.List(selector)
@@ -80,7 +78,7 @@ func (c *Client) getControlPlaneComponentPod(component string) (*v1.Pod, error) 
 
 func getProxyContainer(pod *v1.Pod) (*v1.Container, error) {
 	for _, c := range pod.Spec.Containers {
-		if c.Name == linkerdProxyContainerName {
+		if c.Name == ldConsts.ProxyContainerName {
 			container := c
 			return &container, nil
 		}
@@ -91,12 +89,12 @@ func getProxyContainer(pod *v1.Pod) (*v1.Container, error) {
 
 func getProxyAdminPort(container *v1.Container) (int32, error) {
 	for _, p := range container.Ports {
-		if p.Name == proxyAdminPortName {
+		if p.Name == ldConsts.ProxyAdminPortName {
 			return p.ContainerPort, nil
 		}
 	}
 
-	return 0, fmt.Errorf("could not find port %s on proxy container [%s]", proxyAdminPortName, container.Name)
+	return 0, fmt.Errorf("could not find port %s on proxy container [%s]", ldConsts.ProxyAdminPortName, container.Name)
 }
 
 func getServerName(podsa string, podns string, container *v1.Container) (string, error) {
@@ -122,20 +120,15 @@ func getServerName(podsa string, podns string, container *v1.Container) (string,
 }
 
 func extractRootsCerts(container *v1.Container) (*pb.CertData, error) {
-	var roots []byte
 	for _, ev := range container.Env {
-		if ev.Name == linkerdRootsEnvVarName {
-			roots = []byte(ev.Value)
+		if ev.Name == identity.EnvTrustAnchors {
+			return &pb.CertData{
+				Raw: []byte(ev.Value),
+			}, nil
 		}
 	}
 
-	if roots == nil {
-		return nil, fmt.Errorf("could not find env var with name %s on proxy container [%s]", linkerdRootsEnvVarName, container.Name)
-	}
-
-	return &pb.CertData{
-		Raw: roots,
-	}, nil
+	return nil, fmt.Errorf("could not find env var with name %s on proxy container [%s]", identity.EnvTrustAnchors, container.Name)
 }
 
 func extractIssuerCertChain(pod *v1.Pod, container *v1.Container) (*pb.CertData, error) {

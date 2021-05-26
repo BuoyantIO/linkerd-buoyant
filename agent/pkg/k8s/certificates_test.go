@@ -6,6 +6,8 @@ import (
 	"testing"
 	"time"
 
+	"github.com/linkerd/linkerd2/pkg/identity"
+	ldConsts "github.com/linkerd/linkerd2/pkg/k8s"
 	v1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
@@ -25,7 +27,7 @@ func TestFindIdentityPod(t *testing.T) {
 						Name:      "linkerd-identity",
 						Namespace: "linkerd",
 						Labels: map[string]string{
-							controlPlaneComponentLabel: identityComponentName,
+							ldConsts.ControllerComponentLabel: identityComponentName,
 						},
 					},
 					Status: v1.PodStatus{
@@ -49,7 +51,7 @@ func TestFindIdentityPod(t *testing.T) {
 						Name:      "linkerd-identity",
 						Namespace: "linkerd",
 						Labels: map[string]string{
-							controlPlaneComponentLabel: identityComponentName,
+							ldConsts.ControllerComponentLabel: identityComponentName,
 						},
 					},
 					Status: v1.PodStatus{
@@ -116,7 +118,7 @@ func TestGetProxyContainer(t *testing.T) {
 				Spec: v1.PodSpec{
 					Containers: []v1.Container{
 						{
-							Name: linkerdProxyContainerName,
+							Name: ldConsts.ProxyContainerName,
 						},
 						{
 							Name: "some-other-container",
@@ -154,8 +156,8 @@ func TestGetProxyContainer(t *testing.T) {
 					t.Fatalf("exepected err %s, got %s", tc.expectedErr, err)
 				}
 			} else {
-				if container.Name != linkerdProxyContainerName {
-					t.Fatalf("exepected container with name %s, got %s", linkerdProxyContainerName, container.Name)
+				if container.Name != ldConsts.ProxyContainerName {
+					t.Fatalf("exepected container with name %s, got %s", ldConsts.ProxyContainerName, container.Name)
 				}
 			}
 		})
@@ -172,10 +174,10 @@ func TestGetAdminPort(t *testing.T) {
 		{
 			"container with admin port",
 			&v1.Container{
-				Name: linkerdProxyContainerName,
+				Name: ldConsts.ProxyContainerName,
 				Ports: []v1.ContainerPort{
 					{
-						Name:          proxyAdminPortName,
+						Name:          ldConsts.ProxyAdminPortName,
 						ContainerPort: 555,
 					},
 					{
@@ -190,7 +192,7 @@ func TestGetAdminPort(t *testing.T) {
 		{
 			"container without admin port",
 			&v1.Container{
-				Name: linkerdProxyContainerName,
+				Name: ldConsts.ProxyContainerName,
 				Ports: []v1.ContainerPort{
 					{
 						Name:          "another port",
@@ -233,7 +235,7 @@ func TestGetServerName(t *testing.T) {
 		{
 			"gets correct name",
 			&v1.Container{
-				Name: linkerdProxyContainerName,
+				Name: ldConsts.ProxyContainerName,
 				Env: []v1.EnvVar{
 					{
 						Name:  linkerdNsEnvVarName,
@@ -251,7 +253,7 @@ func TestGetServerName(t *testing.T) {
 		{
 			"missing ns env var",
 			&v1.Container{
-				Name: linkerdProxyContainerName,
+				Name: ldConsts.ProxyContainerName,
 				Env: []v1.EnvVar{
 					{
 						Name:  linkerdTrustDomainEnvVarName,
@@ -260,12 +262,12 @@ func TestGetServerName(t *testing.T) {
 				},
 			},
 			"",
-			fmt.Errorf("could not find %s env var on proxy container [%s]", linkerdNsEnvVarName, linkerdProxyContainerName),
+			fmt.Errorf("could not find %s env var on proxy container [%s]", linkerdNsEnvVarName, ldConsts.ProxyContainerName),
 		},
 		{
 			"missing trust domain env var",
 			&v1.Container{
-				Name: linkerdProxyContainerName,
+				Name: ldConsts.ProxyContainerName,
 				Env: []v1.EnvVar{
 					{
 						Name:  linkerdNsEnvVarName,
@@ -274,7 +276,7 @@ func TestGetServerName(t *testing.T) {
 				},
 			},
 			"",
-			fmt.Errorf("could not find %s env var on proxy container [%s]", linkerdTrustDomainEnvVarName, linkerdProxyContainerName),
+			fmt.Errorf("could not find %s env var on proxy container [%s]", linkerdTrustDomainEnvVarName, ldConsts.ProxyContainerName),
 		},
 	}
 
@@ -318,10 +320,10 @@ func TestExtractRootCerts(t *testing.T) {
 		{
 			"gets correct cert",
 			&v1.Container{
-				Name: linkerdProxyContainerName,
+				Name: ldConsts.ProxyContainerName,
 				Env: []v1.EnvVar{
 					{
-						Name:  linkerdRootsEnvVarName,
+						Name:  identity.EnvTrustAnchors,
 						Value: roots,
 					},
 				},
@@ -332,11 +334,11 @@ func TestExtractRootCerts(t *testing.T) {
 		{
 			"no roots",
 			&v1.Container{
-				Name: linkerdProxyContainerName,
+				Name: ldConsts.ProxyContainerName,
 				Env:  []v1.EnvVar{},
 			},
 			"",
-			fmt.Errorf("could not find env var with name %s on proxy container [linkerd-proxy]", linkerdRootsEnvVarName),
+			fmt.Errorf("could not find env var with name %s on proxy container [linkerd-proxy]", identity.EnvTrustAnchors),
 		},
 	}
 

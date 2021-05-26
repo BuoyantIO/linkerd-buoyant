@@ -14,8 +14,9 @@ const (
 	linkerdInfoInterval = 10 * time.Second
 )
 
-// Event listens to the k8s API for events, and forwards them to the Buoyant
-// Cloud API.
+// LinkerdInfo is responsible for obtaining Linkerd related
+// data and sending it to the Bcloud API in the form of
+// `LinkerdMessage` objects
 type LinkerdInfo struct {
 	api    *api.Client
 	k8s    *k8s.Client
@@ -71,6 +72,6 @@ func (h *LinkerdInfo) handleCertsInfo() {
 
 	err = h.api.CrtInfo(m)
 	if err != nil {
-		h.log.Errorf("error sending list message: %s", err)
+		h.log.Errorf("error sending CertificateInfo message: %s", err)
 	}
 }

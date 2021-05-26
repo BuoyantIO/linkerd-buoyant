@@ -96,30 +96,46 @@ message Event {
 // Linkerd Messages
 //
 
+// This message represents PEM encoded certificate
+// data. It might be a single certificate, a pool of
+// roots or a chain of certificates.
 message CertData {
   bytes raw = 1;
 }
 
+// Represents the certificates that the control plane
+// has been configured with.
 message ControlPlaneCerts {
+  // This is the identity issuer certificate chain
   CertData issuer_crt_chain = 1;
+  // The roots that the control plane has been configured with
   CertData roots = 2;
 }
 
+// A message that carries one or more pod certificates
 message ProxyCerts {
-  CertData peer_crt_chain = 1;
-  CertData roots = 2;
-  string pod_name = 3;
-  string namespace = 4;
-  string workload_name = 5;
+  repeated ProxyCert certs = 1;
+
+  message ProxyCert {
+    // The peer chain which include the issuer
+    // cert as well as the leaf certificate
+    CertData peer_crt_chain = 1;
+    // The roots this proxy has been configured with
+    CertData roots = 2;
+    string pod_name = 3;
+    string namespace = 4;
+    string workload_name = 5;
+  }
 }
 
 message WebhookCerts {
+  // The certificate chain for this webhook cert
   CertData crt_chain = 1;
   string component_name = 2;
 }
 
 message CertificateInfo {
-    oneof info {
+  oneof info {
     ControlPlaneCerts control_plane = 1;
     ProxyCerts proxy = 2;
     WebhookCerts webhook = 3;
