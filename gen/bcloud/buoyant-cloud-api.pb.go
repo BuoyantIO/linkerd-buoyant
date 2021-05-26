@@ -864,6 +864,9 @@ func (x *Event) GetOwner() *Workload {
 	return nil
 }
 
+// This message represents PEM encoded certificate
+// data. It might be a single certificate, a pool of
+// roots or a chain of certificates.
 type CertData struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -911,13 +914,17 @@ func (x *CertData) GetRaw() []byte {
 	return nil
 }
 
+// Represents the certificates that the control plane
+// has been configured with.
 type ControlPlaneCerts struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
+	// This is the identity issuer certificate chain
 	IssuerCrtChain *CertData `protobuf:"bytes,1,opt,name=issuer_crt_chain,json=issuerCrtChain,proto3" json:"issuer_crt_chain,omitempty"`
-	Roots          *CertData `protobuf:"bytes,2,opt,name=roots,proto3" json:"roots,omitempty"`
+	// The roots that the control plane has been configured with
+	Roots *CertData `protobuf:"bytes,2,opt,name=roots,proto3" json:"roots,omitempty"`
 }
 
 func (x *ControlPlaneCerts) Reset() {
@@ -966,6 +973,7 @@ func (x *ControlPlaneCerts) GetRoots() *CertData {
 	return nil
 }
 
+// A message that carries one or more pod certificates
 type ProxyCerts struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -1018,6 +1026,7 @@ type WebhookCerts struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
+	// The certificate chain for this webhook cert
 	CrtChain      *CertData `protobuf:"bytes,1,opt,name=crt_chain,json=crtChain,proto3" json:"crt_chain,omitempty"`
 	ComponentName string    `protobuf:"bytes,2,opt,name=component_name,json=componentName,proto3" json:"component_name,omitempty"`
 }
@@ -1241,7 +1250,10 @@ type ProxyCerts_ProxyCert struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
+	// The peer chain which include the issuer
+	// cert as well as the leaf certificate
 	PeerCrtChain *CertData `protobuf:"bytes,1,opt,name=peer_crt_chain,json=peerCrtChain,proto3" json:"peer_crt_chain,omitempty"`
+	// The roots this proxy has been configured with
 	Roots        *CertData `protobuf:"bytes,2,opt,name=roots,proto3" json:"roots,omitempty"`
 	PodName      string    `protobuf:"bytes,3,opt,name=pod_name,json=podName,proto3" json:"pod_name,omitempty"`
 	Namespace    string    `protobuf:"bytes,4,opt,name=namespace,proto3" json:"namespace,omitempty"`
