@@ -1,18 +1,15 @@
 package k8s
 
 import (
-	"bytes"
 	"crypto/tls"
-	"crypto/x509"
-	"encoding/pem"
 	"fmt"
-	"io"
 	"net"
 	"time"
 
 	pb "github.com/buoyantio/linkerd-buoyant/gen/bcloud"
 	"github.com/linkerd/linkerd2/pkg/identity"
 	ldConsts "github.com/linkerd/linkerd2/pkg/k8s"
+	ldTls "github.com/linkerd/linkerd2/pkg/tls"
 	v1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/labels"
 )
@@ -162,30 +159,10 @@ func extractIssuerCertChain(pod *v1.Pod, container *v1.Container) (*pb.CertData,
 		return nil, fmt.Errorf("expected to get at least 2 peer certs, got %d", len(certs))
 	}
 
-	encodedCerts, err := encodeCertificatesPEM(certs[1:]...)
-	if err != nil {
-		return nil, err
-	}
+	encodedCerts := ldTls.EncodeCertificatesPEM(certs[1:]...)
 	certsData := []byte(encodedCerts)
 
 	return &pb.CertData{
 		Raw: certsData,
 	}, nil
-}
-
-func encodeCertificatesPEM(crts ...*x509.Certificate) (string, error) {
-	buf := bytes.Buffer{}
-	for _, c := range crts {
-		if err := encode(&buf, &pem.Block{Type: "CERTIFICATE", Bytes: c.Raw}); err != nil {
-			return "", err
-		}
-	}
-	return buf.String(), nil
-}
-
-func encode(buf io.Writer, blk *pem.Block) error {
-	if err := pem.Encode(buf, blk); err != nil {
-		return err
-	}
-	return nil
 }
