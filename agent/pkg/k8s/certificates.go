@@ -116,19 +116,27 @@ func getServerName(podsa string, podns string, container *v1.Container) (string,
 	return fmt.Sprintf("%s.%s.serviceaccount.identity.%s.%s", podsa, podns, l5dns, l5dtrustdomain), nil
 }
 
-func extractRootsCerts(container *v1.Container) (*pb.CertData, error) {
+func extractRootsCerts(container *v1.Container) ([]*pb.CertData, error) {
 	for _, ev := range container.Env {
 		if ev.Name == identity.EnvTrustAnchors {
-			return &pb.CertData{
-				Raw: []byte(ev.Value),
-			}, nil
+			certificates, err := ldTls.DecodePEMCertificates(ev.Value)
+			if err != nil {
+				return nil, err
+			}
+			certsData := make([]*pb.CertData, len(certificates))
+			for i, crt := range certificates {
+				encoded := ldTls.EncodeCertificatesPEM(crt)
+				certsData[i] = &pb.CertData{Raw: []byte(encoded)}
+			}
+
+			return certsData, nil
 		}
 	}
 
 	return nil, fmt.Errorf("could not find env var with name %s on proxy container [%s]", identity.EnvTrustAnchors, container.Name)
 }
 
-func extractIssuerCertChain(pod *v1.Pod, container *v1.Container) (*pb.CertData, error) {
+func extractIssuerCertChain(pod *v1.Pod, container *v1.Container) ([]*pb.CertData, error) {
 	port, err := getProxyAdminPort(container)
 	if err != nil {
 		return nil, err
@@ -159,10 +167,12 @@ func extractIssuerCertChain(pod *v1.Pod, container *v1.Container) (*pb.CertData,
 		return nil, fmt.Errorf("expected to get at least 2 peer certs, got %d", len(certs))
 	}
 
-	encodedCerts := ldTls.EncodeCertificatesPEM(certs[1:]...)
-	certsData := []byte(encodedCerts)
+	certificates := certs[1:]
+	certsData := make([]*pb.CertData, len(certificates))
+	for i, crt := range certs[1:] {
+		encoded := ldTls.EncodeCertificatesPEM(crt)
+		certsData[i] = &pb.CertData{Raw: []byte(encoded)}
+	}
 
-	return &pb.CertData{
-		Raw: certsData,
-	}, nil
+	return certsData, nil
 }

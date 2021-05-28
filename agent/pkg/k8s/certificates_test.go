@@ -1,6 +1,7 @@
 package k8s
 
 import (
+	"crypto/x509"
 	"errors"
 	"fmt"
 	"testing"
@@ -8,6 +9,7 @@ import (
 
 	"github.com/linkerd/linkerd2/pkg/identity"
 	ldConsts "github.com/linkerd/linkerd2/pkg/k8s"
+	ldTls "github.com/linkerd/linkerd2/pkg/tls"
 	v1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
@@ -298,18 +300,19 @@ func TestGetServerName(t *testing.T) {
 }
 
 func TestExtractRootCerts(t *testing.T) {
-	roots := `-----BEGIN CERTIFICATE-----
-	MIIBiDCCAS6gAwIBAgIBATAKBggqhkjOPQQDAjAcMRowGAYDVQQDExFpZGVudGl0
-	eS5saW5rZXJkLjAeFw0yMTA1MjUwODMxMjNaFw0yMjA1MjUwODMxNDNaMBwxGjAY
-	BgNVBAMTEWlkZW50aXR5LmxpbmtlcmQuMFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcD
-	QgAEMUWGUJK3hCWLnSFqqVAEZDrpJdcgqOR8N6HCwUZ5W/xUaaKG6mJ4jqXb6A/V
-	smasJzHS1hvuq8X5hUladbJPwqNhMF8wDgYDVR0PAQH/BAQDAgEGMB0GA1UdJQQW
-	MBQGCCsGAQUFBwMBBggrBgEFBQcDAjAPBgNVHRMBAf8EBTADAQH/MB0GA1UdDgQW
-	BBR2rObnHBdmbV6DsgK/WUz7GjB91TAKBggqhkjOPQQDAgNIADBFAiAgaebof4VK
-	BOXnfrTiBdBWxeBCpVa+eLVOqGFgtWN/YQIhAI0FrCU0HkMvKuL/dquRKMqorWie
-	xW1kfPch6RizdaxS
-	-----END CERTIFICATE-----
-	`
+	expectedRoots := `-----BEGIN CERTIFICATE-----
+MIIBwDCCAWegAwIBAgIRAJRIgZ8RtO8Ewg1Xepf8T44wCgYIKoZIzj0EAwIwKTEn
+MCUGA1UEAxMeaWRlbnRpdHkubGlua2VyZC5jbHVzdGVyLmxvY2FsMB4XDTIwMDgy
+ODA3MTM0N1oXDTMwMDgyNjA3MTM0N1owKTEnMCUGA1UEAxMeaWRlbnRpdHkubGlu
+a2VyZC5jbHVzdGVyLmxvY2FsMFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE1/Fp
+fcRnDcedL6AjUaXYPv4DIMBaJufOI5NWty+XSX7JjXgZtM72dQvRaYanuxD36Dt1
+2/JxyiSgxKWRdoay+aNwMG4wDgYDVR0PAQH/BAQDAgEGMBIGA1UdEwEB/wQIMAYB
+Af8CAQAwHQYDVR0OBBYEFI1WnrqMYKaHHOo+zpyiiDq2pO0KMCkGA1UdEQQiMCCC
+HmlkZW50aXR5LmxpbmtlcmQuY2x1c3Rlci5sb2NhbDAKBggqhkjOPQQDAgNHADBE
+AiAtuoI5XuCtrGVRzSmRTl2ra28aV9MyTU7d5qnTAFHKSgIgRKCvluOSgA5O21p5
+51tdrmkHEZRr0qlLSJdHYgEfMzk=
+-----END CERTIFICATE-----
+`
 
 	fixtures := []*struct {
 		testName      string
@@ -324,11 +327,11 @@ func TestExtractRootCerts(t *testing.T) {
 				Env: []v1.EnvVar{
 					{
 						Name:  identity.EnvTrustAnchors,
-						Value: roots,
+						Value: expectedRoots,
 					},
 				},
 			},
-			roots,
+			expectedRoots,
 			nil,
 		},
 		{
@@ -351,9 +354,17 @@ func TestExtractRootCerts(t *testing.T) {
 					t.Fatalf("exepected err %s, got %s", tc.expectedErr, err)
 				}
 			} else {
-				rootsString := string(roots.Raw)
-				if rootsString != tc.expectedCerts {
-					t.Fatalf("exepected roots %s, got %s", tc.expectedCerts, rootsString)
+				certificates := make([]*x509.Certificate, len(roots))
+				for i, c := range roots {
+					decoded, err := ldTls.DecodePEMCertificates(string(c.Raw))
+					if err != nil {
+						t.Fatal(err)
+					}
+					certificates[i] = decoded[0]
+				}
+				rootString := ldTls.EncodeCertificatesPEM(certificates...)
+				if rootString != tc.expectedCerts {
+					t.Fatalf("exepected roots %s, got %s", tc.expectedCerts, rootString)
 				}
 			}
 		})

@@ -96,9 +96,7 @@ message Event {
 // Linkerd Messages
 //
 
-// This message represents PEM encoded certificate
-// data. It might be a single certificate, a pool of
-// roots or a chain of certificates.
+// This message represents a PEM encoded certificate
 message CertData {
   bytes raw = 1;
 }
@@ -107,9 +105,9 @@ message CertData {
 // has been configured with.
 message ControlPlaneCerts {
   // This is the identity issuer certificate chain
-  CertData issuer_crt_chain = 1;
+  repeated CertData issuer_crt_chain = 1;
   // The roots that the control plane has been configured with
-  CertData roots = 2;
+  repeated CertData roots = 2;
 }
 
 // A message that carries one or more pod certificates
@@ -119,9 +117,9 @@ message ProxyCerts {
   message ProxyCert {
     // The peer chain which include the issuer
     // cert as well as the leaf certificate
-    CertData peer_crt_chain = 1;
+    repeated CertData peer_crt_chain = 1;
     // The roots this proxy has been configured with
-    CertData roots = 2;
+    repeated CertData roots = 2;
     string pod_name = 3;
     string namespace = 4;
     string workload_name = 5;
