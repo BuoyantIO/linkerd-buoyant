@@ -106,7 +106,8 @@ message CertData {
 message ControlPlaneCerts {
   // This is the identity issuer certificate chain
   repeated CertData issuer_crt_chain = 1;
-  // The roots that the control plane has been configured with
+  // The roots that the control plane has been configured
+  // with and will add to newly created proxies
   repeated CertData roots = 2;
 }
 
@@ -123,6 +124,7 @@ message ProxyCerts {
     string pod_name = 3;
     string namespace = 4;
     string workload_name = 5;
+    string workload_kind = 6;
   }
 }
 

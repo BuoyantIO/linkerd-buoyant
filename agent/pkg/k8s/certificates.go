@@ -118,19 +118,20 @@ func getServerName(podsa string, podns string, container *v1.Container) (string,
 
 func extractRootsCerts(container *v1.Container) ([]*pb.CertData, error) {
 	for _, ev := range container.Env {
-		if ev.Name == identity.EnvTrustAnchors {
-			certificates, err := ldTls.DecodePEMCertificates(ev.Value)
-			if err != nil {
-				return nil, err
-			}
-			certsData := make([]*pb.CertData, len(certificates))
-			for i, crt := range certificates {
-				encoded := ldTls.EncodeCertificatesPEM(crt)
-				certsData[i] = &pb.CertData{Raw: []byte(encoded)}
-			}
-
-			return certsData, nil
+		if ev.Name != identity.EnvTrustAnchors {
+			continue
 		}
+		certificates, err := ldTls.DecodePEMCertificates(ev.Value)
+		if err != nil {
+			return nil, err
+		}
+		certsData := make([]*pb.CertData, len(certificates))
+		for i, crt := range certificates {
+			encoded := ldTls.EncodeCertificatesPEM(crt)
+			certsData[i] = &pb.CertData{Raw: []byte(encoded)}
+		}
+
+		return certsData, nil
 	}
 
 	return nil, fmt.Errorf("could not find env var with name %s on proxy container [%s]", identity.EnvTrustAnchors, container.Name)
@@ -147,13 +148,16 @@ func extractIssuerCertChain(pod *v1.Pod, container *v1.Container) ([]*pb.CertDat
 		return nil, err
 	}
 
-	dialer := new(net.Dialer)
-	dialer.Timeout = 5 * time.Second
-
 	conn, err := tls.DialWithDialer(
-		dialer,
+		&net.Dialer{Timeout: 5 * time.Second},
 		"tcp",
 		fmt.Sprintf("%s:%d", pod.Status.PodIP, port), &tls.Config{
+			// we want to subvert TLS verification as we not need
+			// to verify that we actually trust these certs. We just
+			// want the certificates and are not sending any data here.
+			// Therefore `InsecureSkipVerify` is just fine. An added
+			// benefit is that we save on some CPU cycles that would be
+			// wasted doing TLS cert verification
 			InsecureSkipVerify: true,
 			ServerName:         sn,
 		})
@@ -169,7 +173,7 @@ func extractIssuerCertChain(pod *v1.Pod, container *v1.Container) ([]*pb.CertDat
 
 	certificates := certs[1:]
 	certsData := make([]*pb.CertData, len(certificates))
-	for i, crt := range certs[1:] {
+	for i, crt := range certificates {
 		encoded := ldTls.EncodeCertificatesPEM(crt)
 		certsData[i] = &pb.CertData{Raw: []byte(encoded)}
 	}
