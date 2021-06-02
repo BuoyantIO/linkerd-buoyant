@@ -20,7 +20,7 @@ const (
 	linkerdTrustDomainEnvVarName = "_l5d_trustdomain"
 )
 
-func (c *Client) GetControlPlaneCerts() (*pb.ControlPlaneCerts, error) {
+func (c *Client) GetControlPlaneCerts(proxyAddrOverride string) (*pb.ControlPlaneCerts, error) {
 	identityPod, err := c.getControlPlaneComponentPod(identityComponentName)
 	if err != nil {
 		return nil, err
@@ -36,7 +36,7 @@ func (c *Client) GetControlPlaneCerts() (*pb.ControlPlaneCerts, error) {
 		return nil, err
 	}
 
-	issuerCerts, err := extractIssuerCertChain(identityPod, container)
+	issuerCerts, err := extractIssuerCertChain(identityPod, container, proxyAddrOverride)
 	if err != nil {
 		return nil, err
 	}
@@ -137,7 +137,7 @@ func extractRootsCerts(container *v1.Container) ([]*pb.CertData, error) {
 	return nil, fmt.Errorf("could not find env var with name %s on proxy container [%s]", identity.EnvTrustAnchors, container.Name)
 }
 
-func extractIssuerCertChain(pod *v1.Pod, container *v1.Container) ([]*pb.CertData, error) {
+func extractIssuerCertChain(pod *v1.Pod, container *v1.Container, proxyAddrOverride string) ([]*pb.CertData, error) {
 	port, err := getProxyAdminPort(container)
 	if err != nil {
 		return nil, err
@@ -148,10 +148,15 @@ func extractIssuerCertChain(pod *v1.Pod, container *v1.Container) ([]*pb.CertDat
 		return nil, err
 	}
 
+	podAddr := pod.Status.PodIP
+	if proxyAddrOverride != "" {
+		podAddr = proxyAddrOverride
+	}
+
 	conn, err := tls.DialWithDialer(
 		&net.Dialer{Timeout: 5 * time.Second},
 		"tcp",
-		fmt.Sprintf("%s:%d", pod.Status.PodIP, port), &tls.Config{
+		fmt.Sprintf("%s:%d", podAddr, port), &tls.Config{
 			// we want to subvert TLS verification as we do not need
 			// to verify that we actually trust these certs. We just
 			// want the certificates and are not sending any data here.

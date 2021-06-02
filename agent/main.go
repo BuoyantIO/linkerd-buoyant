@@ -42,6 +42,7 @@ func main() {
 	kubeConfigPath := flag.String("kubeconfig", "", "path to kube config")
 	logLevel := flag.String("log-level", "info", "log level, must be one of: panic, fatal, error, warn, info, debug, trace")
 	insecure := flag.Bool("insecure", false, "disable TLS in development mode")
+	proxyAddrOverride := flag.String("proxy-addr-override", "", "overrides the proxy address for development mode")
 
 	// klog flags
 	klog.InitFlags(nil)
@@ -109,6 +110,11 @@ func main() {
 
 	k8sClient := k8s.NewClient(sharedInformers)
 
+	var proxyAddr string
+	if proxyAddrOverride != nil {
+		proxyAddr = *proxyAddrOverride
+	}
+
 	// wait for discovery API to load
 
 	log.Info("waiting for Kubernetes API availability")
@@ -142,7 +148,7 @@ func main() {
 	// create handlers
 	eventHandler := handler.NewEvent(k8sClient, apiClient)
 	workloadHandler := handler.NewWorkload(k8sClient, apiClient)
-	linkerdInfoHandler := handler.NewLinkerdInfo(k8sClient, apiClient)
+	linkerdInfoHandler := handler.NewLinkerdInfo(k8sClient, apiClient, proxyAddr)
 
 	// start shared informer and wait for sync
 	err = k8sClient.Sync(shutdown, 60*time.Second)

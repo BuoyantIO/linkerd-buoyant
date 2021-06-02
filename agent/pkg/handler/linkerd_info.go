@@ -18,22 +18,24 @@ const (
 // data and sending it to the Bcloud API in the form of
 // `LinkerdMessage` objects
 type LinkerdInfo struct {
-	api    *api.Client
-	k8s    *k8s.Client
-	log    *log.Entry
-	stopCh chan struct{}
+	api               *api.Client
+	k8s               *k8s.Client
+	log               *log.Entry
+	proxyAddrOverride string
+	stopCh            chan struct{}
 }
 
 // NewLinkerdInfo instantiates a new k8s event handler.
-func NewLinkerdInfo(k8sClient *k8s.Client, apiClient *api.Client) *LinkerdInfo {
+func NewLinkerdInfo(k8sClient *k8s.Client, apiClient *api.Client, proxyAddrOverride string) *LinkerdInfo {
 	log := log.WithField("handler", "linkerd_info")
 	log.Debug("initializing")
 
 	return &LinkerdInfo{
-		api:    apiClient,
-		k8s:    k8sClient,
-		log:    log,
-		stopCh: make(chan struct{}),
+		api:               apiClient,
+		k8s:               k8sClient,
+		log:               log,
+		proxyAddrOverride: proxyAddrOverride,
+		stopCh:            make(chan struct{}),
 	}
 }
 
@@ -57,7 +59,7 @@ func (h *LinkerdInfo) Stop() {
 }
 
 func (h *LinkerdInfo) handleCertsInfo() {
-	certs, err := h.k8s.GetControlPlaneCerts()
+	certs, err := h.k8s.GetControlPlaneCerts(h.proxyAddrOverride)
 	if err != nil {
 		h.log.Errorf("error getting control plane certs: %s", err)
 		return
