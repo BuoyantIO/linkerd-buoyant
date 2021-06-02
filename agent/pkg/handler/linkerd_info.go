@@ -11,7 +11,7 @@ import (
 )
 
 const (
-	linkerdInfoInterval = 10 * time.Second
+	linkerdInfoInterval = time.Minute
 )
 
 // LinkerdInfo is responsible for obtaining Linkerd related
