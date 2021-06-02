@@ -112,34 +112,9 @@ message ControlPlaneCerts {
   repeated CertData roots = 2;
 }
 
-// A message that carries one or more pod certificates
-message ProxyCerts {
-  repeated ProxyCert certs = 1;
-
-  message ProxyCert {
-    // The peer chain which include the issuer
-    // cert chain as well as the leaf certificate
-    repeated CertData peer_crt_chain = 1;
-    // The roots this proxy has been configured with
-    repeated CertData roots = 2;
-    string pod_name = 3;
-    string namespace = 4;
-    string workload_name = 5;
-    string workload_kind = 6;
-  }
-}
-
-message WebhookCerts {
-  // The certificate chain for this webhook cert
-  CertData crt_chain = 1;
-  string component_name = 2;
-}
-
 message CertificateInfo {
   oneof info {
     ControlPlaneCerts control_plane = 1;
-    ProxyCerts proxy = 2;
-    WebhookCerts webhook = 3;
   }
 }
 
