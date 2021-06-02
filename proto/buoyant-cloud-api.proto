@@ -104,7 +104,8 @@ message CertData {
 // Represents the certificates that the control plane
 // has been configured with.
 message ControlPlaneCerts {
-  // This is the identity issuer certificate chain
+  // This is the identity issuer certificate chain;
+  // it does not include a leaf certificate
   repeated CertData issuer_crt_chain = 1;
   // The roots that the control plane has been configured
   // with and will add to newly created proxies
@@ -117,7 +118,7 @@ message ProxyCerts {
 
   message ProxyCert {
     // The peer chain which include the issuer
-    // cert as well as the leaf certificate
+    // cert chain as well as the leaf certificate
     repeated CertData peer_crt_chain = 1;
     // The roots this proxy has been configured with
     repeated CertData roots = 2;

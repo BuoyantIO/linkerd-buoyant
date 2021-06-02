@@ -919,7 +919,8 @@ type ControlPlaneCerts struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// This is the identity issuer certificate chain
+	// This is the identity issuer certificate chain;
+	// it does not include a leaf certificate
 	IssuerCrtChain []*CertData `protobuf:"bytes,1,rep,name=issuer_crt_chain,json=issuerCrtChain,proto3" json:"issuer_crt_chain,omitempty"`
 	// The roots that the control plane has been configured
 	// with and will add to newly created proxies
@@ -1250,7 +1251,7 @@ type ProxyCerts_ProxyCert struct {
 	unknownFields protoimpl.UnknownFields
 
 	// The peer chain which include the issuer
-	// cert as well as the leaf certificate
+	// cert chain as well as the leaf certificate
 	PeerCrtChain []*CertData `protobuf:"bytes,1,rep,name=peer_crt_chain,json=peerCrtChain,proto3" json:"peer_crt_chain,omitempty"`
 	// The roots this proxy has been configured with
 	Roots        []*CertData `protobuf:"bytes,2,rep,name=roots,proto3" json:"roots,omitempty"`
