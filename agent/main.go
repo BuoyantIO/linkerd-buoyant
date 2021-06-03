@@ -94,6 +94,11 @@ func main() {
 
 	// setup kubernetes clients and shared informers
 
+	var proxyAddr string
+	if proxyAddrOverride != nil {
+		proxyAddr = *proxyAddrOverride
+	}
+
 	rules := clientcmd.NewDefaultClientConfigLoadingRules()
 	if *kubeConfigPath != "" {
 		rules.ExplicitPath = *kubeConfigPath
@@ -108,12 +113,7 @@ func main() {
 	dieIf(err)
 	sharedInformers := informers.NewSharedInformerFactory(k8sCS, 10*time.Minute)
 
-	k8sClient := k8s.NewClient(sharedInformers)
-
-	var proxyAddr string
-	if proxyAddrOverride != nil {
-		proxyAddr = *proxyAddrOverride
-	}
+	k8sClient := k8s.NewClient(sharedInformers, proxyAddr)
 
 	// wait for discovery API to load
 
@@ -148,7 +148,7 @@ func main() {
 	// create handlers
 	eventHandler := handler.NewEvent(k8sClient, apiClient)
 	workloadHandler := handler.NewWorkload(k8sClient, apiClient)
-	linkerdInfoHandler := handler.NewLinkerdInfo(k8sClient, apiClient, proxyAddr)
+	linkerdInfoHandler := handler.NewLinkerdInfo(k8sClient, apiClient)
 
 	// start shared informer and wait for sync
 	err = k8sClient.Sync(shutdown, 60*time.Second)

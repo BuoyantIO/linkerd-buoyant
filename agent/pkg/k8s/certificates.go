@@ -20,7 +20,7 @@ const (
 	linkerdTrustDomainEnvVarName = "_l5d_trustdomain"
 )
 
-func (c *Client) GetControlPlaneCerts(proxyAddrOverride string) (*pb.ControlPlaneCerts, error) {
+func (c *Client) GetControlPlaneCerts() (*pb.ControlPlaneCerts, error) {
 	identityPod, err := c.getControlPlaneComponentPod(identityComponentName)
 	if err != nil {
 		return nil, err
@@ -36,7 +36,7 @@ func (c *Client) GetControlPlaneCerts(proxyAddrOverride string) (*pb.ControlPlan
 		return nil, err
 	}
 
-	issuerCerts, err := extractIssuerCertChain(identityPod, container, proxyAddrOverride)
+	issuerCerts, err := extractIssuerCertChain(identityPod, container, c.proxyAddrOverride)
 	if err != nil {
 		return nil, err
 	}
