@@ -11,5 +11,5 @@ import (
 func fakeClient(objects ...runtime.Object) *Client {
 	cs := fake.NewSimpleClientset(objects...)
 	sharedInformers := informers.NewSharedInformerFactory(cs, 10*time.Minute)
-	return NewClient(sharedInformers)
+	return NewClient(sharedInformers, "")
 }

@@ -93,10 +93,44 @@ message Event {
 }
 
 //
+// Linkerd Messages
+//
+
+// This message represents a PEM encoded certificate
+message CertData {
+  bytes raw = 1;
+}
+
+// Represents the certificates that the control plane
+// has been configured with.
+message ControlPlaneCerts {
+  // This is the identity issuer certificate chain;
+  // it does not include a leaf certificate
+  repeated CertData issuer_crt_chain = 1;
+  // The roots that the control plane has been configured
+  // with and will add to newly created proxies
+  repeated CertData roots = 2;
+}
+
+message CertificateInfo {
+  oneof info {
+    ControlPlaneCerts control_plane = 1;
+  }
+}
+
+message LinkerdMessage {
+  Auth auth = 1;
+  oneof message {
+    CertificateInfo crt_info = 2;
+  }
+}
+
+//
 // API
 //
 
 service Api {
   rpc WorkloadStream(stream WorkloadMessage) returns (Empty) {}
   rpc AddEvent(Event) returns (Empty) {}
+  rpc LinkerdInfo(LinkerdMessage) returns (Empty) {}
 }

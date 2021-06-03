@@ -864,6 +864,255 @@ func (x *Event) GetOwner() *Workload {
 	return nil
 }
 
+// This message represents a PEM encoded certificate
+type CertData struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Raw []byte `protobuf:"bytes,1,opt,name=raw,proto3" json:"raw,omitempty"`
+}
+
+func (x *CertData) Reset() {
+	*x = CertData{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_buoyant_cloud_api_proto_msgTypes[14]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *CertData) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CertData) ProtoMessage() {}
+
+func (x *CertData) ProtoReflect() protoreflect.Message {
+	mi := &file_buoyant_cloud_api_proto_msgTypes[14]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CertData.ProtoReflect.Descriptor instead.
+func (*CertData) Descriptor() ([]byte, []int) {
+	return file_buoyant_cloud_api_proto_rawDescGZIP(), []int{14}
+}
+
+func (x *CertData) GetRaw() []byte {
+	if x != nil {
+		return x.Raw
+	}
+	return nil
+}
+
+// Represents the certificates that the control plane
+// has been configured with.
+type ControlPlaneCerts struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	// This is the identity issuer certificate chain;
+	// it does not include a leaf certificate
+	IssuerCrtChain []*CertData `protobuf:"bytes,1,rep,name=issuer_crt_chain,json=issuerCrtChain,proto3" json:"issuer_crt_chain,omitempty"`
+	// The roots that the control plane has been configured
+	// with and will add to newly created proxies
+	Roots []*CertData `protobuf:"bytes,2,rep,name=roots,proto3" json:"roots,omitempty"`
+}
+
+func (x *ControlPlaneCerts) Reset() {
+	*x = ControlPlaneCerts{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_buoyant_cloud_api_proto_msgTypes[15]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *ControlPlaneCerts) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ControlPlaneCerts) ProtoMessage() {}
+
+func (x *ControlPlaneCerts) ProtoReflect() protoreflect.Message {
+	mi := &file_buoyant_cloud_api_proto_msgTypes[15]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ControlPlaneCerts.ProtoReflect.Descriptor instead.
+func (*ControlPlaneCerts) Descriptor() ([]byte, []int) {
+	return file_buoyant_cloud_api_proto_rawDescGZIP(), []int{15}
+}
+
+func (x *ControlPlaneCerts) GetIssuerCrtChain() []*CertData {
+	if x != nil {
+		return x.IssuerCrtChain
+	}
+	return nil
+}
+
+func (x *ControlPlaneCerts) GetRoots() []*CertData {
+	if x != nil {
+		return x.Roots
+	}
+	return nil
+}
+
+type CertificateInfo struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	// Types that are assignable to Info:
+	//	*CertificateInfo_ControlPlane
+	Info isCertificateInfo_Info `protobuf_oneof:"info"`
+}
+
+func (x *CertificateInfo) Reset() {
+	*x = CertificateInfo{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_buoyant_cloud_api_proto_msgTypes[16]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *CertificateInfo) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CertificateInfo) ProtoMessage() {}
+
+func (x *CertificateInfo) ProtoReflect() protoreflect.Message {
+	mi := &file_buoyant_cloud_api_proto_msgTypes[16]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CertificateInfo.ProtoReflect.Descriptor instead.
+func (*CertificateInfo) Descriptor() ([]byte, []int) {
+	return file_buoyant_cloud_api_proto_rawDescGZIP(), []int{16}
+}
+
+func (m *CertificateInfo) GetInfo() isCertificateInfo_Info {
+	if m != nil {
+		return m.Info
+	}
+	return nil
+}
+
+func (x *CertificateInfo) GetControlPlane() *ControlPlaneCerts {
+	if x, ok := x.GetInfo().(*CertificateInfo_ControlPlane); ok {
+		return x.ControlPlane
+	}
+	return nil
+}
+
+type isCertificateInfo_Info interface {
+	isCertificateInfo_Info()
+}
+
+type CertificateInfo_ControlPlane struct {
+	ControlPlane *ControlPlaneCerts `protobuf:"bytes,1,opt,name=control_plane,json=controlPlane,proto3,oneof"`
+}
+
+func (*CertificateInfo_ControlPlane) isCertificateInfo_Info() {}
+
+type LinkerdMessage struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Auth *Auth `protobuf:"bytes,1,opt,name=auth,proto3" json:"auth,omitempty"`
+	// Types that are assignable to Message:
+	//	*LinkerdMessage_CrtInfo
+	Message isLinkerdMessage_Message `protobuf_oneof:"message"`
+}
+
+func (x *LinkerdMessage) Reset() {
+	*x = LinkerdMessage{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_buoyant_cloud_api_proto_msgTypes[17]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *LinkerdMessage) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*LinkerdMessage) ProtoMessage() {}
+
+func (x *LinkerdMessage) ProtoReflect() protoreflect.Message {
+	mi := &file_buoyant_cloud_api_proto_msgTypes[17]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use LinkerdMessage.ProtoReflect.Descriptor instead.
+func (*LinkerdMessage) Descriptor() ([]byte, []int) {
+	return file_buoyant_cloud_api_proto_rawDescGZIP(), []int{17}
+}
+
+func (x *LinkerdMessage) GetAuth() *Auth {
+	if x != nil {
+		return x.Auth
+	}
+	return nil
+}
+
+func (m *LinkerdMessage) GetMessage() isLinkerdMessage_Message {
+	if m != nil {
+		return m.Message
+	}
+	return nil
+}
+
+func (x *LinkerdMessage) GetCrtInfo() *CertificateInfo {
+	if x, ok := x.GetMessage().(*LinkerdMessage_CrtInfo); ok {
+		return x.CrtInfo
+	}
+	return nil
+}
+
+type isLinkerdMessage_Message interface {
+	isLinkerdMessage_Message()
+}
+
+type LinkerdMessage_CrtInfo struct {
+	CrtInfo *CertificateInfo `protobuf:"bytes,2,opt,name=crt_info,json=crtInfo,proto3,oneof"`
+}
+
+func (*LinkerdMessage_CrtInfo) isLinkerdMessage_Message() {}
+
 var File_buoyant_cloud_api_proto protoreflect.FileDescriptor
 
 var file_buoyant_cloud_api_proto_rawDesc = []byte{
@@ -965,19 +1214,48 @@ var file_buoyant_cloud_api_proto_rawDesc = []byte{
 	0x76, 0x65, 0x6e, 0x74, 0x12, 0x2d, 0x0a, 0x05, 0x6f, 0x77, 0x6e, 0x65, 0x72, 0x18, 0x03, 0x20,
 	0x01, 0x28, 0x0b, 0x32, 0x17, 0x2e, 0x62, 0x75, 0x6f, 0x79, 0x61, 0x6e, 0x74, 0x2e, 0x63, 0x6c,
 	0x6f, 0x75, 0x64, 0x2e, 0x57, 0x6f, 0x72, 0x6b, 0x6c, 0x6f, 0x61, 0x64, 0x52, 0x05, 0x6f, 0x77,
-	0x6e, 0x65, 0x72, 0x32, 0x8b, 0x01, 0x0a, 0x03, 0x41, 0x70, 0x69, 0x12, 0x4a, 0x0a, 0x0e, 0x57,
-	0x6f, 0x72, 0x6b, 0x6c, 0x6f, 0x61, 0x64, 0x53, 0x74, 0x72, 0x65, 0x61, 0x6d, 0x12, 0x1e, 0x2e,
-	0x62, 0x75, 0x6f, 0x79, 0x61, 0x6e, 0x74, 0x2e, 0x63, 0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x57, 0x6f,
-	0x72, 0x6b, 0x6c, 0x6f, 0x61, 0x64, 0x4d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x1a, 0x14, 0x2e,
+	0x6e, 0x65, 0x72, 0x22, 0x1c, 0x0a, 0x08, 0x43, 0x65, 0x72, 0x74, 0x44, 0x61, 0x74, 0x61, 0x12,
+	0x10, 0x0a, 0x03, 0x72, 0x61, 0x77, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0c, 0x52, 0x03, 0x72, 0x61,
+	0x77, 0x22, 0x85, 0x01, 0x0a, 0x11, 0x43, 0x6f, 0x6e, 0x74, 0x72, 0x6f, 0x6c, 0x50, 0x6c, 0x61,
+	0x6e, 0x65, 0x43, 0x65, 0x72, 0x74, 0x73, 0x12, 0x41, 0x0a, 0x10, 0x69, 0x73, 0x73, 0x75, 0x65,
+	0x72, 0x5f, 0x63, 0x72, 0x74, 0x5f, 0x63, 0x68, 0x61, 0x69, 0x6e, 0x18, 0x01, 0x20, 0x03, 0x28,
+	0x0b, 0x32, 0x17, 0x2e, 0x62, 0x75, 0x6f, 0x79, 0x61, 0x6e, 0x74, 0x2e, 0x63, 0x6c, 0x6f, 0x75,
+	0x64, 0x2e, 0x43, 0x65, 0x72, 0x74, 0x44, 0x61, 0x74, 0x61, 0x52, 0x0e, 0x69, 0x73, 0x73, 0x75,
+	0x65, 0x72, 0x43, 0x72, 0x74, 0x43, 0x68, 0x61, 0x69, 0x6e, 0x12, 0x2d, 0x0a, 0x05, 0x72, 0x6f,
+	0x6f, 0x74, 0x73, 0x18, 0x02, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x17, 0x2e, 0x62, 0x75, 0x6f, 0x79,
+	0x61, 0x6e, 0x74, 0x2e, 0x63, 0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x43, 0x65, 0x72, 0x74, 0x44, 0x61,
+	0x74, 0x61, 0x52, 0x05, 0x72, 0x6f, 0x6f, 0x74, 0x73, 0x22, 0x62, 0x0a, 0x0f, 0x43, 0x65, 0x72,
+	0x74, 0x69, 0x66, 0x69, 0x63, 0x61, 0x74, 0x65, 0x49, 0x6e, 0x66, 0x6f, 0x12, 0x47, 0x0a, 0x0d,
+	0x63, 0x6f, 0x6e, 0x74, 0x72, 0x6f, 0x6c, 0x5f, 0x70, 0x6c, 0x61, 0x6e, 0x65, 0x18, 0x01, 0x20,
+	0x01, 0x28, 0x0b, 0x32, 0x20, 0x2e, 0x62, 0x75, 0x6f, 0x79, 0x61, 0x6e, 0x74, 0x2e, 0x63, 0x6c,
+	0x6f, 0x75, 0x64, 0x2e, 0x43, 0x6f, 0x6e, 0x74, 0x72, 0x6f, 0x6c, 0x50, 0x6c, 0x61, 0x6e, 0x65,
+	0x43, 0x65, 0x72, 0x74, 0x73, 0x48, 0x00, 0x52, 0x0c, 0x63, 0x6f, 0x6e, 0x74, 0x72, 0x6f, 0x6c,
+	0x50, 0x6c, 0x61, 0x6e, 0x65, 0x42, 0x06, 0x0a, 0x04, 0x69, 0x6e, 0x66, 0x6f, 0x22, 0x81, 0x01,
+	0x0a, 0x0e, 0x4c, 0x69, 0x6e, 0x6b, 0x65, 0x72, 0x64, 0x4d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65,
+	0x12, 0x27, 0x0a, 0x04, 0x61, 0x75, 0x74, 0x68, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x13,
+	0x2e, 0x62, 0x75, 0x6f, 0x79, 0x61, 0x6e, 0x74, 0x2e, 0x63, 0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x41,
+	0x75, 0x74, 0x68, 0x52, 0x04, 0x61, 0x75, 0x74, 0x68, 0x12, 0x3b, 0x0a, 0x08, 0x63, 0x72, 0x74,
+	0x5f, 0x69, 0x6e, 0x66, 0x6f, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1e, 0x2e, 0x62, 0x75,
+	0x6f, 0x79, 0x61, 0x6e, 0x74, 0x2e, 0x63, 0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x43, 0x65, 0x72, 0x74,
+	0x69, 0x66, 0x69, 0x63, 0x61, 0x74, 0x65, 0x49, 0x6e, 0x66, 0x6f, 0x48, 0x00, 0x52, 0x07, 0x63,
+	0x72, 0x74, 0x49, 0x6e, 0x66, 0x6f, 0x42, 0x09, 0x0a, 0x07, 0x6d, 0x65, 0x73, 0x73, 0x61, 0x67,
+	0x65, 0x32, 0xd1, 0x01, 0x0a, 0x03, 0x41, 0x70, 0x69, 0x12, 0x4a, 0x0a, 0x0e, 0x57, 0x6f, 0x72,
+	0x6b, 0x6c, 0x6f, 0x61, 0x64, 0x53, 0x74, 0x72, 0x65, 0x61, 0x6d, 0x12, 0x1e, 0x2e, 0x62, 0x75,
+	0x6f, 0x79, 0x61, 0x6e, 0x74, 0x2e, 0x63, 0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x57, 0x6f, 0x72, 0x6b,
+	0x6c, 0x6f, 0x61, 0x64, 0x4d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x1a, 0x14, 0x2e, 0x62, 0x75,
+	0x6f, 0x79, 0x61, 0x6e, 0x74, 0x2e, 0x63, 0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x45, 0x6d, 0x70, 0x74,
+	0x79, 0x22, 0x00, 0x28, 0x01, 0x12, 0x38, 0x0a, 0x08, 0x41, 0x64, 0x64, 0x45, 0x76, 0x65, 0x6e,
+	0x74, 0x12, 0x14, 0x2e, 0x62, 0x75, 0x6f, 0x79, 0x61, 0x6e, 0x74, 0x2e, 0x63, 0x6c, 0x6f, 0x75,
+	0x64, 0x2e, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x1a, 0x14, 0x2e, 0x62, 0x75, 0x6f, 0x79, 0x61, 0x6e,
+	0x74, 0x2e, 0x63, 0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x45, 0x6d, 0x70, 0x74, 0x79, 0x22, 0x00, 0x12,
+	0x44, 0x0a, 0x0b, 0x4c, 0x69, 0x6e, 0x6b, 0x65, 0x72, 0x64, 0x49, 0x6e, 0x66, 0x6f, 0x12, 0x1d,
+	0x2e, 0x62, 0x75, 0x6f, 0x79, 0x61, 0x6e, 0x74, 0x2e, 0x63, 0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x4c,
+	0x69, 0x6e, 0x6b, 0x65, 0x72, 0x64, 0x4d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x1a, 0x14, 0x2e,
 	0x62, 0x75, 0x6f, 0x79, 0x61, 0x6e, 0x74, 0x2e, 0x63, 0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x45, 0x6d,
-	0x70, 0x74, 0x79, 0x22, 0x00, 0x28, 0x01, 0x12, 0x38, 0x0a, 0x08, 0x41, 0x64, 0x64, 0x45, 0x76,
-	0x65, 0x6e, 0x74, 0x12, 0x14, 0x2e, 0x62, 0x75, 0x6f, 0x79, 0x61, 0x6e, 0x74, 0x2e, 0x63, 0x6c,
-	0x6f, 0x75, 0x64, 0x2e, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x1a, 0x14, 0x2e, 0x62, 0x75, 0x6f, 0x79,
-	0x61, 0x6e, 0x74, 0x2e, 0x63, 0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x45, 0x6d, 0x70, 0x74, 0x79, 0x22,
-	0x00, 0x42, 0x31, 0x5a, 0x2f, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f,
-	0x62, 0x75, 0x6f, 0x79, 0x61, 0x6e, 0x74, 0x69, 0x6f, 0x2f, 0x6c, 0x69, 0x6e, 0x6b, 0x65, 0x72,
-	0x64, 0x2d, 0x62, 0x75, 0x6f, 0x79, 0x61, 0x6e, 0x74, 0x2f, 0x67, 0x65, 0x6e, 0x2f, 0x62, 0x63,
-	0x6c, 0x6f, 0x75, 0x64, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x70, 0x74, 0x79, 0x22, 0x00, 0x42, 0x31, 0x5a, 0x2f, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62, 0x2e,
+	0x63, 0x6f, 0x6d, 0x2f, 0x62, 0x75, 0x6f, 0x79, 0x61, 0x6e, 0x74, 0x69, 0x6f, 0x2f, 0x6c, 0x69,
+	0x6e, 0x6b, 0x65, 0x72, 0x64, 0x2d, 0x62, 0x75, 0x6f, 0x79, 0x61, 0x6e, 0x74, 0x2f, 0x67, 0x65,
+	0x6e, 0x2f, 0x62, 0x63, 0x6c, 0x6f, 0x75, 0x64, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -992,7 +1270,7 @@ func file_buoyant_cloud_api_proto_rawDescGZIP() []byte {
 	return file_buoyant_cloud_api_proto_rawDescData
 }
 
-var file_buoyant_cloud_api_proto_msgTypes = make([]protoimpl.MessageInfo, 14)
+var file_buoyant_cloud_api_proto_msgTypes = make([]protoimpl.MessageInfo, 18)
 var file_buoyant_cloud_api_proto_goTypes = []interface{}{
 	(*Empty)(nil),                 // 0: buoyant.cloud.Empty
 	(*Auth)(nil),                  // 1: buoyant.cloud.Auth
@@ -1008,7 +1286,11 @@ var file_buoyant_cloud_api_proto_goTypes = []interface{}{
 	(*UpdateWorkload)(nil),        // 11: buoyant.cloud.UpdateWorkload
 	(*ListWorkloads)(nil),         // 12: buoyant.cloud.ListWorkloads
 	(*Event)(nil),                 // 13: buoyant.cloud.Event
-	(*timestamppb.Timestamp)(nil), // 14: google.protobuf.Timestamp
+	(*CertData)(nil),              // 14: buoyant.cloud.CertData
+	(*ControlPlaneCerts)(nil),     // 15: buoyant.cloud.ControlPlaneCerts
+	(*CertificateInfo)(nil),       // 16: buoyant.cloud.CertificateInfo
+	(*LinkerdMessage)(nil),        // 17: buoyant.cloud.LinkerdMessage
+	(*timestamppb.Timestamp)(nil), // 18: google.protobuf.Timestamp
 }
 var file_buoyant_cloud_api_proto_depIdxs = []int32{
 	3,  // 0: buoyant.cloud.Workload.daemonset:type_name -> buoyant.cloud.DaemonSet
@@ -1027,19 +1309,26 @@ var file_buoyant_cloud_api_proto_depIdxs = []int32{
 	2,  // 13: buoyant.cloud.DeleteWorkload.workload:type_name -> buoyant.cloud.Workload
 	2,  // 14: buoyant.cloud.UpdateWorkload.old_workload:type_name -> buoyant.cloud.Workload
 	2,  // 15: buoyant.cloud.UpdateWorkload.new_workload:type_name -> buoyant.cloud.Workload
-	14, // 16: buoyant.cloud.UpdateWorkload.timestamp:type_name -> google.protobuf.Timestamp
+	18, // 16: buoyant.cloud.UpdateWorkload.timestamp:type_name -> google.protobuf.Timestamp
 	2,  // 17: buoyant.cloud.ListWorkloads.workloads:type_name -> buoyant.cloud.Workload
 	1,  // 18: buoyant.cloud.Event.auth:type_name -> buoyant.cloud.Auth
 	2,  // 19: buoyant.cloud.Event.owner:type_name -> buoyant.cloud.Workload
-	8,  // 20: buoyant.cloud.Api.WorkloadStream:input_type -> buoyant.cloud.WorkloadMessage
-	13, // 21: buoyant.cloud.Api.AddEvent:input_type -> buoyant.cloud.Event
-	0,  // 22: buoyant.cloud.Api.WorkloadStream:output_type -> buoyant.cloud.Empty
-	0,  // 23: buoyant.cloud.Api.AddEvent:output_type -> buoyant.cloud.Empty
-	22, // [22:24] is the sub-list for method output_type
-	20, // [20:22] is the sub-list for method input_type
-	20, // [20:20] is the sub-list for extension type_name
-	20, // [20:20] is the sub-list for extension extendee
-	0,  // [0:20] is the sub-list for field type_name
+	14, // 20: buoyant.cloud.ControlPlaneCerts.issuer_crt_chain:type_name -> buoyant.cloud.CertData
+	14, // 21: buoyant.cloud.ControlPlaneCerts.roots:type_name -> buoyant.cloud.CertData
+	15, // 22: buoyant.cloud.CertificateInfo.control_plane:type_name -> buoyant.cloud.ControlPlaneCerts
+	1,  // 23: buoyant.cloud.LinkerdMessage.auth:type_name -> buoyant.cloud.Auth
+	16, // 24: buoyant.cloud.LinkerdMessage.crt_info:type_name -> buoyant.cloud.CertificateInfo
+	8,  // 25: buoyant.cloud.Api.WorkloadStream:input_type -> buoyant.cloud.WorkloadMessage
+	13, // 26: buoyant.cloud.Api.AddEvent:input_type -> buoyant.cloud.Event
+	17, // 27: buoyant.cloud.Api.LinkerdInfo:input_type -> buoyant.cloud.LinkerdMessage
+	0,  // 28: buoyant.cloud.Api.WorkloadStream:output_type -> buoyant.cloud.Empty
+	0,  // 29: buoyant.cloud.Api.AddEvent:output_type -> buoyant.cloud.Empty
+	0,  // 30: buoyant.cloud.Api.LinkerdInfo:output_type -> buoyant.cloud.Empty
+	28, // [28:31] is the sub-list for method output_type
+	25, // [25:28] is the sub-list for method input_type
+	25, // [25:25] is the sub-list for extension type_name
+	25, // [25:25] is the sub-list for extension extendee
+	0,  // [0:25] is the sub-list for field type_name
 }
 
 func init() { file_buoyant_cloud_api_proto_init() }
@@ -1216,6 +1505,54 @@ func file_buoyant_cloud_api_proto_init() {
 				return nil
 			}
 		}
+		file_buoyant_cloud_api_proto_msgTypes[14].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*CertData); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_buoyant_cloud_api_proto_msgTypes[15].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*ControlPlaneCerts); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_buoyant_cloud_api_proto_msgTypes[16].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*CertificateInfo); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_buoyant_cloud_api_proto_msgTypes[17].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*LinkerdMessage); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
 	}
 	file_buoyant_cloud_api_proto_msgTypes[2].OneofWrappers = []interface{}{
 		(*Workload_Daemonset)(nil),
@@ -1229,13 +1566,19 @@ func file_buoyant_cloud_api_proto_init() {
 		(*WorkloadMessage_Deleted)(nil),
 		(*WorkloadMessage_List)(nil),
 	}
+	file_buoyant_cloud_api_proto_msgTypes[16].OneofWrappers = []interface{}{
+		(*CertificateInfo_ControlPlane)(nil),
+	}
+	file_buoyant_cloud_api_proto_msgTypes[17].OneofWrappers = []interface{}{
+		(*LinkerdMessage_CrtInfo)(nil),
+	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_buoyant_cloud_api_proto_rawDesc,
 			NumEnums:      0,
-			NumMessages:   14,
+			NumMessages:   18,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

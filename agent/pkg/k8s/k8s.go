@@ -38,6 +38,8 @@ type Client struct {
 	eventInformer corev1informers.EventInformer
 	eventSynced   cache.InformerSynced
 
+	proxyAddrOverride string
+
 	log *log.Entry
 }
 
@@ -52,7 +54,7 @@ const (
 
 var errSyncCache = errors.New("failed to sync caches")
 
-func NewClient(sharedInformers informers.SharedInformerFactory) *Client {
+func NewClient(sharedInformers informers.SharedInformerFactory, proxyAddrOverride string) *Client {
 	log := log.WithField("client", "k8s")
 	log.Debug("initializing")
 
@@ -99,6 +101,8 @@ func NewClient(sharedInformers informers.SharedInformerFactory) *Client {
 
 		eventInformer: eventInformer,
 		eventSynced:   eventInformerSynced,
+
+		proxyAddrOverride: proxyAddrOverride,
 
 		log: log,
 	}

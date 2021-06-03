@@ -7,21 +7,21 @@ import (
 	pb "github.com/buoyantio/linkerd-buoyant/gen/bcloud"
 )
 
-func TestAddEvent(t *testing.T) {
+func TestCrtInfo(t *testing.T) {
 	t.Run("calls the api and gets a response", func(t *testing.T) {
 		fixtures := []*struct {
 			testName string
-			event    *pb.Event
+			info     *pb.CertificateInfo
 			err      error
 		}{
 			{
 				"bad API response",
-				&pb.Event{},
+				&pb.CertificateInfo{},
 				errors.New("bad response"),
 			},
 			{
-				"empty event",
-				&pb.Event{},
+				"empty info",
+				&pb.CertificateInfo{},
 				nil,
 			},
 		}
@@ -32,13 +32,13 @@ func TestAddEvent(t *testing.T) {
 				m := &MockBcloudClient{err: tc.err}
 				c := NewClient("", "", m)
 
-				err := c.AddEvent(tc.event)
+				err := c.CrtInfo(tc.info)
 				if tc.err != err {
 					t.Errorf("Expected %s, got %s", tc.err, err)
 				}
 
-				if len(m.Events()) != 1 {
-					t.Errorf("Expected 1 event, got %d", len(m.Events()))
+				if len(m.LinkerdMessages()) != 1 {
+					t.Errorf("Expected 1 message, got %d", len(m.LinkerdMessages()))
 				}
 			})
 		}
@@ -48,7 +48,7 @@ func TestAddEvent(t *testing.T) {
 		m := &MockBcloudClient{}
 		c := NewClient(fakeID, fakeKey, m)
 
-		err := c.AddEvent(&pb.Event{})
+		err := c.CrtInfo(&pb.CertificateInfo{})
 		if err != nil {
 			t.Error(err)
 		}
