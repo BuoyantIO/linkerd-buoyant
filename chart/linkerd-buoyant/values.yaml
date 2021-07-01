@@ -1,0 +1,27 @@
+# -- The ID for your Buoyant Cloud account. Required.
+accountID:
+
+# -- The key for your Buoyant Cloud account. Required.
+accountKey:
+
+# -- The download key for your Buoyant Cloud account. Required.
+accountDownloadKey:
+
+# -- The name of your cluster, as it should appear in Buoyant Cloud. Required
+clusterName:
+
+# -- Namespace where the agent components will be deployed
+namespace: buoyant-cloud
+
+# -- Set to false when installing Linkerd in a custom namespace. If so, make
+# sure you add the required annotations and labels, as depicted in the
+# namespace.yaml template
+installNamespace: true
+
+agent:
+  # -- Log level for the buoyant-cloud-agent pod
+  logLevel: debug
+
+metrics:
+  # -- Log level for the buoyant-cloud-metrics pod
+  logLevel: info
