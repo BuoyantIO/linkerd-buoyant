@@ -10,7 +10,7 @@ fi
 arch=$(uname -m)
 
 # keep in sync with bin/gen-proto
-protocversion=3.15.8
+protocversion=3.17.3
 targetbin=target/bin
 protocbin=$targetbin/protoc-${protocversion}
 protocurl="https://github.com/protocolbuffers/protobuf/releases/download/v${protocversion}/protoc-${protocversion}-${os}-${arch}.zip"
