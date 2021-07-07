@@ -24,12 +24,15 @@ Kubernetes: `>=1.15.0-0`
 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
-| accountDownloadKey | string | `nil` | The download key for your Buoyant Cloud account. Required. |
-| accountID | string | `nil` | The ID for your Buoyant Cloud account. Required. |
-| accountKey | string | `nil` | The key for your Buoyant Cloud account. Required. |
-| agent.logLevel | string | `"debug"` | Log level for the buoyant-cloud-agent pod |
-| clusterName | string | `nil` | The name of your cluster, as it should appear in Buoyant Cloud. Required |
-| installNamespace | bool | `true` | Set to false when installing Linkerd in a custom namespace. If so, make sure you add the required annotations and labels, as depicted in the namespace.yaml template |
+| agent.apiAddress | string | `"api.buoyant.cloud:443"` | API address for buoyant cloud |
+| agent.insecure | bool | `false` | Disable TLS. Only use for testing. |
+| agent.logLevel | string | `"info"` | Log level for the buoyant-cloud-agent pod |
+| agentClusterName | string | `nil` | The name of the cluster observed by this agent, as it should appear in Buoyant Cloud. Required |
+| agentDownloadKey | string | `nil` | The download key for this agent. Required. |
+| agentID | string | `nil` | The ID for this agent. Required. |
+| agentKey | string | `nil` | The key for this agent. Required. |
+| installNamespace | bool | `true` | Set to false when installing linkerd-buoyant in a custom namespace. If so, make sure you add the required annotations and labels, as depicted in the namespace.yaml template |
+| metrics.apiAddress | string | `"https://api.buoyant.cloud:443"` | API address for buoyant cloud |
 | metrics.logLevel | string | `"info"` | Log level for the buoyant-cloud-metrics pod |
 | namespace | string | `"buoyant-cloud"` | Namespace where the agent components will be deployed |
 

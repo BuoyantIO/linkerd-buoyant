@@ -11,10 +11,10 @@ metadata:
     app.kubernetes.io/part-of: buoyant-cloud
 type: Opaque
 data:
-  id: {{ b64enc (required "Please provide the ID for your Buoyant Cloud account in the accountID value" .Values.accountID | trim) }}
-  key: {{ b64enc (required "Please provide the key for your Buoyant Cloud account in the accountKey value" .Values.accountKey | trim) }}
-  downloadKey: {{ b64enc (required "Please provide the download key for your Buoyant Cloud account in the accountDownloadKey value" .Values.accountDownloadKey | trim) }}
-  name: {{ b64enc (required "Please provide the cluster name in the clusterName value" .Values.clusterName | trim) }}
+  id: {{ b64enc (required "Please provide the ID for this agent in the agentID value" .Values.agentID | trim) }}
+  key: {{ b64enc (required "Please provide the key for this agent in the agentKey value" .Values.agentKey | trim) }}
+  downloadKey: {{ b64enc (required "Please provide the download key for this agent in the agentDownloadKey value" .Values.agentDownloadKey | trim) }}
+  name: {{ b64enc (required "Please provide the cluster name for this agent in the agentClusterName value" .Values.agentClusterName | trim) }}
 ---
 #
 # Buoyant Cloud Agent

@@ -1,14 +1,14 @@
-# -- The ID for your Buoyant Cloud account. Required.
-accountID:
+# -- The ID for this agent. Required.
+agentID:
 
-# -- The key for your Buoyant Cloud account. Required.
-accountKey:
+# -- The key for this agent. Required.
+agentKey:
 
-# -- The download key for your Buoyant Cloud account. Required.
-accountDownloadKey:
+# -- The download key for this agent. Required.
+agentDownloadKey:
 
-# -- The name of your cluster, as it should appear in Buoyant Cloud. Required
-clusterName:
+# -- The name of the cluster observed by this agent, as it should appear in Buoyant Cloud. Required
+agentClusterName:
 
 # -- Namespace where the agent components will be deployed
 namespace: buoyant-cloud
