@@ -21,6 +21,7 @@ type ApiClient interface {
 	WorkloadStream(ctx context.Context, opts ...grpc.CallOption) (Api_WorkloadStreamClient, error)
 	AddEvent(ctx context.Context, in *Event, opts ...grpc.CallOption) (*Empty, error)
 	LinkerdInfo(ctx context.Context, in *LinkerdMessage, opts ...grpc.CallOption) (*Empty, error)
+	ManageAgent(ctx context.Context, in *Auth, opts ...grpc.CallOption) (Api_ManageAgentClient, error)
 }
 
 type apiClient struct {
@@ -83,6 +84,38 @@ func (c *apiClient) LinkerdInfo(ctx context.Context, in *LinkerdMessage, opts ..
 	return out, nil
 }
 
+func (c *apiClient) ManageAgent(ctx context.Context, in *Auth, opts ...grpc.CallOption) (Api_ManageAgentClient, error) {
+	stream, err := c.cc.NewStream(ctx, &Api_ServiceDesc.Streams[1], "/buoyant.cloud.Api/ManageAgent", opts...)
+	if err != nil {
+		return nil, err
+	}
+	x := &apiManageAgentClient{stream}
+	if err := x.ClientStream.SendMsg(in); err != nil {
+		return nil, err
+	}
+	if err := x.ClientStream.CloseSend(); err != nil {
+		return nil, err
+	}
+	return x, nil
+}
+
+type Api_ManageAgentClient interface {
+	Recv() (*AgentCommand, error)
+	grpc.ClientStream
+}
+
+type apiManageAgentClient struct {
+	grpc.ClientStream
+}
+
+func (x *apiManageAgentClient) Recv() (*AgentCommand, error) {
+	m := new(AgentCommand)
+	if err := x.ClientStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
 // ApiServer is the server API for Api service.
 // All implementations must embed UnimplementedApiServer
 // for forward compatibility
@@ -90,6 +123,7 @@ type ApiServer interface {
 	WorkloadStream(Api_WorkloadStreamServer) error
 	AddEvent(context.Context, *Event) (*Empty, error)
 	LinkerdInfo(context.Context, *LinkerdMessage) (*Empty, error)
+	ManageAgent(*Auth, Api_ManageAgentServer) error
 	mustEmbedUnimplementedApiServer()
 }
 
@@ -105,6 +139,9 @@ func (UnimplementedApiServer) AddEvent(context.Context, *Event) (*Empty, error) 
 }
 func (UnimplementedApiServer) LinkerdInfo(context.Context, *LinkerdMessage) (*Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method LinkerdInfo not implemented")
+}
+func (UnimplementedApiServer) ManageAgent(*Auth, Api_ManageAgentServer) error {
+	return status.Errorf(codes.Unimplemented, "method ManageAgent not implemented")
 }
 func (UnimplementedApiServer) mustEmbedUnimplementedApiServer() {}
 
@@ -181,6 +218,27 @@ func _Api_LinkerdInfo_Handler(srv interface{}, ctx context.Context, dec func(int
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Api_ManageAgent_Handler(srv interface{}, stream grpc.ServerStream) error {
+	m := new(Auth)
+	if err := stream.RecvMsg(m); err != nil {
+		return err
+	}
+	return srv.(ApiServer).ManageAgent(m, &apiManageAgentServer{stream})
+}
+
+type Api_ManageAgentServer interface {
+	Send(*AgentCommand) error
+	grpc.ServerStream
+}
+
+type apiManageAgentServer struct {
+	grpc.ServerStream
+}
+
+func (x *apiManageAgentServer) Send(m *AgentCommand) error {
+	return x.ServerStream.SendMsg(m)
+}
+
 // Api_ServiceDesc is the grpc.ServiceDesc for Api service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -202,6 +260,11 @@ var Api_ServiceDesc = grpc.ServiceDesc{
 			StreamName:    "WorkloadStream",
 			Handler:       _Api_WorkloadStream_Handler,
 			ClientStreams: true,
+		},
+		{
+			StreamName:    "ManageAgent",
+			Handler:       _Api_ManageAgent_Handler,
+			ServerStreams: true,
 		},
 	},
 	Metadata: "buoyant-cloud-api.proto",

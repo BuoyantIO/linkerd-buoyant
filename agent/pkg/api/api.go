@@ -11,8 +11,9 @@ import (
 type Client struct {
 	auth *pb.Auth
 
-	client pb.ApiClient
-	stream pb.Api_WorkloadStreamClient
+	client            pb.ApiClient
+	stream            pb.Api_WorkloadStreamClient
+	manageAgentClient pb.Api_ManageAgentClient
 
 	log *log.Entry
 

@@ -118,10 +118,32 @@ message CertificateInfo {
   }
 }
 
+message ProxyDiagnostics {
+  string diagnostic_id = 1;
+  bytes data = 2;
+}
+
 message LinkerdMessage {
   Auth auth = 1;
   oneof message {
     CertificateInfo crt_info = 2;
+    ProxyDiagnostics proxy_diagnostics = 3;
+  }
+}
+
+//
+// ManageAgent Messages
+//
+
+message GetProxyDiagnostics {
+  string diagnostic_id = 1;
+  string pod_name = 2;
+  string pod_namespace = 3;
+}
+
+message AgentCommand {
+  oneof command {
+    GetProxyDiagnostics get_proxy_diagnostics = 1;
   }
 }
 
@@ -133,4 +155,5 @@ service Api {
   rpc WorkloadStream(stream WorkloadMessage) returns (Empty) {}
   rpc AddEvent(Event) returns (Empty) {}
   rpc LinkerdInfo(LinkerdMessage) returns (Empty) {}
+  rpc ManageAgent(Auth) returns (stream AgentCommand) {}
 }

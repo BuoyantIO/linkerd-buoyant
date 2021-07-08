@@ -18,6 +18,17 @@ func (c *Client) CrtInfo(info *pb.CertificateInfo) error {
 	return c.sendLinkerdMsg(msg)
 }
 
+func (c *Client) ProxyDiagnostics(diagnostics *pb.ProxyDiagnostics) error {
+	msg := &pb.LinkerdMessage{
+		Auth: c.auth,
+		Message: &pb.LinkerdMessage_ProxyDiagnostics{
+			ProxyDiagnostics: diagnostics,
+		},
+	}
+
+	return c.sendLinkerdMsg(msg)
+}
+
 func (c *Client) sendLinkerdMsg(msg *pb.LinkerdMessage) error {
 	c.log.Tracef("LinkerdInfo: %s", prototext.Format(msg))
 	_, err := c.client.LinkerdInfo(context.Background(), msg)

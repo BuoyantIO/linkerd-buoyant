@@ -148,7 +148,10 @@ func main() {
 	// create handlers
 	eventHandler := handler.NewEvent(k8sClient, apiClient)
 	workloadHandler := handler.NewWorkload(k8sClient, apiClient)
-	linkerdInfoHandler := handler.NewLinkerdInfo(k8sClient, apiClient)
+
+	diagnostics := make(chan handler.DiagnosticsDataRequest, 1)
+	linkerdInfoHandler := handler.NewLinkerdInfo(k8sClient, apiClient, diagnostics)
+	manageAgentHandler := handler.NewManageAgent(apiClient, diagnostics)
 
 	// start shared informer and wait for sync
 	err = k8sClient.Sync(shutdown, 60*time.Second)
@@ -158,6 +161,7 @@ func main() {
 	go eventHandler.Start(sharedInformers)
 	go workloadHandler.Start(sharedInformers)
 	go linkerdInfoHandler.Start()
+	go manageAgentHandler.Start()
 
 	// run admin server
 	go admin.StartServer(*adminAddr)
@@ -167,5 +171,6 @@ func main() {
 	log.Info("shutting down")
 	workloadHandler.Stop()
 	linkerdInfoHandler.Stop()
+	manageAgentHandler.Stop()
 	close(shutdown)
 }

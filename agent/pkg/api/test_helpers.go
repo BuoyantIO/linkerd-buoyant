@@ -106,6 +106,11 @@ func (m *MockBcloudClient) LinkerdInfo(
 	return nil, m.err
 }
 
+func (m *MockBcloudClient) ManageAgent(
+	ctx context.Context, in *pb.Auth, opts ...grpc.CallOption) (pb.Api_ManageAgentClient, error) {
+	return nil, nil
+}
+
 //
 // bcloud.Api_WorkloadStreamClient methods
 //
