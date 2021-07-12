@@ -118,16 +118,10 @@ message CertificateInfo {
   }
 }
 
-message ProxyDiagnostics {
-  string diagnostic_id = 1;
-  bytes data = 2;
-}
-
 message LinkerdMessage {
   Auth auth = 1;
   oneof message {
     CertificateInfo crt_info = 2;
-    ProxyDiagnostics proxy_diagnostics = 3;
   }
 }
 
@@ -148,6 +142,18 @@ message AgentCommand {
 }
 
 //
+// ProxyDiagnostic Messages
+//
+
+
+message ProxyDiagnostic {
+  Auth auth = 1;
+  string diagnostic_id = 2;
+  bytes logs = 3;
+  bytes metrics = 4;
+}
+
+//
 // API
 //
 
@@ -156,4 +162,5 @@ service Api {
   rpc AddEvent(Event) returns (Empty) {}
   rpc LinkerdInfo(LinkerdMessage) returns (Empty) {}
   rpc ManageAgent(Auth) returns (stream AgentCommand) {}
+  rpc ProxyDiagnostics(ProxyDiagnostic) returns (Empty) {}
 }

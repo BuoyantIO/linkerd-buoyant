@@ -149,9 +149,8 @@ func main() {
 	eventHandler := handler.NewEvent(k8sClient, apiClient)
 	workloadHandler := handler.NewWorkload(k8sClient, apiClient)
 
-	diagnostics := make(chan handler.DiagnosticsDataRequest, 1)
-	linkerdInfoHandler := handler.NewLinkerdInfo(k8sClient, apiClient, diagnostics)
-	manageAgentHandler := handler.NewManageAgent(apiClient, diagnostics)
+	linkerdInfoHandler := handler.NewLinkerdInfo(k8sClient, apiClient)
+	manageAgentHandler := handler.NewManageAgent(k8sClient, apiClient)
 
 	// start shared informer and wait for sync
 	err = k8sClient.Sync(shutdown, 60*time.Second)

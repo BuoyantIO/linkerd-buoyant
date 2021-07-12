@@ -111,6 +111,10 @@ func (m *MockBcloudClient) ManageAgent(
 	return nil, nil
 }
 
+func (m *MockBcloudClient) ProxyDiagnostics(ctx context.Context, in *pb.ProxyDiagnostic, opts ...grpc.CallOption) (*pb.Empty, error) {
+	return nil, nil
+}
+
 //
 // bcloud.Api_WorkloadStreamClient methods
 //
