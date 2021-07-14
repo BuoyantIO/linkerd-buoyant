@@ -37,7 +37,7 @@ func TestWorkloadStream(t *testing.T) {
 				c := NewClient("", "", m)
 
 				for _, msg := range tc.msgs {
-					err := c.WorkloadStream(msg)
+					err := c.SendWorkloadMessage(msg)
 					if err != nil {
 						t.Error(err)
 					}
@@ -78,7 +78,7 @@ func TestWorkloadStream(t *testing.T) {
 				c := NewClient(fakeID, fakeKey, m)
 
 				for _, msg := range tc.msgs {
-					err := c.WorkloadStream(msg)
+					err := c.SendWorkloadMessage(msg)
 					if err != nil {
 						t.Error(err)
 					}

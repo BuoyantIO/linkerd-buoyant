@@ -212,7 +212,7 @@ func (h *Workload) handleAdd(workload *pb.Workload) {
 	}
 	h.log.Tracef("handleAdd: %s", prototext.Format(m))
 
-	err := h.api.WorkloadStream(m)
+	err := h.api.SendWorkloadMessage(m)
 	if err != nil {
 		h.log.Errorf("error sending add message: %s", err)
 	}
@@ -234,7 +234,7 @@ func (h *Workload) handleUpdate(oldWorkload *pb.Workload, newWorkload *pb.Worklo
 	}
 	h.log.Tracef("handleUpdate: %s", prototext.Format(m))
 
-	err := h.api.WorkloadStream(m)
+	err := h.api.SendWorkloadMessage(m)
 	if err != nil {
 		h.log.Errorf("error sending update message: %s", err)
 	}
@@ -249,7 +249,7 @@ func (h *Workload) handleDelete(workload *pb.Workload) {
 
 	h.log.Tracef("handleDelete: %s", prototext.Format(m))
 
-	err := h.api.WorkloadStream(m)
+	err := h.api.SendWorkloadMessage(m)
 	if err != nil {
 		h.log.Errorf("error sending delete message: %s", err)
 	}
@@ -269,7 +269,7 @@ func (h *Workload) handleWorkloadList() {
 	}
 	h.log.Tracef("handleWorkloadList: %s", prototext.Format(m))
 
-	err = h.api.WorkloadStream(m)
+	err = h.api.SendWorkloadMessage(m)
 	if err != nil {
 		h.log.Errorf("error sending list message: %s", err)
 	}
