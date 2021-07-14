@@ -144,6 +144,7 @@ func main() {
 
 	bcloudClient := pb.NewApiClient(conn)
 	apiClient := api.NewClient(id, key, bcloudClient)
+	apiClient.Init()
 
 	// create handlers
 	eventHandler := handler.NewEvent(k8sClient, apiClient)
@@ -171,6 +172,5 @@ func main() {
 	workloadHandler.Stop()
 	linkerdInfoHandler.Stop()
 	manageAgentHandler.Stop()
-	apiClient.Close()
 	close(shutdown)
 }

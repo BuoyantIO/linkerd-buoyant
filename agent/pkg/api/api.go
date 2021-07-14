@@ -39,7 +39,3 @@ func NewClient(id string, key string, client pb.ApiClient) *Client {
 func (c *Client) Init() {
 	go c.manageAgentStream.startStream()
 }
-
-func (c *Client) Close() {
-	c.manageAgentStream.closeStream()
-}

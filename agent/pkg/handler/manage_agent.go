@@ -30,6 +30,7 @@ func NewManageAgent(k8sClient *k8s.Client, apiClient *api.Client) *ManageAgent {
 
 // Start initiates ManageAgent handler
 func (h *ManageAgent) Start() {
+	h.log.Info("Starting manage agent handler")
 	for {
 		select {
 		case <-h.stopCh:

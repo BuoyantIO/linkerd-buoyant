@@ -19,7 +19,6 @@ type manageAgentStream struct {
 	log    *log.Entry
 
 	commands chan *pb.AgentCommand
-	stopCh   chan struct{}
 
 	// protects stream
 	sync.Mutex
@@ -31,31 +30,20 @@ func newManageAgentStream(auth *pb.Auth, client pb.ApiClient) *manageAgentStream
 		client:   client,
 		log:      log.WithField("stream", "ManageAgentStream"),
 		commands: make(chan *pb.AgentCommand, 10),
-		stopCh:   make(chan struct{}),
 	}
 }
 
 func (s *manageAgentStream) startStream() {
 	for {
-		select {
-		case <-s.stopCh:
-			return
-		default:
-			command := s.recv()
-			s.commands <- command
-		}
-	}
-}
-
-func (s *manageAgentStream) recv() *pb.AgentCommand {
-	for {
-		event, err := s.recv_locked()
-		if err == io.EOF {
-			s.log.Info("server closed stream, reseting")
+		command, err := s.recv_locked()
+		if err != nil {
+			if err == io.EOF {
+				s.log.Info("server closed stream, reseting")
+			}
 			s.resetStream()
 			continue
 		}
-		return event
+		s.commands <- command
 	}
 }
 
@@ -84,7 +72,7 @@ func (s *manageAgentStream) newStream() pb.Api_ManageAgentClient {
 		break
 	}
 
-	s.log.Debug("stream opened")
+	s.log.Info("ManageAgentStream connected")
 	return stream
 }
 
@@ -95,12 +83,4 @@ func (s *manageAgentStream) resetStream() {
 		s.stream.CloseSend()
 		s.stream = nil
 	}
-}
-
-func (s *manageAgentStream) closeStream() {
-	s.Lock()
-	defer s.Unlock()
-	s.stream.CloseSend()
-	close(s.stopCh)
-	s.stream = nil
 }
