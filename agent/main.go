@@ -171,5 +171,6 @@ func main() {
 	workloadHandler.Stop()
 	linkerdInfoHandler.Stop()
 	manageAgentHandler.Stop()
+	apiClient.Close()
 	close(shutdown)
 }

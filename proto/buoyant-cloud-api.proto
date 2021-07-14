@@ -151,6 +151,7 @@ message ProxyDiagnostic {
   string diagnostic_id = 2;
   bytes logs = 3;
   bytes metrics = 4;
+  bytes pod_manifest = 5;
 }
 
 //

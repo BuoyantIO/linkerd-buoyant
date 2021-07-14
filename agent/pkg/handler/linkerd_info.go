@@ -11,8 +11,7 @@ import (
 )
 
 const (
-	linkerdInfoInterval       = time.Minute
-	diagnosticCollectDuration = time.Minute * 5
+	linkerdInfoInterval = time.Minute
 )
 
 // LinkerdInfo is responsible for obtaining Linkerd related

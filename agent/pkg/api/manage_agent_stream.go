@@ -2,7 +2,6 @@ package api
 
 import (
 	"context"
-	"errors"
 	"io"
 	"sync"
 	"time"
@@ -10,8 +9,6 @@ import (
 	pb "github.com/buoyantio/linkerd-buoyant/gen/bcloud"
 	log "github.com/sirupsen/logrus"
 )
-
-var clientClosed = errors.New("Client closed")
 
 // manageAgentStream wraps the Buoyant Cloud API ManageAgent gRPC endpoint, and
 // manages the stream.
@@ -21,43 +18,50 @@ type manageAgentStream struct {
 	stream pb.Api_ManageAgentClient
 	log    *log.Entry
 
+	commands chan *pb.AgentCommand
+	stopCh   chan struct{}
+
 	// protects stream
 	sync.Mutex
-	client_closed bool
 }
 
 func newManageAgentStream(auth *pb.Auth, client pb.ApiClient) *manageAgentStream {
 	return &manageAgentStream{
-		auth:   auth,
-		client: client,
-		log:    log.WithField("stream", "ManageAgentStream"),
+		auth:     auth,
+		client:   client,
+		log:      log.WithField("stream", "ManageAgentStream"),
+		commands: make(chan *pb.AgentCommand, 10),
+		stopCh:   make(chan struct{}),
 	}
 }
 
-func (s *manageAgentStream) recv() (*pb.AgentCommand, error) {
+func (s *manageAgentStream) startStream() {
+	for {
+		select {
+		case <-s.stopCh:
+			return
+		default:
+			command := s.recv()
+			s.commands <- command
+		}
+	}
+}
+
+func (s *manageAgentStream) recv() *pb.AgentCommand {
 	for {
 		event, err := s.recv_locked()
 		if err == io.EOF {
 			s.log.Info("server closed stream, reseting")
 			s.resetStream()
 			continue
-		} else if err != nil {
-			if err != clientClosed {
-				s.resetStream()
-			}
-			return nil, err
 		}
-
-		return event, nil
+		return event
 	}
 }
 
 func (s *manageAgentStream) recv_locked() (*pb.AgentCommand, error) {
 	s.Lock()
 	defer s.Unlock()
-	if s.client_closed {
-		return nil, clientClosed
-	}
 	if s.stream == nil {
 		s.stream = s.newStream()
 	}
@@ -97,6 +101,6 @@ func (s *manageAgentStream) closeStream() {
 	s.Lock()
 	defer s.Unlock()
 	s.stream.CloseSend()
+	close(s.stopCh)
 	s.stream = nil
-	s.client_closed = true
 }

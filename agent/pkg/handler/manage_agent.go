@@ -1,12 +1,11 @@
 package handler
 
 import (
-	"time"
-
 	"github.com/buoyantio/linkerd-buoyant/agent/pkg/api"
 	"github.com/buoyantio/linkerd-buoyant/agent/pkg/k8s"
 	pb "github.com/buoyantio/linkerd-buoyant/gen/bcloud"
 	log "github.com/sirupsen/logrus"
+	"gopkg.in/yaml.v2"
 )
 
 type ManageAgent struct {
@@ -35,12 +34,7 @@ func (h *ManageAgent) Start() {
 		select {
 		case <-h.stopCh:
 			return
-		default:
-			agentCommand, err := h.api.RecvAgentCommand()
-			if err != nil {
-				h.log.Errorf("Error from stream %s", err)
-				continue
-			}
+		case agentCommand := <-h.api.AgentCommands():
 			switch command := agentCommand.Command.(type) {
 			case *pb.AgentCommand_GetProxyDiagnostics:
 				proxyDiagnostic := command.GetProxyDiagnostics
@@ -54,43 +48,35 @@ func (h *ManageAgent) Start() {
 func (h *ManageAgent) Stop() {
 	h.log.Info("shutting down")
 	close(h.stopCh)
-	h.api.CloseAgentCommandStream()
 }
 
 func (h *ManageAgent) handleProxyDiagnostics(podName string, namespace string, diagnosticId string) {
-	initialLogLevel, err := h.k8s.GetProxyLogLevel(podName, namespace)
+	logs, err := h.k8s.GetProxyLogs(podName, namespace)
 	if err != nil {
-		h.log.Errorf("error getting proxy log level for pod %s/%s: %s", namespace, podName, err)
+		h.log.Errorf("cannot obtain proxy logs for pod %s/%s: %s", namespace, podName, err)
 		return
 	}
 
-	err = h.k8s.SetProxyLogLevel(podName, namespace, "trace")
+	metrics, err := h.k8s.GetPrometheusScrape(podName, namespace)
 	if err != nil {
-		h.log.Errorf("error setting proxy log level for pod %s/%s: %s", namespace, podName, err)
+		h.log.Errorf("cannot obtain proxy metrics for pod %s/%s: %s", namespace, podName, err)
 		return
 	}
 
-	time.AfterFunc(diagnosticCollectDuration, func() {
-		logs, err := h.k8s.GetProxyLogs(podName, namespace)
-		if err != nil {
-			h.log.Errorf("cannot obtain proxy logs for pod %s/%s: %s", namespace, podName, err)
-			return
-		}
+	pod, err := h.k8s.GetPodManifest(podName, namespace)
+	if err != nil {
+		h.log.Errorf("cannot obtain pod manifest for pod %s/%s: %s", namespace, podName, err)
+		return
+	}
 
-		metrics, err := h.k8s.GetPrometheusScrape(podName, namespace)
-		if err != nil {
-			h.log.Errorf("cannot obtain proxy metrics for pod %s/%s: %s", namespace, podName, err)
-			return
-		}
-		err = h.api.ProxyDiagnostics(diagnosticId, []byte(logs), []byte(metrics))
-		if err != nil {
-			h.log.Errorf("error sending ProxyDiagnostics message: %s", err)
-		}
+	podManifestBytes, err := yaml.Marshal(pod)
+	if err != nil {
+		h.log.Errorf("cannot serialize pod manifest for pod %s/%s: %s", namespace, podName, err)
+		return
+	}
 
-		err = h.k8s.SetProxyLogLevel(podName, namespace, initialLogLevel)
-		if err != nil {
-			h.log.Errorf("error reverting proxy log level to %s for pod %s/%s: %s", initialLogLevel, namespace, podName, err)
-			return
-		}
-	})
+	err = h.api.ProxyDiagnostics(diagnosticId, []byte(logs), []byte(metrics), podManifestBytes)
+	if err != nil {
+		h.log.Errorf("error sending ProxyDiagnostics message: %s", err)
+	}
 }
