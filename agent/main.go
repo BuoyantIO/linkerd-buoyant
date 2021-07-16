@@ -13,6 +13,7 @@ import (
 	"github.com/buoyantio/linkerd-buoyant/agent/pkg/k8s"
 	pb "github.com/buoyantio/linkerd-buoyant/gen/bcloud"
 	"github.com/linkerd/linkerd2/pkg/admin"
+	ld5k8s "github.com/linkerd/linkerd2/pkg/k8s"
 	log "github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
@@ -41,8 +42,8 @@ func main() {
 	grpcAddr := flag.String("grpc-addr", "api.buoyant.cloud:443", "address of the Buoyant Cloud API")
 	kubeConfigPath := flag.String("kubeconfig", "", "path to kube config")
 	logLevel := flag.String("log-level", "info", "log level, must be one of: panic, fatal, error, warn, info, debug, trace")
+	localMode := flag.Bool("local-mode", false, "enable port forwarding for local mode")
 	insecure := flag.Bool("insecure", false, "disable TLS in development mode")
-	proxyAddrOverride := flag.String("proxy-addr-override", "", "overrides the proxy address for development mode")
 
 	// klog flags
 	klog.InitFlags(nil)
@@ -93,12 +94,6 @@ func main() {
 	}
 
 	// setup kubernetes clients and shared informers
-
-	var proxyAddr string
-	if proxyAddrOverride != nil {
-		proxyAddr = *proxyAddrOverride
-	}
-
 	rules := clientcmd.NewDefaultClientConfigLoadingRules()
 	if *kubeConfigPath != "" {
 		rules.ExplicitPath = *kubeConfigPath
@@ -113,7 +108,13 @@ func main() {
 	dieIf(err)
 	sharedInformers := informers.NewSharedInformerFactory(k8sCS, 10*time.Minute)
 
-	k8sClient := k8s.NewClient(sharedInformers, proxyAddr)
+	var ld5Api *ld5k8s.KubernetesAPI
+	if *localMode {
+		ld5Api, err = ld5k8s.NewAPIForConfig(k8sConfig, "", nil, 0)
+		dieIf(err)
+	}
+
+	k8sClient := k8s.NewClient(k8sCS, sharedInformers, k8sConfig, ld5Api)
 
 	// wait for discovery API to load
 

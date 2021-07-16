@@ -2,7 +2,6 @@ package api
 
 import (
 	"context"
-	"io"
 	"sync"
 	"time"
 
@@ -37,9 +36,7 @@ func (s *manageAgentStream) startStream() {
 	for {
 		command, err := s.recv_locked()
 		if err != nil {
-			if err == io.EOF {
-				s.log.Info("server closed stream, reseting")
-			}
+			s.log.Infof("stream closed, reseting: %s", err)
 			s.resetStream()
 			continue
 		}

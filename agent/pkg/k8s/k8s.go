@@ -5,6 +5,7 @@ import (
 	"errors"
 	"time"
 
+	ld5k8s "github.com/linkerd/linkerd2/pkg/k8s"
 	log "github.com/sirupsen/logrus"
 	appsv1 "k8s.io/api/apps/v1"
 	v1 "k8s.io/api/core/v1"
@@ -12,13 +13,20 @@ import (
 	"k8s.io/apimachinery/pkg/runtime/serializer/protobuf"
 	"k8s.io/client-go/informers"
 	corev1informers "k8s.io/client-go/informers/core/v1"
+	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/kubernetes/scheme"
 	appsv1listers "k8s.io/client-go/listers/apps/v1"
 	corev1listers "k8s.io/client-go/listers/core/v1"
+	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/cache"
 )
 
 type Client struct {
+	k8sClient kubernetes.Interface
+	// the presence of the LD5 k8s api signifies that we are running in local mode
+	// and that we should use it for port forwarding
+	ld5API *ld5k8s.KubernetesAPI
+
 	encoders map[runtime.GroupVersioner]runtime.Encoder
 
 	sharedInformers informers.SharedInformerFactory
@@ -38,8 +46,6 @@ type Client struct {
 	eventInformer corev1informers.EventInformer
 	eventSynced   cache.InformerSynced
 
-	proxyAddrOverride string
-
 	log *log.Entry
 }
 
@@ -54,7 +60,7 @@ const (
 
 var errSyncCache = errors.New("failed to sync caches")
 
-func NewClient(sharedInformers informers.SharedInformerFactory, proxyAddrOverride string) *Client {
+func NewClient(k8sClient kubernetes.Interface, sharedInformers informers.SharedInformerFactory, k8sConfig *rest.Config, ld5API *ld5k8s.KubernetesAPI) *Client {
 	log := log.WithField("client", "k8s")
 	log.Debug("initializing")
 
@@ -83,7 +89,8 @@ func NewClient(sharedInformers informers.SharedInformerFactory, proxyAddrOverrid
 	eventInformerSynced := eventInformer.Informer().HasSynced
 
 	return &Client{
-		encoders: encoders,
+		k8sClient: k8sClient,
+		encoders:  encoders,
 
 		sharedInformers: sharedInformers,
 
@@ -102,9 +109,8 @@ func NewClient(sharedInformers informers.SharedInformerFactory, proxyAddrOverrid
 		eventInformer: eventInformer,
 		eventSynced:   eventInformerSynced,
 
-		proxyAddrOverride: proxyAddrOverride,
-
-		log: log,
+		ld5API: ld5API,
+		log:    log,
 	}
 }
 

@@ -88,7 +88,7 @@ func TestFindIdentityPod(t *testing.T) {
 		t.Run(tc.testName, func(t *testing.T) {
 			c := fakeClient(tc.pods...)
 			c.Sync(nil, time.Second)
-			client := NewClient(c.sharedInformers, "")
+			client := NewClient(nil, c.sharedInformers, nil, nil)
 
 			pod, err := client.getControlPlaneComponentPod(identityComponentName)
 			if tc.expectedErr != nil {

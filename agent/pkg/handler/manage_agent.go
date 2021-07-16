@@ -1,11 +1,12 @@
 package handler
 
 import (
+	"context"
+
 	"github.com/buoyantio/linkerd-buoyant/agent/pkg/api"
 	"github.com/buoyantio/linkerd-buoyant/agent/pkg/k8s"
 	pb "github.com/buoyantio/linkerd-buoyant/gen/bcloud"
 	log "github.com/sirupsen/logrus"
-	"gopkg.in/yaml.v2"
 )
 
 type ManageAgent struct {
@@ -39,7 +40,7 @@ func (h *ManageAgent) Start() {
 			switch command := agentCommand.Command.(type) {
 			case *pb.AgentCommand_GetProxyDiagnostics:
 				proxyDiagnostic := command.GetProxyDiagnostics
-				go h.handleProxyDiagnostics(proxyDiagnostic.PodName, proxyDiagnostic.PodNamespace, proxyDiagnostic.DiagnosticId)
+				go h.handleProxyDiagnostics(context.Background(), proxyDiagnostic.PodName, proxyDiagnostic.PodNamespace, proxyDiagnostic.DiagnosticId)
 			}
 		}
 	}
@@ -51,33 +52,51 @@ func (h *ManageAgent) Stop() {
 	close(h.stopCh)
 }
 
-func (h *ManageAgent) handleProxyDiagnostics(podName string, namespace string, diagnosticId string) {
-	logs, err := h.k8s.GetProxyLogs(podName, namespace)
+func (h *ManageAgent) handleProxyDiagnostics(ctx context.Context, podName, namespace, diagnosticID string) {
+	logs, err := h.k8s.GetProxyLogs(ctx, podName, namespace)
 	if err != nil {
-		h.log.Errorf("cannot obtain proxy logs for pod %s/%s: %s", namespace, podName, err)
-		return
+		h.log.Errorf("cannot obtain proxy logs for diagnosticID: %s", diagnosticID)
+	} else {
+		h.log.Debugf("Successfully obtained proxy logs for diagnosticID: %s", diagnosticID)
 	}
 
-	metrics, err := h.k8s.GetPrometheusScrape(podName, namespace)
+	podSpec, err := h.k8s.GetPodSpec(ctx, podName, namespace)
 	if err != nil {
-		h.log.Errorf("cannot obtain proxy metrics for pod %s/%s: %s", namespace, podName, err)
-		return
+		h.log.Errorf("cannot obtain pod manifest for diagnosticID: %s", diagnosticID)
+	} else {
+		h.log.Debugf("Successfully obtained pod manifest for diagnosticID: %s", diagnosticID)
 	}
 
-	pod, err := h.k8s.GetPodManifest(podName, namespace)
+	metrics, err := h.k8s.GetPrometheusScrape(ctx, podName, namespace)
 	if err != nil {
-		h.log.Errorf("cannot obtain pod manifest for pod %s/%s: %s", namespace, podName, err)
-		return
+		h.log.Errorf("cannot obtain proxy metrics for diagnosticID: %s", diagnosticID)
+	} else {
+		h.log.Debugf("Successfully obtained proxy metrics for diagnosticID: %s", diagnosticID)
 	}
 
-	podManifestBytes, err := yaml.Marshal(pod)
+	ld5ConfigMap, err := h.k8s.GetLinkerdConfigMap(ctx)
 	if err != nil {
-		h.log.Errorf("cannot serialize pod manifest for pod %s/%s: %s", namespace, podName, err)
-		return
+		h.log.Errorf("cannot Linkerd config map for diagnosticID: %s", diagnosticID)
+	} else {
+		h.log.Debugf("Successfully obtained Linkerd config map for for diagnosticID: %s", diagnosticID)
 	}
 
-	err = h.api.ProxyDiagnostics(diagnosticId, []byte(logs), []byte(metrics), podManifestBytes)
+	nodes, err := h.k8s.GetNodeManifests(ctx)
 	if err != nil {
-		h.log.Errorf("error sending ProxyDiagnostics message: %s", err)
+		h.log.Errorf("cannot obtain nodes for diagnosticID: %s", diagnosticID)
+	} else {
+		h.log.Debugf("Successfully obtained nodes for diagnosticID: %s", diagnosticID)
+	}
+
+	svcManifest, err := h.k8s.GetK8sServiceManifest(ctx)
+	if err != nil {
+		h.log.Errorf("cannot K8s svc manifest for diagnosticID: %s", diagnosticID)
+	} else {
+		h.log.Debugf("Successfully K8s svc manifest for diagnosticID: %s", diagnosticID)
+	}
+
+	err = h.api.ProxyDiagnostics(diagnosticID, logs, metrics, podSpec, ld5ConfigMap, nodes, svcManifest)
+	if err != nil {
+		h.log.Debugf("error sending ProxyDiagnostics message: %s", err)
 	}
 }

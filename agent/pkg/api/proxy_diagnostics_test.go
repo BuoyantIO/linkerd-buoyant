@@ -3,32 +3,43 @@ package api
 import (
 	"errors"
 	"testing"
+
+	pb "github.com/buoyantio/linkerd-buoyant/gen/bcloud"
 )
 
 func TestProxyDiagnostic(t *testing.T) {
 	t.Run("calls the api and gets a response", func(t *testing.T) {
 		fixtures := []*struct {
-			testName     string
-			diagnosticId string
-			logs         []byte
-			metrics      []byte
-			podManifest  []byte
-			err          error
+			testName       string
+			diagnosticId   string
+			logs           []byte
+			metrics        [][]byte
+			podManifest    *pb.Pod
+			configMap      *pb.ConfigMap
+			nodes          []*pb.Node
+			k8sSvcManifest *pb.Service
+			err            error
 		}{
 			{
 				"bad API response",
 				"diagnosticId",
 				[]byte("logs"),
-				[]byte("metrics"),
-				[]byte("manifest"),
+				[][]byte{[]byte("snapshot1"), []byte("snapshot2")},
+				&pb.Pod{Pod: []byte("pod")},
+				&pb.ConfigMap{ConfigMap: []byte("cm")},
+				[]*pb.Node{{Node: []byte("node1")}, {Node: []byte("node2")}},
+				&pb.Service{Service: []byte("svc")},
 				errors.New("bad response"),
 			},
 			{
 				"ok rsp",
 				"diagnosticId",
 				[]byte("logs"),
-				[]byte("metrics"),
-				[]byte("manifest"),
+				[][]byte{[]byte("snapshot1"), []byte("snapshot2")},
+				&pb.Pod{Pod: []byte("pod")},
+				&pb.ConfigMap{ConfigMap: []byte("cm")},
+				[]*pb.Node{{Node: []byte("node1")}, {Node: []byte("node2")}},
+				&pb.Service{Service: []byte("svc")},
 				nil,
 			},
 		}
@@ -39,7 +50,7 @@ func TestProxyDiagnostic(t *testing.T) {
 				m := &MockBcloudClient{err: tc.err}
 				c := NewClient("", "", m)
 
-				err := c.ProxyDiagnostics(tc.diagnosticId, tc.logs, tc.metrics, tc.podManifest)
+				err := c.ProxyDiagnostics(tc.diagnosticId, tc.logs, tc.metrics, tc.podManifest, tc.configMap, tc.nodes, tc.k8sSvcManifest)
 				if tc.err != err {
 					t.Errorf("Expected %s, got %s", tc.err, err)
 				}
@@ -55,7 +66,7 @@ func TestProxyDiagnostic(t *testing.T) {
 		m := &MockBcloudClient{}
 		c := NewClient(fakeID, fakeKey, m)
 
-		err := c.ProxyDiagnostics("id1", []byte{}, []byte{}, []byte{})
+		err := c.ProxyDiagnostics("id1", nil, nil, nil, nil, nil, nil)
 		if err != nil {
 			t.Error(err)
 		}

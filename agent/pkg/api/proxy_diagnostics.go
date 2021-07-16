@@ -7,14 +7,24 @@ import (
 	"google.golang.org/protobuf/encoding/prototext"
 )
 
-// AddEvent wraps the Buoyant Cloud API AddEvent gRPC unary endpoint.
-func (c *Client) ProxyDiagnostics(diagnosticId string, logs []byte, metrics []byte, podManifest []byte) error {
+// ProxyDiagnostics wraps the Buoyant Cloud API ProxyDiagnostics gRPC unary endpoint.
+func (c *Client) ProxyDiagnostics(
+	diagnosticID string,
+	logs []byte,
+	metrics [][]byte,
+	podManifest *pb.Pod,
+	linkerdConfigMap *pb.ConfigMap,
+	nodes []*pb.Node,
+	k8sServiceManifest *pb.Service) error {
 	diagnostic := &pb.ProxyDiagnostic{
-		Auth:         c.auth,
-		DiagnosticId: diagnosticId,
-		Logs:         logs,
-		Metrics:      metrics,
-		PodManifest:  podManifest,
+		Auth:               c.auth,
+		DiagnosticId:       diagnosticID,
+		Logs:               logs,
+		Metrics:            metrics,
+		PodManifest:        podManifest,
+		LinkerdConfigMap:   linkerdConfigMap,
+		Nodes:              nodes,
+		K8SServiceManifest: k8sServiceManifest,
 	}
 	c.log.Tracef("ProxyDiagnostics: %s", prototext.Format(diagnostic))
 
