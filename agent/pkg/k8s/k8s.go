@@ -3,6 +3,8 @@ package k8s
 import (
 	"context"
 	"errors"
+	"fmt"
+	"net/url"
 	"time"
 
 	ld5k8s "github.com/linkerd/linkerd2/pkg/k8s"
@@ -17,7 +19,6 @@ import (
 	"k8s.io/client-go/kubernetes/scheme"
 	appsv1listers "k8s.io/client-go/listers/apps/v1"
 	corev1listers "k8s.io/client-go/listers/core/v1"
-	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/cache"
 )
 
@@ -49,6 +50,11 @@ type Client struct {
 	log *log.Entry
 }
 
+type containerConnection struct {
+	host    string
+	cleanup func()
+}
+
 const (
 	DaemonSet   = "DaemonSet"
 	Deployment  = "Deployment"
@@ -60,7 +66,7 @@ const (
 
 var errSyncCache = errors.New("failed to sync caches")
 
-func NewClient(k8sClient kubernetes.Interface, sharedInformers informers.SharedInformerFactory, k8sConfig *rest.Config, ld5API *ld5k8s.KubernetesAPI) *Client {
+func NewClient(k8sClient kubernetes.Interface, sharedInformers informers.SharedInformerFactory, ld5API *ld5k8s.KubernetesAPI) *Client {
 	log := log.WithField("client", "k8s")
 	log.Debug("initializing")
 
@@ -154,4 +160,49 @@ func (c *Client) serialize(obj runtime.Object, gv runtime.GroupVersioner) []byte
 		return nil
 	}
 	return buf
+}
+
+func (c *Client) localMode() bool {
+	return c.ld5API != nil
+}
+
+// this method establishes a connection to a specific container in a pod
+// and gives you the host addr. This logic is abstracted away in order to
+// enable running this agent outside of a K8s cluster for the purpose of
+// local development. The `containerConnection` struct returned contains
+// a `cleanup()` function that must be called when this connection is not
+// needed anymore
+func (c *Client) getContainerConnection(pod *v1.Pod, container *v1.Container, portName string) (*containerConnection, error) {
+	if c.localMode() {
+		// running in local mode, we need a port forward
+		pf, err := ld5k8s.NewContainerMetricsForward(c.ld5API, *pod, *container, false, ld5k8s.ProxyAdminPortName)
+		if err != nil {
+			return nil, err
+		}
+
+		// not very elegant... We need a way to get the port and host from PortForward
+		httpUrl, err := url.Parse(pf.URLFor(""))
+		if err != nil {
+			return nil, err
+		}
+
+		if err = pf.Init(); err != nil {
+			return nil, err
+		}
+
+		return &containerConnection{
+			host:    httpUrl.Host,
+			cleanup: func() { pf.Stop() },
+		}, nil
+	} else {
+		port, err := getContainerPort(container, portName)
+		if err != nil {
+			return nil, err
+		}
+
+		return &containerConnection{
+			host:    fmt.Sprintf("%s:%d", pod.Status.PodIP, port),
+			cleanup: func() {}, // noop
+		}, nil
+	}
 }

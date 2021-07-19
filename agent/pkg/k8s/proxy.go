@@ -11,7 +11,6 @@ import (
 
 	pb "github.com/buoyantio/linkerd-buoyant/gen/bcloud"
 	ld5k8s "github.com/linkerd/linkerd2/pkg/k8s"
-	ldConsts "github.com/linkerd/linkerd2/pkg/k8s"
 	v1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
@@ -21,7 +20,7 @@ const k8sServiceName = "kubernetes"
 
 // GetProxyLogs retrieves the proxy logs of a pod
 func (c *Client) GetProxyLogs(ctx context.Context, podName, namespace string) ([]byte, error) {
-	req := c.k8sClient.CoreV1().Pods(namespace).GetLogs(podName, &v1.PodLogOptions{Container: ldConsts.ProxyContainerName})
+	req := c.k8sClient.CoreV1().Pods(namespace).GetLogs(podName, &v1.PodLogOptions{Container: ld5k8s.ProxyContainerName})
 	logs, err := req.Stream(ctx)
 	if err != nil {
 		return nil, err
@@ -52,46 +51,18 @@ func (c *Client) GetPrometheusScrape(ctx context.Context, podName, namespace str
 		return nil, fmt.Errorf("pod IP not allocated: %s/%s", namespace, podName)
 	}
 
-	var proxyContainer *v1.Container
-	for _, c := range pod.Spec.Containers {
-		if c.Name == ldConsts.ProxyContainerName {
-			c := c
-			proxyContainer = &c
-			break
-		}
-	}
-	if proxyContainer == nil {
-		return nil, fmt.Errorf("cannot find proxy container for pod: %s/%s", namespace, podName)
+	proxyContainer, err := getProxyContainer(pod)
+	if err != nil {
+		return nil, err
 	}
 
-	metricsUrl := ""
-	if c.ld5API != nil {
-		pf, err := ld5k8s.NewContainerMetricsForward(c.ld5API, *pod, *proxyContainer, false, ldConsts.ProxyAdminPortName)
-		if err != nil {
-			return nil, err
-		}
-		metricsUrl = pf.URLFor("/metrics")
-		if err = pf.Init(); err != nil {
-			return nil, err
-		}
-
-		defer pf.Stop()
-	} else {
-		// now find the port we need to hit
-		var port *int32
-		for _, p := range proxyContainer.Ports {
-			if p.Name == ldConsts.ProxyAdminPortName {
-				p := p
-				port = &p.ContainerPort
-				break
-			}
-		}
-		if port == nil {
-			return nil, fmt.Errorf("cannot find proxy admin port for pod: %s/%s", namespace, podName)
-		}
-		metricsUrl = fmt.Sprintf("http://%s:%d/metrics", pod.Status.PodIP, *port)
+	proxyConnection, err := c.getContainerConnection(pod, proxyContainer, ld5k8s.ProxyAdminPortName)
+	if err != nil {
+		return nil, err
 	}
+	defer proxyConnection.cleanup()
 
+	metricsUrl := fmt.Sprintf("http://%s/metrics", proxyConnection.host)
 	data := [][]byte{}
 	for {
 		resp, err := http.Get(metricsUrl)
@@ -114,7 +85,7 @@ func (c *Client) GetPrometheusScrape(ctx context.Context, podName, namespace str
 	return data, nil
 }
 
-// GetPodManifest retrieves pod manifest
+// GetPodSpec retrieves pod manifest
 func (c *Client) GetPodSpec(ctx context.Context, podName, namespace string) (*pb.Pod, error) {
 	pod, err := c.k8sClient.CoreV1().Pods(namespace).Get(ctx, podName, metav1.GetOptions{})
 	if err != nil {
@@ -126,7 +97,7 @@ func (c *Client) GetPodSpec(ctx context.Context, podName, namespace string) (*pb
 
 // GetLinkerdConfigMap retrieves Linkerd config map
 func (c *Client) GetLinkerdConfigMap(ctx context.Context) (*pb.ConfigMap, error) {
-	cm, err := c.k8sClient.CoreV1().ConfigMaps(linkerdNamespace).Get(ctx, ldConsts.ConfigConfigMapName, metav1.GetOptions{})
+	cm, err := c.k8sClient.CoreV1().ConfigMaps(linkerdNamespace).Get(ctx, ld5k8s.ConfigConfigMapName, metav1.GetOptions{})
 	if err != nil {
 		return nil, err
 	}
@@ -156,4 +127,15 @@ func (c *Client) GetK8sServiceManifest(ctx context.Context) (*pb.Service, error)
 		return nil, err
 	}
 	return &pb.Service{Service: c.serialize(svc, v1.SchemeGroupVersion)}, nil
+}
+
+func getProxyContainer(pod *v1.Pod) (*v1.Container, error) {
+	for _, c := range pod.Spec.Containers {
+		if c.Name == ld5k8s.ProxyContainerName {
+			container := c
+			return &container, nil
+		}
+	}
+
+	return nil, fmt.Errorf("could not find proxy container in pod %s/%s", pod.Namespace, pod.Name)
 }

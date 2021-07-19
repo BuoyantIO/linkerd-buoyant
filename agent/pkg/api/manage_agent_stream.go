@@ -34,7 +34,7 @@ func newManageAgentStream(auth *pb.Auth, client pb.ApiClient) *manageAgentStream
 
 func (s *manageAgentStream) startStream() {
 	for {
-		command, err := s.recv_locked()
+		command, err := s.recvCommand()
 		if err != nil {
 			s.log.Infof("stream closed, reseting: %s", err)
 			s.resetStream()
@@ -44,7 +44,7 @@ func (s *manageAgentStream) startStream() {
 	}
 }
 
-func (s *manageAgentStream) recv_locked() (*pb.AgentCommand, error) {
+func (s *manageAgentStream) recvCommand() (*pb.AgentCommand, error) {
 	s.Lock()
 	defer s.Unlock()
 	if s.stream == nil {

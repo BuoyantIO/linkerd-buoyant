@@ -4,7 +4,6 @@ import (
 	"crypto/tls"
 	"fmt"
 	"net"
-	"net/url"
 	"time"
 
 	pb "github.com/buoyantio/linkerd-buoyant/gen/bcloud"
@@ -74,20 +73,9 @@ func (c *Client) getControlPlaneComponentPod(component string) (*v1.Pod, error) 
 	return nil, fmt.Errorf("could not find running pod for linkerd-%s", component)
 }
 
-func getProxyContainer(pod *v1.Pod) (*v1.Container, error) {
-	for _, c := range pod.Spec.Containers {
-		if c.Name == ld5k8s.ProxyContainerName {
-			container := c
-			return &container, nil
-		}
-	}
-
-	return nil, fmt.Errorf("could not find proxy container in pod %s/%s", pod.Namespace, pod.Name)
-}
-
-func getProxyAdminPort(container *v1.Container) (int32, error) {
+func getContainerPort(container *v1.Container, portName string) (int32, error) {
 	for _, p := range container.Ports {
-		if p.Name == ld5k8s.ProxyAdminPortName {
+		if p.Name == portName {
 			return p.ContainerPort, nil
 		}
 	}
@@ -144,39 +132,16 @@ func (c *Client) extractIssuerCertChain(pod *v1.Pod, container *v1.Container) ([
 		return nil, err
 	}
 
-	podAddr := ""
-	if c.ld5API != nil {
-		// running in local mode, we need a port forward
-		pf, err := ld5k8s.NewContainerMetricsForward(c.ld5API, *pod, *container, false, ld5k8s.ProxyAdminPortName)
-		if err != nil {
-			return nil, err
-		}
-
-		// not very elegant... We need a way to get the port and host from PortForward
-		httpUrl, err := url.Parse(pf.URLFor(""))
-		if err != nil {
-			return nil, err
-		}
-
-		podAddr = httpUrl.Host
-		if err = pf.Init(); err != nil {
-			return nil, err
-		}
-
-		defer pf.Stop()
-	} else {
-		port, err := getProxyAdminPort(container)
-		if err != nil {
-			return nil, err
-		}
-
-		podAddr = fmt.Sprintf("%s:%d", pod.Status.PodIP, port)
+	proxyConnection, err := c.getContainerConnection(pod, container, ld5k8s.ProxyAdminPortName)
+	if err != nil {
+		return nil, err
 	}
+	defer proxyConnection.cleanup()
 
 	conn, err := tls.DialWithDialer(
 		&net.Dialer{Timeout: 5 * time.Second},
 		"tcp",
-		podAddr, &tls.Config{
+		proxyConnection.host, &tls.Config{
 			// we want to subvert TLS verification as we do not need
 			// to verify that we actually trust these certs. We just
 			// want the certificates and are not sending any data here.

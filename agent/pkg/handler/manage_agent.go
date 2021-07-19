@@ -55,48 +55,48 @@ func (h *ManageAgent) Stop() {
 func (h *ManageAgent) handleProxyDiagnostics(ctx context.Context, podName, namespace, diagnosticID string) {
 	logs, err := h.k8s.GetProxyLogs(ctx, podName, namespace)
 	if err != nil {
-		h.log.Errorf("cannot obtain proxy logs for diagnosticID: %s", diagnosticID)
+		h.log.Errorf("cannot obtain proxy logs for diagnosticID %s: %s", diagnosticID, err)
 	} else {
 		h.log.Debugf("Successfully obtained proxy logs for diagnosticID: %s", diagnosticID)
 	}
 
 	podSpec, err := h.k8s.GetPodSpec(ctx, podName, namespace)
 	if err != nil {
-		h.log.Errorf("cannot obtain pod manifest for diagnosticID: %s", diagnosticID)
+		h.log.Errorf("cannot obtain pod manifest for diagnosticID %s: %s", diagnosticID, err)
 	} else {
 		h.log.Debugf("Successfully obtained pod manifest for diagnosticID: %s", diagnosticID)
 	}
 
 	metrics, err := h.k8s.GetPrometheusScrape(ctx, podName, namespace)
 	if err != nil {
-		h.log.Errorf("cannot obtain proxy metrics for diagnosticID: %s", diagnosticID)
+		h.log.Errorf("cannot obtain proxy metrics for diagnosticID %s: %s", diagnosticID, err)
 	} else {
 		h.log.Debugf("Successfully obtained proxy metrics for diagnosticID: %s", diagnosticID)
 	}
 
 	ld5ConfigMap, err := h.k8s.GetLinkerdConfigMap(ctx)
 	if err != nil {
-		h.log.Errorf("cannot Linkerd config map for diagnosticID: %s", diagnosticID)
+		h.log.Errorf("cannot Linkerd config map for diagnosticID %s: %s", diagnosticID, err)
 	} else {
 		h.log.Debugf("Successfully obtained Linkerd config map for for diagnosticID: %s", diagnosticID)
 	}
 
 	nodes, err := h.k8s.GetNodeManifests(ctx)
 	if err != nil {
-		h.log.Errorf("cannot obtain nodes for diagnosticID: %s", diagnosticID)
+		h.log.Errorf("cannot obtain nodes for diagnosticID %s: %s", diagnosticID, err)
 	} else {
 		h.log.Debugf("Successfully obtained nodes for diagnosticID: %s", diagnosticID)
 	}
 
 	svcManifest, err := h.k8s.GetK8sServiceManifest(ctx)
 	if err != nil {
-		h.log.Errorf("cannot K8s svc manifest for diagnosticID: %s", diagnosticID)
+		h.log.Errorf("cannot obtain K8s svc manifest for diagnosticID %s: %s", diagnosticID, err)
 	} else {
-		h.log.Debugf("Successfully K8s svc manifest for diagnosticID: %s", diagnosticID)
+		h.log.Debugf("Successfully obtained K88s svc manifest for diagnosticID: %s", diagnosticID)
 	}
 
 	err = h.api.ProxyDiagnostics(diagnosticID, logs, metrics, podSpec, ld5ConfigMap, nodes, svcManifest)
 	if err != nil {
-		h.log.Debugf("error sending ProxyDiagnostics message: %s", err)
+		h.log.Errorf("error sending ProxyDiagnostics message: %s", err)
 	}
 }

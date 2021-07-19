@@ -42,7 +42,7 @@ func main() {
 	grpcAddr := flag.String("grpc-addr", "api.buoyant.cloud:443", "address of the Buoyant Cloud API")
 	kubeConfigPath := flag.String("kubeconfig", "", "path to kube config")
 	logLevel := flag.String("log-level", "info", "log level, must be one of: panic, fatal, error, warn, info, debug, trace")
-	localMode := flag.Bool("local-mode", false, "enable port forwarding for local mode")
+	localMode := flag.Bool("local-mode", false, "enable port forwarding for local development")
 	insecure := flag.Bool("insecure", false, "disable TLS in development mode")
 
 	// klog flags
@@ -114,7 +114,7 @@ func main() {
 		dieIf(err)
 	}
 
-	k8sClient := k8s.NewClient(k8sCS, sharedInformers, k8sConfig, ld5Api)
+	k8sClient := k8s.NewClient(k8sCS, sharedInformers, ld5Api)
 
 	// wait for discovery API to load
 
@@ -145,7 +145,6 @@ func main() {
 
 	bcloudClient := pb.NewApiClient(conn)
 	apiClient := api.NewClient(id, key, bcloudClient)
-	apiClient.Init()
 
 	// create handlers
 	eventHandler := handler.NewEvent(k8sClient, apiClient)
@@ -157,6 +156,9 @@ func main() {
 	// start shared informer and wait for sync
 	err = k8sClient.Sync(shutdown, 60*time.Second)
 	dieIf(err)
+
+	// start api client stream management logic
+	go apiClient.Start()
 
 	// start handlers
 	go eventHandler.Start(sharedInformers)

@@ -32,7 +32,7 @@ func TestManageAgentStream(t *testing.T) {
 			t.Run(tc.testName, func(t *testing.T) {
 				m := &MockBcloudClient{agentCommandMessages: tc.commandsFromApi}
 				c := NewClient("", "", m)
-				go c.Init()
+				go c.Start()
 
 				receivedCommands := []*pb.AgentCommand{}
 
