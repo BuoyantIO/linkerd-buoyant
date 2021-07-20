@@ -203,7 +203,7 @@ func TestGetAdminPort(t *testing.T) {
 				},
 			},
 			0,
-			fmt.Errorf("could not find port linkerd-admin on proxy container [linkerd-proxy]"),
+			fmt.Errorf("could not find port linkerd-admin on container [linkerd-proxy]"),
 		},
 	}
 
