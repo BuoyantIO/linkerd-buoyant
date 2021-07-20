@@ -80,7 +80,7 @@ func getContainerPort(container *v1.Container, portName string) (int32, error) {
 		}
 	}
 
-	return 0, fmt.Errorf("could not find port %s on proxy container [%s]", ld5k8s.ProxyAdminPortName, container.Name)
+	return 0, fmt.Errorf("could not find port %s on container [%s]", portName, container.Name)
 }
 
 func getServerName(podsa string, podns string, container *v1.Container) (string, error) {
