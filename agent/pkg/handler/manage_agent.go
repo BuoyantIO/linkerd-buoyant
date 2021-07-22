@@ -74,7 +74,7 @@ func (h *ManageAgent) handleProxyDiagnostics(ctx context.Context, podName, names
 		h.log.Debugf("Successfully obtained proxy metrics for diagnosticID: %s", diagnosticID)
 	}
 
-	ld5ConfigMap, err := h.k8s.GetLinkerdConfigMap(ctx)
+	l5dConfigMap, err := h.k8s.GetLinkerdConfigMap(ctx)
 	if err != nil {
 		h.log.Errorf("cannot Linkerd config map for diagnosticID %s: %s", diagnosticID, err)
 	} else {
@@ -95,7 +95,7 @@ func (h *ManageAgent) handleProxyDiagnostics(ctx context.Context, podName, names
 		h.log.Debugf("Successfully obtained K8s svc manifest for diagnosticID: %s", diagnosticID)
 	}
 
-	err = h.api.ProxyDiagnostics(diagnosticID, logs, metrics, podSpec, ld5ConfigMap, nodes, svcManifest)
+	err = h.api.ProxyDiagnostics(diagnosticID, logs, metrics, podSpec, l5dConfigMap, nodes, svcManifest)
 	if err != nil {
 		h.log.Errorf("error sending ProxyDiagnostics message: %s", err)
 	}

@@ -10,7 +10,7 @@ import (
 	"time"
 
 	pb "github.com/buoyantio/linkerd-buoyant/gen/bcloud"
-	ld5k8s "github.com/linkerd/linkerd2/pkg/k8s"
+	l5dk8s "github.com/linkerd/linkerd2/pkg/k8s"
 	v1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
@@ -20,7 +20,7 @@ const k8sServiceName = "kubernetes"
 
 // GetProxyLogs retrieves the proxy logs of a pod
 func (c *Client) GetProxyLogs(ctx context.Context, podName, namespace string) ([]byte, error) {
-	req := c.k8sClient.CoreV1().Pods(namespace).GetLogs(podName, &v1.PodLogOptions{Container: ld5k8s.ProxyContainerName})
+	req := c.k8sClient.CoreV1().Pods(namespace).GetLogs(podName, &v1.PodLogOptions{Container: l5dk8s.ProxyContainerName})
 	logs, err := req.Stream(ctx)
 	if err != nil {
 		return nil, err
@@ -56,7 +56,7 @@ func (c *Client) GetPrometheusScrape(ctx context.Context, podName, namespace str
 		return nil, err
 	}
 
-	proxyConnection, err := c.getContainerConnection(pod, proxyContainer, ld5k8s.ProxyAdminPortName)
+	proxyConnection, err := c.getContainerConnection(pod, proxyContainer, l5dk8s.ProxyAdminPortName)
 	if err != nil {
 		return nil, err
 	}
@@ -97,7 +97,7 @@ func (c *Client) GetPodSpec(ctx context.Context, podName, namespace string) (*pb
 
 // GetLinkerdConfigMap retrieves Linkerd config map
 func (c *Client) GetLinkerdConfigMap(ctx context.Context) (*pb.ConfigMap, error) {
-	cm, err := c.k8sClient.CoreV1().ConfigMaps(linkerdNamespace).Get(ctx, ld5k8s.ConfigConfigMapName, metav1.GetOptions{})
+	cm, err := c.k8sClient.CoreV1().ConfigMaps(linkerdNamespace).Get(ctx, l5dk8s.ConfigConfigMapName, metav1.GetOptions{})
 	if err != nil {
 		return nil, err
 	}
@@ -131,7 +131,7 @@ func (c *Client) GetK8sServiceManifest(ctx context.Context) (*pb.Service, error)
 
 func getProxyContainer(pod *v1.Pod) (*v1.Container, error) {
 	for _, c := range pod.Spec.Containers {
-		if c.Name == ld5k8s.ProxyContainerName {
+		if c.Name == l5dk8s.ProxyContainerName {
 			container := c
 			return &container, nil
 		}

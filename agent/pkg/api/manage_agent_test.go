@@ -36,7 +36,7 @@ func TestManageAgentStream(t *testing.T) {
 
 				receivedCommands := []*pb.AgentCommand{}
 
-				timeot := time.After(time.Second * 10)
+				timeout := time.After(time.Second * 10)
 
 			out:
 				for {
@@ -46,7 +46,7 @@ func TestManageAgentStream(t *testing.T) {
 						if len(receivedCommands) >= len(tc.commandsFromApi) {
 							break out
 						}
-					case <-timeot:
+					case <-timeout:
 						t.Fatal("test timed out")
 					}
 				}

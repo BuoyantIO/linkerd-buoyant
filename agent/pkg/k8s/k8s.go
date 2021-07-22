@@ -7,7 +7,7 @@ import (
 	"net/url"
 	"time"
 
-	ld5k8s "github.com/linkerd/linkerd2/pkg/k8s"
+	l5dk8s "github.com/linkerd/linkerd2/pkg/k8s"
 	log "github.com/sirupsen/logrus"
 	appsv1 "k8s.io/api/apps/v1"
 	v1 "k8s.io/api/core/v1"
@@ -24,9 +24,9 @@ import (
 
 type Client struct {
 	k8sClient kubernetes.Interface
-	// the presence of the LD5 k8s api signifies that we are running in local mode
+	// the presence of the L5D k8s api signifies that we are running in local mode
 	// and that we should use it for port forwarding
-	ld5API *ld5k8s.KubernetesAPI
+	l5dApi *l5dk8s.KubernetesAPI
 
 	encoders map[runtime.GroupVersioner]runtime.Encoder
 
@@ -66,7 +66,7 @@ const (
 
 var errSyncCache = errors.New("failed to sync caches")
 
-func NewClient(k8sClient kubernetes.Interface, sharedInformers informers.SharedInformerFactory, ld5API *ld5k8s.KubernetesAPI) *Client {
+func NewClient(k8sClient kubernetes.Interface, sharedInformers informers.SharedInformerFactory, l5dApi *l5dk8s.KubernetesAPI) *Client {
 	log := log.WithField("client", "k8s")
 	log.Debug("initializing")
 
@@ -115,7 +115,7 @@ func NewClient(k8sClient kubernetes.Interface, sharedInformers informers.SharedI
 		eventInformer: eventInformer,
 		eventSynced:   eventInformerSynced,
 
-		ld5API: ld5API,
+		l5dApi: l5dApi,
 		log:    log,
 	}
 }
@@ -163,7 +163,7 @@ func (c *Client) serialize(obj runtime.Object, gv runtime.GroupVersioner) []byte
 }
 
 func (c *Client) localMode() bool {
-	return c.ld5API != nil
+	return c.l5dApi != nil
 }
 
 // this method establishes a connection to a specific container in a pod
@@ -175,7 +175,7 @@ func (c *Client) localMode() bool {
 func (c *Client) getContainerConnection(pod *v1.Pod, container *v1.Container, portName string) (*containerConnection, error) {
 	if c.localMode() {
 		// running in local mode, we need a port forward
-		pf, err := ld5k8s.NewContainerMetricsForward(c.ld5API, *pod, *container, false, ld5k8s.ProxyAdminPortName)
+		pf, err := l5dk8s.NewContainerMetricsForward(c.l5dApi, *pod, *container, false, l5dk8s.ProxyAdminPortName)
 		if err != nil {
 			return nil, err
 		}
@@ -205,4 +205,14 @@ func (c *Client) getContainerConnection(pod *v1.Pod, container *v1.Container, po
 			cleanup: func() {}, // noop
 		}, nil
 	}
+}
+
+func getContainerPort(container *v1.Container, portName string) (int32, error) {
+	for _, p := range container.Ports {
+		if p.Name == portName {
+			return p.ContainerPort, nil
+		}
+	}
+
+	return 0, fmt.Errorf("could not find port %s on container [%s]", portName, container.Name)
 }

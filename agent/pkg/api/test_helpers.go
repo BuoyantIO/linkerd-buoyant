@@ -75,49 +75,25 @@ type MockBcloudClient struct {
 func (m *MockBcloudClient) Events() []*pb.Event {
 	m.Lock()
 	defer m.Unlock()
-
-	events := make([]*pb.Event, len(m.events))
-	for i, e := range m.events {
-		events[i] = e
-	}
-
-	return events
+	return m.events
 }
 
 func (m *MockBcloudClient) Messages() []*pb.WorkloadMessage {
 	m.Lock()
 	defer m.Unlock()
-
-	messages := make([]*pb.WorkloadMessage, len(m.messages))
-	for i, m := range m.messages {
-		messages[i] = m
-	}
-
-	return messages
+	return m.messages
 }
 
 func (m *MockBcloudClient) LinkerdMessages() []*pb.LinkerdMessage {
 	m.Lock()
 	defer m.Unlock()
-
-	messages := make([]*pb.LinkerdMessage, len(m.linkerdMessages))
-	for i, m := range m.linkerdMessages {
-		messages[i] = m
-	}
-
-	return messages
+	return m.linkerdMessages
 }
 
 func (m *MockBcloudClient) ProxyDiagnosticMessages() []*pb.ProxyDiagnostic {
 	m.Lock()
 	defer m.Unlock()
-
-	messages := make([]*pb.ProxyDiagnostic, len(m.proxyDiagnosticMessages))
-	for i, m := range m.proxyDiagnosticMessages {
-		messages[i] = m
-	}
-
-	return messages
+	return m.proxyDiagnosticMessages
 }
 
 func (m *MockBcloudClient) ProxyDiagnosticsAuth() *pb.Auth {

@@ -56,7 +56,7 @@ func TestProxyDiagnostic(t *testing.T) {
 				}
 
 				if len(m.ProxyDiagnosticMessages()) != 1 {
-					t.Errorf("Expected 1 message, got %d", len(m.LinkerdMessages()))
+					t.Errorf("Expected 1 message, got %d", len(m.ProxyDiagnosticMessages()))
 				}
 			})
 		}

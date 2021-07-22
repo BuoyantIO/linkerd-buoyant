@@ -28,7 +28,7 @@ func newManageAgentStream(auth *pb.Auth, client pb.ApiClient) *manageAgentStream
 		auth:     auth,
 		client:   client,
 		log:      log.WithField("stream", "ManageAgentStream"),
-		commands: make(chan *pb.AgentCommand, 10),
+		commands: make(chan *pb.AgentCommand),
 	}
 }
 

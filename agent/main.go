@@ -13,7 +13,7 @@ import (
 	"github.com/buoyantio/linkerd-buoyant/agent/pkg/k8s"
 	pb "github.com/buoyantio/linkerd-buoyant/gen/bcloud"
 	"github.com/linkerd/linkerd2/pkg/admin"
-	ld5k8s "github.com/linkerd/linkerd2/pkg/k8s"
+	l5dk8s "github.com/linkerd/linkerd2/pkg/k8s"
 	log "github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
@@ -108,13 +108,13 @@ func main() {
 	dieIf(err)
 	sharedInformers := informers.NewSharedInformerFactory(k8sCS, 10*time.Minute)
 
-	var ld5Api *ld5k8s.KubernetesAPI
+	var l5dApi *l5dk8s.KubernetesAPI
 	if *localMode {
-		ld5Api, err = ld5k8s.NewAPIForConfig(k8sConfig, "", nil, 0)
+		l5dApi, err = l5dk8s.NewAPIForConfig(k8sConfig, "", nil, 0)
 		dieIf(err)
 	}
 
-	k8sClient := k8s.NewClient(k8sCS, sharedInformers, ld5Api)
+	k8sClient := k8s.NewClient(k8sCS, sharedInformers, l5dApi)
 
 	// wait for discovery API to load
 

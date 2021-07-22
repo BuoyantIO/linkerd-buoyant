@@ -8,7 +8,7 @@ import (
 
 	pb "github.com/buoyantio/linkerd-buoyant/gen/bcloud"
 	"github.com/linkerd/linkerd2/pkg/identity"
-	ld5k8s "github.com/linkerd/linkerd2/pkg/k8s"
+	l5dk8s "github.com/linkerd/linkerd2/pkg/k8s"
 	ldTls "github.com/linkerd/linkerd2/pkg/tls"
 	v1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/labels"
@@ -51,7 +51,7 @@ func (c *Client) GetControlPlaneCerts() (*pb.ControlPlaneCerts, error) {
 
 func (c *Client) getControlPlaneComponentPod(component string) (*v1.Pod, error) {
 	selector := labels.Set(map[string]string{
-		ld5k8s.ControllerComponentLabel: component,
+		l5dk8s.ControllerComponentLabel: component,
 	}).AsSelector()
 
 	pods, err := c.podLister.List(selector)
@@ -71,16 +71,6 @@ func (c *Client) getControlPlaneComponentPod(component string) (*v1.Pod, error) 
 	}
 
 	return nil, fmt.Errorf("could not find running pod for linkerd-%s", component)
-}
-
-func getContainerPort(container *v1.Container, portName string) (int32, error) {
-	for _, p := range container.Ports {
-		if p.Name == portName {
-			return p.ContainerPort, nil
-		}
-	}
-
-	return 0, fmt.Errorf("could not find port %s on container [%s]", portName, container.Name)
 }
 
 func getServerName(podsa string, podns string, container *v1.Container) (string, error) {
@@ -132,7 +122,7 @@ func (c *Client) extractIssuerCertChain(pod *v1.Pod, container *v1.Container) ([
 		return nil, err
 	}
 
-	proxyConnection, err := c.getContainerConnection(pod, container, ld5k8s.ProxyAdminPortName)
+	proxyConnection, err := c.getContainerConnection(pod, container, l5dk8s.ProxyAdminPortName)
 	if err != nil {
 		return nil, err
 	}
@@ -141,7 +131,8 @@ func (c *Client) extractIssuerCertChain(pod *v1.Pod, container *v1.Container) ([
 	conn, err := tls.DialWithDialer(
 		&net.Dialer{Timeout: 5 * time.Second},
 		"tcp",
-		proxyConnection.host, &tls.Config{
+		proxyConnection.host,
+		&tls.Config{
 			// we want to subvert TLS verification as we do not need
 			// to verify that we actually trust these certs. We just
 			// want the certificates and are not sending any data here.
