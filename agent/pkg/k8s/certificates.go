@@ -8,7 +8,7 @@ import (
 
 	pb "github.com/buoyantio/linkerd-buoyant/gen/bcloud"
 	"github.com/linkerd/linkerd2/pkg/identity"
-	ldConsts "github.com/linkerd/linkerd2/pkg/k8s"
+	l5dk8s "github.com/linkerd/linkerd2/pkg/k8s"
 	ldTls "github.com/linkerd/linkerd2/pkg/tls"
 	v1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/labels"
@@ -36,7 +36,7 @@ func (c *Client) GetControlPlaneCerts() (*pb.ControlPlaneCerts, error) {
 		return nil, err
 	}
 
-	issuerCerts, err := extractIssuerCertChain(identityPod, container, c.proxyAddrOverride)
+	issuerCerts, err := c.extractIssuerCertChain(identityPod, container)
 	if err != nil {
 		return nil, err
 	}
@@ -51,7 +51,7 @@ func (c *Client) GetControlPlaneCerts() (*pb.ControlPlaneCerts, error) {
 
 func (c *Client) getControlPlaneComponentPod(component string) (*v1.Pod, error) {
 	selector := labels.Set(map[string]string{
-		ldConsts.ControllerComponentLabel: component,
+		l5dk8s.ControllerComponentLabel: component,
 	}).AsSelector()
 
 	pods, err := c.podLister.List(selector)
@@ -71,27 +71,6 @@ func (c *Client) getControlPlaneComponentPod(component string) (*v1.Pod, error) 
 	}
 
 	return nil, fmt.Errorf("could not find running pod for linkerd-%s", component)
-}
-
-func getProxyContainer(pod *v1.Pod) (*v1.Container, error) {
-	for _, c := range pod.Spec.Containers {
-		if c.Name == ldConsts.ProxyContainerName {
-			container := c
-			return &container, nil
-		}
-	}
-
-	return nil, fmt.Errorf("could not find proxy container in pod %s/%s", pod.Namespace, pod.Name)
-}
-
-func getProxyAdminPort(container *v1.Container) (int32, error) {
-	for _, p := range container.Ports {
-		if p.Name == ldConsts.ProxyAdminPortName {
-			return p.ContainerPort, nil
-		}
-	}
-
-	return 0, fmt.Errorf("could not find port %s on proxy container [%s]", ldConsts.ProxyAdminPortName, container.Name)
 }
 
 func getServerName(podsa string, podns string, container *v1.Container) (string, error) {
@@ -137,26 +116,23 @@ func extractRootsCerts(container *v1.Container) ([]*pb.CertData, error) {
 	return nil, fmt.Errorf("could not find env var with name %s on proxy container [%s]", identity.EnvTrustAnchors, container.Name)
 }
 
-func extractIssuerCertChain(pod *v1.Pod, container *v1.Container, proxyAddrOverride string) ([]*pb.CertData, error) {
-	port, err := getProxyAdminPort(container)
-	if err != nil {
-		return nil, err
-	}
-
+func (c *Client) extractIssuerCertChain(pod *v1.Pod, container *v1.Container) ([]*pb.CertData, error) {
 	sn, err := getServerName(pod.Spec.ServiceAccountName, pod.ObjectMeta.Namespace, container)
 	if err != nil {
 		return nil, err
 	}
 
-	podAddr := pod.Status.PodIP
-	if proxyAddrOverride != "" {
-		podAddr = proxyAddrOverride
+	proxyConnection, err := c.getContainerConnection(pod, container, l5dk8s.ProxyAdminPortName)
+	if err != nil {
+		return nil, err
 	}
+	defer proxyConnection.cleanup()
 
 	conn, err := tls.DialWithDialer(
 		&net.Dialer{Timeout: 5 * time.Second},
 		"tcp",
-		fmt.Sprintf("%s:%d", podAddr, port), &tls.Config{
+		proxyConnection.host,
+		&tls.Config{
 			// we want to subvert TLS verification as we do not need
 			// to verify that we actually trust these certs. We just
 			// want the certificates and are not sending any data here.

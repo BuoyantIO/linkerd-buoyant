@@ -130,7 +130,7 @@ func TestEvent(t *testing.T) {
 		t.Run(tc.testName, func(t *testing.T) {
 			cs := fake.NewSimpleClientset(tc.objs...)
 			sharedInformers := informers.NewSharedInformerFactory(cs, 10*time.Minute)
-			k8sClient := k8s.NewClient(sharedInformers, "")
+			k8sClient := k8s.NewClient(cs, sharedInformers, nil)
 
 			m := &api.MockBcloudClient{}
 			apiClient := api.NewClient("", "", m)

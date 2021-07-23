@@ -49,6 +49,18 @@ message Pod {
   bytes pod = 1;
 }
 
+message ConfigMap {
+  bytes config_map = 1;
+}
+
+message Node {
+  bytes node = 1;
+}
+
+message Service {
+  bytes service = 1;
+}
+
 //
 // WorkloadStream messages
 //
@@ -126,6 +138,38 @@ message LinkerdMessage {
 }
 
 //
+// ManageAgent Messages
+//
+
+message GetProxyDiagnostics {
+  string diagnostic_id = 1;
+  string pod_name = 2;
+  string pod_namespace = 3;
+}
+
+message AgentCommand {
+  oneof command {
+    GetProxyDiagnostics get_proxy_diagnostics = 1;
+  }
+}
+
+//
+// ProxyDiagnostic Messages
+//
+
+
+message ProxyDiagnostic {
+  Auth auth = 1;
+  string diagnostic_id = 2;
+  bytes logs = 3;
+  repeated bytes metrics = 4;
+  Pod pod_manifest = 5;
+  ConfigMap linkerd_config_map = 6;
+  repeated Node nodes = 7;
+  Service k8s_service_manifest = 8;
+}
+
+//
 // API
 //
 
@@ -133,4 +177,6 @@ service Api {
   rpc WorkloadStream(stream WorkloadMessage) returns (Empty) {}
   rpc AddEvent(Event) returns (Empty) {}
   rpc LinkerdInfo(LinkerdMessage) returns (Empty) {}
+  rpc ManageAgent(Auth) returns (stream AgentCommand) {}
+  rpc ProxyDiagnostics(ProxyDiagnostic) returns (Empty) {}
 }
