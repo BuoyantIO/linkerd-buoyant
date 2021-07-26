@@ -36,7 +36,9 @@ func (s *manageAgentStream) startStream() {
 	for {
 		command, err := s.recvCommand()
 		if err != nil {
-			s.log.Infof("stream closed, reseting: %s", err)
+			// TODO: set this back to `Infof`:
+			// https://github.com/BuoyantIO/linkerd-buoyant/issues/21
+			s.log.Debugf("stream closed, reseting: %s", err)
 			s.resetStream()
 			continue
 		}
@@ -69,7 +71,9 @@ func (s *manageAgentStream) newStream() pb.Api_ManageAgentClient {
 		break
 	}
 
-	s.log.Info("ManageAgentStream connected")
+	// TODO: set this back to `Info`:
+	// https://github.com/BuoyantIO/linkerd-buoyant/issues/21
+	s.log.Debug("ManageAgentStream connected")
 	return stream
 }
 
