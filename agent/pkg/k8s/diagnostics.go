@@ -19,7 +19,7 @@ const linkerdNamespace = "linkerd"
 const k8sServiceName = "kubernetes"
 
 // GetProxyLogs retrieves the proxy logs of a pod
-func (c *Client) GetProxyLogs(ctx context.Context, podName, namespace string) ([]byte, error) {
+func (c *Client) GetProxyLogs(ctx context.Context, podName, namespace string, includeTimestamps bool, tailLines *int64) ([]byte, error) {
 	req := c.k8sClient.CoreV1().Pods(namespace).GetLogs(podName, &v1.PodLogOptions{Container: l5dk8s.ProxyContainerName})
 	logs, err := req.Stream(ctx)
 	if err != nil {

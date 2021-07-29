@@ -59,6 +59,7 @@ type MockBcloudClient struct {
 	events                  []*pb.Event
 	linkerdMessages         []*pb.LinkerdMessage
 	proxyDiagnosticMessages []*pb.ProxyDiagnostic
+	proxyLogMessages        []*pb.ProxyLog
 	proxyDiagnosticAuth     *pb.Auth
 
 	// simulates commands received from bcloud-api
@@ -94,6 +95,12 @@ func (m *MockBcloudClient) ProxyDiagnosticMessages() []*pb.ProxyDiagnostic {
 	m.Lock()
 	defer m.Unlock()
 	return m.proxyDiagnosticMessages
+}
+
+func (m *MockBcloudClient) ProxyLogsMessages() []*pb.ProxyLog {
+	m.Lock()
+	defer m.Unlock()
+	return m.proxyLogMessages
 }
 
 func (m *MockBcloudClient) ProxyDiagnosticsAuth() *pb.Auth {
@@ -154,6 +161,16 @@ func (m *MockBcloudClient) ProxyDiagnostics(ctx context.Context, message *pb.Pro
 	m.id = message.GetAuth().GetAgentId()
 	m.key = message.GetAuth().GetAgentKey()
 	m.proxyDiagnosticMessages = append(m.proxyDiagnosticMessages, message)
+	return nil, m.err
+}
+
+func (m *MockBcloudClient) ProxyLogs(ctx context.Context, message *pb.ProxyLog, opts ...grpc.CallOption) (*pb.Empty, error) {
+	m.Lock()
+	defer m.Unlock()
+
+	m.id = message.GetAuth().GetAgentId()
+	m.key = message.GetAuth().GetAgentKey()
+	m.proxyLogMessages = append(m.proxyLogMessages, message)
 	return nil, m.err
 }
 
