@@ -11,7 +11,7 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-// GetProxyLogs retrieves the proxy logs of a pod
+// GetProxyLogsAndLevel retrieves the the proxy logs and level of a pod
 func (c *Client) GetProxyLogsAndLevel(ctx context.Context, podName, namespace string, lines int64) ([]byte, string, error) {
 	logs, err := c.GetProxyLogs(ctx, podName, namespace, true, &lines)
 	if err != nil {

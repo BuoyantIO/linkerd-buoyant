@@ -20,7 +20,8 @@ const k8sServiceName = "kubernetes"
 
 // GetProxyLogs retrieves the proxy logs of a pod
 func (c *Client) GetProxyLogs(ctx context.Context, podName, namespace string, includeTimestamps bool, tailLines *int64) ([]byte, error) {
-	req := c.k8sClient.CoreV1().Pods(namespace).GetLogs(podName, &v1.PodLogOptions{Container: l5dk8s.ProxyContainerName})
+	podLogOptions := &v1.PodLogOptions{Container: l5dk8s.ProxyContainerName, Timestamps: includeTimestamps, TailLines: tailLines}
+	req := c.k8sClient.CoreV1().Pods(namespace).GetLogs(podName, podLogOptions)
 	logs, err := req.Stream(ctx)
 	if err != nil {
 		return nil, err
@@ -127,15 +128,4 @@ func (c *Client) GetK8sServiceManifest(ctx context.Context) (*pb.Service, error)
 		return nil, err
 	}
 	return &pb.Service{Service: c.serialize(svc, v1.SchemeGroupVersion)}, nil
-}
-
-func getProxyContainer(pod *v1.Pod) (*v1.Container, error) {
-	for _, c := range pod.Spec.Containers {
-		if c.Name == l5dk8s.ProxyContainerName {
-			container := c
-			return &container, nil
-		}
-	}
-
-	return nil, fmt.Errorf("could not find proxy container in pod %s/%s", pod.Namespace, pod.Name)
 }

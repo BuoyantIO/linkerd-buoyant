@@ -113,6 +113,6 @@ func (h *ManageAgent) handleGetProxyLogs(ctx context.Context, podName, namespace
 
 	err = h.api.ProxyLogs(podName, namespace, logs, level)
 	if err != nil {
-		h.log.Errorf("error sending ProxyDiagnostics message: %s", err)
+		h.log.Errorf("error sending ProxyLog message: %s", err)
 	}
 }

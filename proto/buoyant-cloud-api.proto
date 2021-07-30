@@ -177,7 +177,7 @@ message ProxyDiagnostic {
 }
 
 //
-// ProxyLogs Messages
+// ProxyLog Messages
 //
 
 message ProxyLog {
