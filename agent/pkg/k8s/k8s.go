@@ -216,3 +216,14 @@ func getContainerPort(container *v1.Container, portName string) (int32, error) {
 
 	return 0, fmt.Errorf("could not find port %s on container [%s]", portName, container.Name)
 }
+
+func getProxyContainer(pod *v1.Pod) (*v1.Container, error) {
+	for _, c := range pod.Spec.Containers {
+		if c.Name == l5dk8s.ProxyContainerName {
+			container := c
+			return &container, nil
+		}
+	}
+
+	return nil, fmt.Errorf("could not find proxy container in pod %s/%s", pod.Namespace, pod.Name)
+}

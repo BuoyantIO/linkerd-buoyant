@@ -23,6 +23,7 @@ type ApiClient interface {
 	LinkerdInfo(ctx context.Context, in *LinkerdMessage, opts ...grpc.CallOption) (*Empty, error)
 	ManageAgent(ctx context.Context, in *Auth, opts ...grpc.CallOption) (Api_ManageAgentClient, error)
 	ProxyDiagnostics(ctx context.Context, in *ProxyDiagnostic, opts ...grpc.CallOption) (*Empty, error)
+	ProxyLogs(ctx context.Context, in *ProxyLog, opts ...grpc.CallOption) (*Empty, error)
 }
 
 type apiClient struct {
@@ -126,6 +127,15 @@ func (c *apiClient) ProxyDiagnostics(ctx context.Context, in *ProxyDiagnostic, o
 	return out, nil
 }
 
+func (c *apiClient) ProxyLogs(ctx context.Context, in *ProxyLog, opts ...grpc.CallOption) (*Empty, error) {
+	out := new(Empty)
+	err := c.cc.Invoke(ctx, "/buoyant.cloud.Api/ProxyLogs", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // ApiServer is the server API for Api service.
 // All implementations must embed UnimplementedApiServer
 // for forward compatibility
@@ -135,6 +145,7 @@ type ApiServer interface {
 	LinkerdInfo(context.Context, *LinkerdMessage) (*Empty, error)
 	ManageAgent(*Auth, Api_ManageAgentServer) error
 	ProxyDiagnostics(context.Context, *ProxyDiagnostic) (*Empty, error)
+	ProxyLogs(context.Context, *ProxyLog) (*Empty, error)
 	mustEmbedUnimplementedApiServer()
 }
 
@@ -156,6 +167,9 @@ func (UnimplementedApiServer) ManageAgent(*Auth, Api_ManageAgentServer) error {
 }
 func (UnimplementedApiServer) ProxyDiagnostics(context.Context, *ProxyDiagnostic) (*Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ProxyDiagnostics not implemented")
+}
+func (UnimplementedApiServer) ProxyLogs(context.Context, *ProxyLog) (*Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ProxyLogs not implemented")
 }
 func (UnimplementedApiServer) mustEmbedUnimplementedApiServer() {}
 
@@ -271,6 +285,24 @@ func _Api_ProxyDiagnostics_Handler(srv interface{}, ctx context.Context, dec fun
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Api_ProxyLogs_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ProxyLog)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ApiServer).ProxyLogs(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/buoyant.cloud.Api/ProxyLogs",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ApiServer).ProxyLogs(ctx, req.(*ProxyLog))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Api_ServiceDesc is the grpc.ServiceDesc for Api service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -289,6 +321,10 @@ var Api_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ProxyDiagnostics",
 			Handler:    _Api_ProxyDiagnostics_Handler,
+		},
+		{
+			MethodName: "ProxyLogs",
+			Handler:    _Api_ProxyLogs_Handler,
 		},
 	},
 	Streams: []grpc.StreamDesc{

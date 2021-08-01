@@ -1,0 +1,34 @@
+package api
+
+import (
+	"context"
+	"time"
+
+	pb "github.com/buoyantio/linkerd-buoyant/gen/bcloud"
+	"google.golang.org/protobuf/encoding/prototext"
+	"google.golang.org/protobuf/types/known/timestamppb"
+)
+
+// ProxyLogs wraps the Buoyant Cloud API ProxyLogs gRPC unary endpoint.
+func (c *Client) ProxyLogs(
+	podName string,
+	namespace string,
+	logs []byte,
+	level string) error {
+	now := time.Now()
+	logMessage := &pb.ProxyLog{
+		Auth:         c.auth,
+		PodName:      podName,
+		PodNamespace: namespace,
+		Lines:        logs,
+		Level:        level,
+		Timestamp: &timestamppb.Timestamp{
+			Seconds: now.Unix(),
+			Nanos:   int32(now.Nanosecond()),
+		},
+	}
+	c.log.Tracef("ProxyLogs: %s", prototext.Format(logMessage))
+
+	_, err := c.client.ProxyLogs(context.Background(), logMessage)
+	return err
+}

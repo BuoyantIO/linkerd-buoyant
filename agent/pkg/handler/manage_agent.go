@@ -41,6 +41,9 @@ func (h *ManageAgent) Start() {
 			case *pb.AgentCommand_GetProxyDiagnostics:
 				proxyDiagnostic := command.GetProxyDiagnostics
 				go h.handleProxyDiagnostics(context.Background(), proxyDiagnostic.PodName, proxyDiagnostic.PodNamespace, proxyDiagnostic.DiagnosticId)
+			case *pb.AgentCommand_GetProxyLogs:
+				proxyLogs := command.GetProxyLogs
+				go h.handleGetProxyLogs(context.Background(), proxyLogs.PodName, proxyLogs.PodNamespace, int64(proxyLogs.NumLines))
 			}
 		}
 	}
@@ -53,7 +56,7 @@ func (h *ManageAgent) Stop() {
 }
 
 func (h *ManageAgent) handleProxyDiagnostics(ctx context.Context, podName, namespace, diagnosticID string) {
-	logs, err := h.k8s.GetProxyLogs(ctx, podName, namespace)
+	logs, err := h.k8s.GetProxyLogs(ctx, podName, namespace, false, nil)
 	if err != nil {
 		h.log.Errorf("cannot obtain proxy logs for diagnosticID %s: %s", diagnosticID, err)
 	} else {
@@ -98,5 +101,18 @@ func (h *ManageAgent) handleProxyDiagnostics(ctx context.Context, podName, names
 	err = h.api.ProxyDiagnostics(diagnosticID, logs, metrics, podSpec, l5dConfigMap, nodes, svcManifest)
 	if err != nil {
 		h.log.Errorf("error sending ProxyDiagnostics message: %s", err)
+	}
+}
+
+func (h *ManageAgent) handleGetProxyLogs(ctx context.Context, podName, namespace string, lines int64) {
+	logs, level, err := h.k8s.GetProxyLogsAndLevel(ctx, podName, namespace, lines)
+	if err != nil {
+		h.log.Errorf("cannot obtain logs and level for proxy %s/%s", namespace, podName)
+		return
+	}
+
+	err = h.api.ProxyLogs(podName, namespace, logs, level)
+	if err != nil {
+		h.log.Errorf("error sending ProxyLog message: %s", err)
 	}
 }

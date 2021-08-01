@@ -23,6 +23,12 @@ func TestManageAgentStream(t *testing.T) {
 					createDiagnosticCommand("id4", "pod4", "ns4"),
 					createDiagnosticCommand("id5", "pod5", "ns5"),
 					createDiagnosticCommand("id6", "pod6", "ns6"),
+					createLogsCommand("id1", "pod1", 1),
+					createLogsCommand("id2", "pod2", 2),
+					createLogsCommand("id3", "pod3", 3),
+					createLogsCommand("id4", "pod4", 4),
+					createLogsCommand("id5", "pod5", 6),
+					createLogsCommand("id6", "pod6", 5),
 				},
 			},
 		}
@@ -73,6 +79,18 @@ func createDiagnosticCommand(diagnosticID, podName string, podNamespace string) 
 				DiagnosticId: diagnosticID,
 				PodName:      podName,
 				PodNamespace: podNamespace,
+			},
+		},
+	}
+}
+
+func createLogsCommand(podName string, podNamespace string, numLines int64) *pb.AgentCommand {
+	return &pb.AgentCommand{
+		Command: &pb.AgentCommand_GetProxyLogs{
+			GetProxyLogs: &pb.GetProxyLogs{
+				PodName:      podName,
+				PodNamespace: podNamespace,
+				NumLines:     int32(numLines),
 			},
 		},
 	}
