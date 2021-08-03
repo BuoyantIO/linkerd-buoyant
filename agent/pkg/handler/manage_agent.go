@@ -105,13 +105,13 @@ func (h *ManageAgent) handleProxyDiagnostics(ctx context.Context, podName, names
 }
 
 func (h *ManageAgent) handleGetProxyLogs(ctx context.Context, podName, namespace string, lines int64) {
-	logs, level, err := h.k8s.GetProxyLogsAndLevel(ctx, podName, namespace, lines)
+	logs, err := h.k8s.GetProxyLogs(ctx, podName, namespace, true, &lines)
 	if err != nil {
-		h.log.Errorf("cannot obtain logs and level for proxy %s/%s", namespace, podName)
+		h.log.Errorf("cannot obtain logs for proxy %s/%s", namespace, podName)
 		return
 	}
 
-	err = h.api.ProxyLogs(podName, namespace, logs, level)
+	err = h.api.ProxyLogs(podName, namespace, logs)
 	if err != nil {
 		h.log.Errorf("error sending ProxyLog message: %s", err)
 	}

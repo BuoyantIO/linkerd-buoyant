@@ -185,8 +185,7 @@ message ProxyLog {
   string pod_name = 2;
   string pod_namespace = 3;
   bytes lines = 4;
-  string level = 5;
-  google.protobuf.Timestamp timestamp = 6;
+  google.protobuf.Timestamp timestamp = 5;
 }
 
 //
