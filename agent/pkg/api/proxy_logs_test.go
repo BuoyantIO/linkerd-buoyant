@@ -12,7 +12,6 @@ func TestProxyLogs(t *testing.T) {
 			podNamespace string
 			podName      string
 			logs         []byte
-			level        string
 			err          error
 		}{
 			{
@@ -20,7 +19,6 @@ func TestProxyLogs(t *testing.T) {
 				"ns",
 				"pod",
 				[]byte("logs"),
-				"info",
 				errors.New("bad response"),
 			},
 			{
@@ -28,7 +26,6 @@ func TestProxyLogs(t *testing.T) {
 				"ns",
 				"pod",
 				[]byte("logs"),
-				"info",
 				nil,
 			},
 		}
@@ -39,7 +36,7 @@ func TestProxyLogs(t *testing.T) {
 				m := &MockBcloudClient{err: tc.err}
 				c := NewClient("", "", m)
 
-				err := c.ProxyLogs(tc.podName, tc.podNamespace, tc.logs, tc.level)
+				err := c.ProxyLogs(tc.podName, tc.podNamespace, tc.logs)
 				if tc.err != err {
 					t.Errorf("Expected %s, got %s", tc.err, err)
 				}
@@ -55,7 +52,7 @@ func TestProxyLogs(t *testing.T) {
 		m := &MockBcloudClient{}
 		c := NewClient(fakeID, fakeKey, m)
 
-		err := c.ProxyLogs("pod", "ns", nil, "info")
+		err := c.ProxyLogs("pod", "ns", nil)
 		if err != nil {
 			t.Error(err)
 		}

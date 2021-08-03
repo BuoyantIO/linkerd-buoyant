@@ -13,15 +13,13 @@ import (
 func (c *Client) ProxyLogs(
 	podName string,
 	namespace string,
-	logs []byte,
-	level string) error {
+	logs []byte) error {
 	now := time.Now()
 	logMessage := &pb.ProxyLog{
 		Auth:         c.auth,
 		PodName:      podName,
 		PodNamespace: namespace,
 		Lines:        logs,
-		Level:        level,
 		Timestamp: &timestamppb.Timestamp{
 			Seconds: now.Unix(),
 			Nanos:   int32(now.Nanosecond()),
