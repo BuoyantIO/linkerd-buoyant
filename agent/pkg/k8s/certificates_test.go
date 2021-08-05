@@ -1,6 +1,7 @@
 package k8s
 
 import (
+	"context"
 	"crypto/x509"
 	"errors"
 	"fmt"
@@ -317,11 +318,12 @@ AiAtuoI5XuCtrGVRzSmRTl2ra28aV9MyTU7d5qnTAFHKSgIgRKCvluOSgA5O21p5
 	fixtures := []*struct {
 		testName      string
 		container     *v1.Container
+		crtConfigMap  *v1.ConfigMap
 		expectedCerts string
 		expectedErr   error
 	}{
 		{
-			"gets correct cert",
+			"gets correct cert from env value",
 			&v1.Container{
 				Name: l5dk8s.ProxyContainerName,
 				Env: []v1.EnvVar{
@@ -331,15 +333,99 @@ AiAtuoI5XuCtrGVRzSmRTl2ra28aV9MyTU7d5qnTAFHKSgIgRKCvluOSgA5O21p5
 					},
 				},
 			},
+			nil,
 			expectedRoots,
 			nil,
 		},
 		{
-			"no roots",
+			"gets correct cert from config map",
+			&v1.Container{
+				Name: l5dk8s.ProxyContainerName,
+				Env: []v1.EnvVar{
+					{
+						Name: identity.EnvTrustAnchors,
+						ValueFrom: &v1.EnvVarSource{
+							ConfigMapKeyRef: &v1.ConfigMapKeySelector{
+								LocalObjectReference: v1.LocalObjectReference{
+									Name: trustRootsConfigMapName,
+								},
+								Key: trustRootsConfigMapKeyName,
+							},
+						},
+					},
+				},
+			},
+			&v1.ConfigMap{
+				ObjectMeta: metav1.ObjectMeta{
+					Name:      trustRootsConfigMapName,
+					Namespace: "linkerd",
+				},
+				Data: map[string]string{
+					trustRootsConfigMapKeyName: expectedRoots,
+				},
+			},
+			expectedRoots,
+			nil,
+		},
+		{
+			"errors when config map not present",
+			&v1.Container{
+				Name: l5dk8s.ProxyContainerName,
+				Env: []v1.EnvVar{
+					{
+						Name: identity.EnvTrustAnchors,
+						ValueFrom: &v1.EnvVarSource{
+							ConfigMapKeyRef: &v1.ConfigMapKeySelector{
+								LocalObjectReference: v1.LocalObjectReference{
+									Name: trustRootsConfigMapName,
+								},
+								Key: trustRootsConfigMapKeyName,
+							},
+						},
+					},
+				},
+			},
+			nil,
+			expectedRoots,
+			fmt.Errorf("cannot obtain config map linkerd/%s", trustRootsConfigMapName),
+		},
+		{
+			"errors when config map key not present",
+			&v1.Container{
+				Name: l5dk8s.ProxyContainerName,
+				Env: []v1.EnvVar{
+					{
+						Name: identity.EnvTrustAnchors,
+						ValueFrom: &v1.EnvVarSource{
+							ConfigMapKeyRef: &v1.ConfigMapKeySelector{
+								LocalObjectReference: v1.LocalObjectReference{
+									Name: trustRootsConfigMapName,
+								},
+								Key: trustRootsConfigMapKeyName,
+							},
+						},
+					},
+				},
+			},
+			&v1.ConfigMap{
+				ObjectMeta: metav1.ObjectMeta{
+					Name:      trustRootsConfigMapName,
+					Namespace: "linkerd",
+				},
+				Data: map[string]string{
+					"nonsense.key": expectedRoots,
+				},
+			},
+			expectedRoots,
+			fmt.Errorf("config map linkerd/%s does not have %s key", trustRootsConfigMapName, trustRootsConfigMapKeyName),
+		},
+		{
+			"no roots env var",
 			&v1.Container{
 				Name: l5dk8s.ProxyContainerName,
 				Env:  []v1.EnvVar{},
 			},
+			nil,
 			"",
 			fmt.Errorf("could not find env var with name %s on proxy container [linkerd-proxy]", identity.EnvTrustAnchors),
 		},
@@ -348,7 +434,15 @@ AiAtuoI5XuCtrGVRzSmRTl2ra28aV9MyTU7d5qnTAFHKSgIgRKCvluOSgA5O21p5
 	for _, tc := range fixtures {
 		tc := tc
 		t.Run(tc.testName, func(t *testing.T) {
-			roots, err := extractRootsCerts(tc.container)
+			c := fakeClient()
+			if tc.crtConfigMap != nil {
+				c = fakeClient(tc.crtConfigMap)
+			}
+
+			c.Sync(nil, time.Second)
+			client := NewClient(c.k8sClient, c.sharedInformers, nil)
+
+			roots, err := client.extractRootsCerts(context.Background(), tc.container, "linkerd")
 			if tc.expectedErr != nil {
 				if tc.expectedErr.Error() != err.Error() {
 					t.Fatalf("exepected err %s, got %s", tc.expectedErr, err)

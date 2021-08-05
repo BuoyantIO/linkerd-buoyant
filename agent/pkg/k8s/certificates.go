@@ -1,7 +1,9 @@
 package k8s
 
 import (
+	"context"
 	"crypto/tls"
+	"crypto/x509"
 	"fmt"
 	"net"
 	"time"
@@ -11,6 +13,7 @@ import (
 	l5dk8s "github.com/linkerd/linkerd2/pkg/k8s"
 	ldTls "github.com/linkerd/linkerd2/pkg/tls"
 	v1 "k8s.io/api/core/v1"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/labels"
 )
 
@@ -18,9 +21,11 @@ const (
 	identityComponentName        = "identity"
 	linkerdNsEnvVarName          = "_l5d_ns"
 	linkerdTrustDomainEnvVarName = "_l5d_trustdomain"
+	trustRootsConfigMapName      = "linkerd-identity-trust-roots"
+	trustRootsConfigMapKeyName   = "ca-bundle.crt"
 )
 
-func (c *Client) GetControlPlaneCerts() (*pb.ControlPlaneCerts, error) {
+func (c *Client) GetControlPlaneCerts(ctx context.Context) (*pb.ControlPlaneCerts, error) {
 	identityPod, err := c.getControlPlaneComponentPod(identityComponentName)
 	if err != nil {
 		return nil, err
@@ -31,7 +36,7 @@ func (c *Client) GetControlPlaneCerts() (*pb.ControlPlaneCerts, error) {
 		return nil, err
 	}
 
-	rootCerts, err := extractRootsCerts(container)
+	rootCerts, err := c.extractRootsCerts(ctx, container, identityPod.Namespace)
 	if err != nil {
 		return nil, err
 	}
@@ -95,15 +100,41 @@ func getServerName(podsa string, podns string, container *v1.Container) (string,
 	return fmt.Sprintf("%s.%s.serviceaccount.identity.%s.%s", podsa, podns, l5dns, l5dtrustdomain), nil
 }
 
-func extractRootsCerts(container *v1.Container) ([]*pb.CertData, error) {
+func (c *Client) extractRootsCerts(ctx context.Context, container *v1.Container, namespace string) ([]*pb.CertData, error) {
 	for _, ev := range container.Env {
 		if ev.Name != identity.EnvTrustAnchors {
 			continue
 		}
-		certificates, err := ldTls.DecodePEMCertificates(ev.Value)
-		if err != nil {
-			return nil, err
+
+		var certificates []*x509.Certificate
+		var err error
+		if ev.Value != "" {
+			certificates, err = ldTls.DecodePEMCertificates(ev.Value)
+			if err != nil {
+				return nil, err
+			}
+		} else {
+			// in this case we need to check for a reference to a config map
+			if ev.ValueFrom == nil || ev.ValueFrom.ConfigMapKeyRef == nil {
+				return nil, fmt.Errorf("neither a Value nor a ConfigMapKeyRef for the %s env var arepresent on proxy container [%s]", identity.EnvTrustAnchors, container.Name)
+			}
+			cmName := ev.ValueFrom.ConfigMapKeyRef.Name
+			cm, err := c.k8sClient.CoreV1().ConfigMaps(namespace).Get(ctx, cmName, metav1.GetOptions{})
+			if err != nil {
+				return nil, fmt.Errorf("cannot obtain config map %s/%s", namespace, cmName)
+			}
+
+			rootsValue, ok := cm.Data[trustRootsConfigMapKeyName]
+			if !ok {
+				return nil, fmt.Errorf("config map %s/%s does not have %s key", namespace, cmName, trustRootsConfigMapKeyName)
+			}
+
+			certificates, err = ldTls.DecodePEMCertificates(rootsValue)
+			if err != nil {
+				return nil, err
+			}
 		}
+
 		certsData := make([]*pb.CertData, len(certificates))
 		for i, crt := range certificates {
 			encoded := ldTls.EncodeCertificatesPEM(crt)
