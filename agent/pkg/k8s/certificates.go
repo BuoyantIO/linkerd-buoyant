@@ -3,7 +3,6 @@ package k8s
 import (
 	"context"
 	"crypto/tls"
-	"crypto/x509"
 	"fmt"
 	"net"
 	"time"
@@ -106,17 +105,11 @@ func (c *Client) extractRootsCerts(ctx context.Context, container *v1.Container,
 			continue
 		}
 
-		var certificates []*x509.Certificate
-		var err error
-		if ev.Value != "" {
-			certificates, err = ldTls.DecodePEMCertificates(ev.Value)
-			if err != nil {
-				return nil, err
-			}
-		} else {
+		rootsValue := ev.Value
+		if rootsValue == "" {
 			// in this case we need to check for a reference to a config map
 			if ev.ValueFrom == nil || ev.ValueFrom.ConfigMapKeyRef == nil {
-				return nil, fmt.Errorf("neither a Value nor a ConfigMapKeyRef for the %s env var arepresent on proxy container [%s]", identity.EnvTrustAnchors, container.Name)
+				return nil, fmt.Errorf("neither a Value nor a ConfigMapKeyRef for the %s env var are present on proxy container [%s]", identity.EnvTrustAnchors, container.Name)
 			}
 			cmName := ev.ValueFrom.ConfigMapKeyRef.Name
 			cm, err := c.k8sClient.CoreV1().ConfigMaps(namespace).Get(ctx, cmName, metav1.GetOptions{})
@@ -124,15 +117,16 @@ func (c *Client) extractRootsCerts(ctx context.Context, container *v1.Container,
 				return nil, fmt.Errorf("cannot obtain config map %s/%s", namespace, cmName)
 			}
 
-			rootsValue, ok := cm.Data[trustRootsConfigMapKeyName]
+			var ok bool
+			rootsValue, ok = cm.Data[trustRootsConfigMapKeyName]
 			if !ok {
 				return nil, fmt.Errorf("config map %s/%s does not have %s key", namespace, cmName, trustRootsConfigMapKeyName)
 			}
+		}
 
-			certificates, err = ldTls.DecodePEMCertificates(rootsValue)
-			if err != nil {
-				return nil, err
-			}
+		certificates, err := ldTls.DecodePEMCertificates(rootsValue)
+		if err != nil {
+			return nil, err
 		}
 
 		certsData := make([]*pb.CertData, len(certificates))
