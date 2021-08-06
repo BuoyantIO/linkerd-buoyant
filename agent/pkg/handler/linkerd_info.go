@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"context"
 	"time"
 
 	"github.com/buoyantio/linkerd-buoyant/agent/pkg/api"
@@ -43,7 +44,7 @@ func (h *LinkerdInfo) Start() {
 	for {
 		select {
 		case <-ticker.C:
-			h.handleCertsInfo()
+			h.handleCertsInfo(context.Background())
 		case <-h.stopCh:
 			return
 		}
@@ -56,8 +57,8 @@ func (h *LinkerdInfo) Stop() {
 	close(h.stopCh)
 }
 
-func (h *LinkerdInfo) handleCertsInfo() {
-	certs, err := h.k8s.GetControlPlaneCerts()
+func (h *LinkerdInfo) handleCertsInfo(ctx context.Context) {
+	certs, err := h.k8s.GetControlPlaneCerts(ctx)
 	if err != nil {
 		h.log.Errorf("error getting control plane certs: %s", err)
 		return
