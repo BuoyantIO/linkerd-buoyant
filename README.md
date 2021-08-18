@@ -6,7 +6,7 @@
 
 The Linkerd Buoyant extension connects your
 [Linkerd](https://linkerd.io)-enabled Kubernetes cluster to
-[Buoyant Cloud](https://buoyant.cloud), the global platform health dashboard for
+[Buoyant Cloud](https://buoyant.io/cloud), the global platform health dashboard for
 Linkerd.
 
 This repo consists of two components:
