@@ -75,6 +75,7 @@ func TestHealthChecker(t *testing.T) {
 √ buoyant-cloud Namespace exists
 × buoyant-cloud Namespace has correct labels
     missing linkerd.io/extension label
+    see https://linkerd.io/2/checks/# for hints
 
 Status check results are ×
 `,
