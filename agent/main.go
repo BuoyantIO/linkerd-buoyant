@@ -21,7 +21,7 @@ import (
 	"k8s.io/client-go/informers"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/tools/clientcmd"
-	"k8s.io/klog"
+	"k8s.io/klog/v2"
 
 	// Load all the auth plugins for the cloud providers.
 	// This enables connecting to a k8s cluster from outside the cluster, during

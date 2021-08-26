@@ -50,7 +50,7 @@ func NewHealthChecker(
 
 // L5dBuoyantCategory returns a healthcheck.Category containing checkers to
 // verify the health of linkerd-buoyant components.
-func (hc *HealthChecker) L5dBuoyantCategory() healthcheck.Category {
+func (hc *HealthChecker) L5dBuoyantCategory() *healthcheck.Category {
 	checks := append(
 		hc.globalChecks(),
 		append(
@@ -58,7 +58,7 @@ func (hc *HealthChecker) L5dBuoyantCategory() healthcheck.Category {
 			hc.deploymentChecks(k8s.MetricsName)...,
 		)...,
 	)
-	return *healthcheck.NewCategory(categoryID, checks, true)
+	return healthcheck.NewCategory(categoryID, checks, true)
 }
 
 func (hc *HealthChecker) globalChecks() []healthcheck.Checker {
