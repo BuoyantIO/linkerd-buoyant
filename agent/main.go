@@ -44,6 +44,7 @@ func main() {
 	logLevel := flag.String("log-level", "info", "log level, must be one of: panic, fatal, error, warn, info, debug, trace")
 	localMode := flag.Bool("local-mode", false, "enable port forwarding for local development")
 	insecure := flag.Bool("insecure", false, "disable TLS in development mode")
+	eventsDelaySeconds := flag.Int64("events-delay-seconds", 60, "configures the initial delay before events start being sent")
 
 	// klog flags
 	klog.InitFlags(nil)
@@ -147,7 +148,7 @@ func main() {
 	apiClient := api.NewClient(id, key, bcloudClient)
 
 	// create handlers
-	eventHandler := handler.NewEvent(k8sClient, apiClient)
+	eventHandler := handler.NewEvent(k8sClient, apiClient, time.Duration(*eventsDelaySeconds)*time.Second)
 	workloadHandler := handler.NewWorkload(k8sClient, apiClient)
 
 	linkerdInfoHandler := handler.NewLinkerdInfo(k8sClient, apiClient)

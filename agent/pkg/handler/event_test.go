@@ -135,7 +135,7 @@ func TestEvent(t *testing.T) {
 			m := &api.MockBcloudClient{}
 			apiClient := api.NewClient("", "", m)
 
-			eh := NewEvent(k8sClient, apiClient)
+			eh := NewEvent(k8sClient, apiClient, 1*time.Microsecond)
 			if len(m.Events()) != 0 {
 				t.Errorf("Expected no events sent, got %d", len(m.Events()))
 			}

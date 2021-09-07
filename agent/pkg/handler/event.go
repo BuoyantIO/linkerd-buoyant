@@ -1,6 +1,8 @@
 package handler
 
 import (
+	"time"
+
 	"github.com/buoyantio/linkerd-buoyant/agent/pkg/api"
 	"github.com/buoyantio/linkerd-buoyant/agent/pkg/k8s"
 	log "github.com/sirupsen/logrus"
@@ -12,33 +14,37 @@ import (
 // Event listens to the k8s API for events, and forwards them to the Buoyant
 // Cloud API.
 type Event struct {
-	api *api.Client
-	k8s *k8s.Client
-	log *log.Entry
+	api          *api.Client
+	k8s          *k8s.Client
+	log          *log.Entry
+	initialDelay time.Duration
 }
 
 // NewEvent instantiates a new k8s event handler.
-func NewEvent(k8sClient *k8s.Client, apiClient *api.Client) *Event {
+func NewEvent(k8sClient *k8s.Client, apiClient *api.Client, initialDelay time.Duration) *Event {
 	log := log.WithField("handler", "event")
 	log.Debug("initializing")
 
 	return &Event{
-		api: apiClient,
-		k8s: k8sClient,
-		log: log,
+		api:          apiClient,
+		k8s:          k8sClient,
+		log:          log,
+		initialDelay: initialDelay,
 	}
 }
 
 // Start initiates listening to a k8s event handler.
 func (h *Event) Start(sharedInformers informers.SharedInformerFactory) {
-	sharedInformers.Core().V1().Events().Informer().AddEventHandler(
-		cache.ResourceEventHandlerFuncs{
-			AddFunc: func(obj interface{}) {
-				event := obj.(*v1.Event)
-				h.handleEvent(event)
+	time.AfterFunc(h.initialDelay, func() {
+		sharedInformers.Core().V1().Events().Informer().AddEventHandler(
+			cache.ResourceEventHandlerFuncs{
+				AddFunc: func(obj interface{}) {
+					event := obj.(*v1.Event)
+					h.handleEvent(event)
+				},
 			},
-		},
-	)
+		)
+	})
 }
 
 func (h *Event) handleEvent(event *v1.Event) error {
