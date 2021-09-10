@@ -15,6 +15,7 @@ type MockClient struct {
 	MockClusterRoleBinding *rbacv1.ClusterRoleBinding
 	MockSecret             *v1.Secret
 	MockServiceAccount     *v1.ServiceAccount
+	MockDaemonSet          *appsv1.DaemonSet
 	MockDeployment         *appsv1.Deployment
 	MockPods               *v1.PodList
 
@@ -45,6 +46,11 @@ func (m *MockClient) Secret(ctx context.Context) (*v1.Secret, error) {
 // ServiceAccount returns a mock ServiceAccount object.
 func (m *MockClient) ServiceAccount(ctx context.Context) (*v1.ServiceAccount, error) {
 	return m.MockServiceAccount, nil
+}
+
+// DaemonSet returns a mock DaemonSet object.
+func (m *MockClient) DaemonSet(ctx context.Context, name string) (*appsv1.DaemonSet, error) {
+	return m.MockDaemonSet, nil
 }
 
 // Deployment returns a mock Deployment object.

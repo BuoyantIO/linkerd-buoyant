@@ -5,11 +5,11 @@ import (
 	"fmt"
 	"net/http"
 
+	agentk8s "github.com/buoyantio/linkerd-buoyant/agent/pkg/k8s"
 	"github.com/buoyantio/linkerd-buoyant/cli/pkg/k8s"
 	"github.com/buoyantio/linkerd-buoyant/cli/pkg/version"
 	"github.com/linkerd/linkerd2/pkg/healthcheck"
 	l5dk8s "github.com/linkerd/linkerd2/pkg/k8s"
-	appsv1 "k8s.io/api/apps/v1"
 	v1 "k8s.io/api/core/v1"
 )
 
@@ -30,6 +30,8 @@ type HealthChecker struct {
 	version string
 	ns      *v1.Namespace
 }
+
+type getWorkloadLabelsFn func(ctx context.Context) (map[string]string, error)
 
 // NewHealthChecker returns an initialized HealthChecker for linkerd-buoyant.
 // The returned instance does not contain any linkerd-buoyant Categories.
@@ -55,10 +57,10 @@ func (hc *HealthChecker) L5dBuoyantCategory() *healthcheck.Category {
 		hc.globalChecks(),
 		append(
 			hc.deploymentChecks(k8s.AgentName),
-			hc.deploymentChecks(k8s.MetricsName)...,
+			hc.daemonSetChecks(k8s.MetricsName)...,
 		)...,
 	)
-	return healthcheck.NewCategory(categoryID, checks, true)
+	return healthcheck.NewCategory(categoryID, checks, true).WithHintBaseURL("https://linkerd.io/checks#l5d-buoyant")
 }
 
 func (hc *HealthChecker) globalChecks() []healthcheck.Checker {
@@ -141,46 +143,86 @@ func (hc *HealthChecker) globalChecks() []healthcheck.Checker {
 }
 
 func (hc *HealthChecker) deploymentChecks(name string) []healthcheck.Checker {
-	var deploy *appsv1.Deployment
-	var pod v1.Pod
+	getWorkloadLabels := func(ctx context.Context) (map[string]string, error) {
+		deploy, err := hc.k8s.Deployment(ctx, name)
+		if err != nil {
+			return nil, err
+		}
+		return deploy.GetLabels(), nil
+	}
 
-	return []healthcheck.Checker{
-		*healthcheck.NewChecker(fmt.Sprintf("%s Deployment exists", name)).
+	return hc.workloadChecks(name, agentk8s.Deployment, getWorkloadLabels, true)
+}
+
+func (hc *HealthChecker) daemonSetChecks(name string) []healthcheck.Checker {
+	getWorkloadLabels := func(ctx context.Context) (map[string]string, error) {
+		ds, err := hc.k8s.DaemonSet(ctx, name)
+		if err != nil {
+			return nil, err
+		}
+		return ds.GetLabels(), nil
+	}
+
+	return hc.workloadChecks(name, agentk8s.DaemonSet, getWorkloadLabels, false)
+}
+
+func (hc *HealthChecker) workloadChecks(
+	name, kind string, getWorkloadLabels getWorkloadLabelsFn, singleton bool,
+) []healthcheck.Checker {
+	var labels map[string]string
+	var pods []v1.Pod
+
+	checks := []healthcheck.Checker{
+		*healthcheck.NewChecker(fmt.Sprintf("%s %s exists", name, kind)).
 			Fatal().
 			WithCheck(func(ctx context.Context) error {
 				var err error
-				deploy, err = hc.k8s.Deployment(ctx, name)
+				labels, err = getWorkloadLabels(ctx)
 				if err != nil {
 					return err
 				}
-				return checkLabel(deploy.GetLabels(), k8s.PartOfKey, k8s.PartOfVal)
+				return checkLabel(labels, k8s.PartOfKey, k8s.PartOfVal)
 			}),
-		*healthcheck.NewChecker(fmt.Sprintf("%s Deployment is running", name)).
+		*healthcheck.NewChecker(fmt.Sprintf("%s %s is running", name, kind)).
 			WithCheck(func(ctx context.Context) error {
 				labelSelector := fmt.Sprintf("app=%s", name)
-				pods, err := hc.k8s.Pods(ctx, labelSelector)
+				podList, err := hc.k8s.Pods(ctx, labelSelector)
 				if err != nil {
 					return err
 				}
 
-				if len(pods.Items) != 1 {
-					return fmt.Errorf("expected 1 %s pod, found %d", name, len(pods.Items))
+				pods = podList.Items
+
+				if len(pods) == 0 {
+					return fmt.Errorf("no running pods for %s %s", name, kind)
 				}
 
-				pod = pods.Items[0]
-
-				return healthcheck.CheckPodsRunning(pods.Items, "")
+				return healthcheck.CheckPodsRunning(pods, "")
 			}),
-		*healthcheck.NewChecker(fmt.Sprintf("%s Deployment is injected", name)).
+		*healthcheck.NewChecker(fmt.Sprintf("%s %s is injected", name, kind)).
 			WithCheck(func(ctx context.Context) error {
-				return healthcheck.CheckIfDataPlanePodsExist([]v1.Pod{pod})
+				return healthcheck.CheckIfDataPlanePodsExist(pods)
 			}),
-		*healthcheck.NewChecker(fmt.Sprintf("%s is up-to-date", name)).
+		*healthcheck.NewChecker(fmt.Sprintf("%s %s is up-to-date", name, kind)).
 			Warning().
 			WithCheck(func(ctx context.Context) error {
-				return checkLabel(deploy.GetLabels(), k8s.VersionLabel, hc.version)
+				return checkLabel(labels, k8s.VersionLabel, hc.version)
 			}),
 	}
+
+	if singleton {
+		checks = append(checks,
+			*healthcheck.NewChecker(fmt.Sprintf("%s %s is running a single pod", name, kind)).
+				WithCheck(func(ctx context.Context) error {
+					if len(pods) != 1 {
+						return fmt.Errorf("expected 1 %s pod, found %d", name, len(pods))
+					}
+					return nil
+				}),
+		)
+	}
+
+	return checks
 }
 
 func checkLabel(labels map[string]string, key, val string) error {
