@@ -24,6 +24,8 @@ type (
 		Secret(ctx context.Context) (*v1.Secret, error)
 		// ServiceAccount retrieves the buoyant-cloud-agent ServiceAccount.
 		ServiceAccount(ctx context.Context) (*v1.ServiceAccount, error)
+		// DaemonSet retrieves a DaemonSet by name in the buoyant-cloud namespace.
+		DaemonSet(ctx context.Context, name string) (*appsv1.DaemonSet, error)
 		// Deployment retrieves a Deployment by name in the buoyant-cloud namespace.
 		Deployment(ctx context.Context, name string) (*appsv1.Deployment, error)
 		// Pods retrieves a PodList by labelSelector from the buoyant-cloud
@@ -105,6 +107,13 @@ func (c *client) ServiceAccount(ctx context.Context) (*v1.ServiceAccount, error)
 		CoreV1().
 		ServiceAccounts(Namespace).
 		Get(ctx, AgentName, metav1.GetOptions{})
+}
+
+func (c *client) DaemonSet(ctx context.Context, name string) (*appsv1.DaemonSet, error) {
+	return c.
+		AppsV1().
+		DaemonSets(Namespace).
+		Get(ctx, name, metav1.GetOptions{})
 }
 
 func (c *client) Deployment(ctx context.Context, name string) (*appsv1.Deployment, error) {

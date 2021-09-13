@@ -75,7 +75,7 @@ func TestHealthChecker(t *testing.T) {
 √ buoyant-cloud Namespace exists
 × buoyant-cloud Namespace has correct labels
     missing linkerd.io/extension label
-    see https://linkerd.io/2/checks/# for hints
+    see https://linkerd.io/checks#l5d-buoyant for hints
 
 Status check results are ×
 `,
@@ -115,6 +115,9 @@ Status check results are ×
 						},
 						MockServiceAccount: &v1.ServiceAccount{
 							ObjectMeta: objMeta,
+						},
+						MockDaemonSet: &appsv1.DaemonSet{
+							ObjectMeta: objMetaDeploy,
 						},
 						MockDeployment: &appsv1.Deployment{
 							ObjectMeta: objMetaDeploy,
@@ -157,11 +160,12 @@ Status check results are ×
 √ buoyant-cloud-agent Deployment exists
 √ buoyant-cloud-agent Deployment is running
 √ buoyant-cloud-agent Deployment is injected
-√ buoyant-cloud-agent is up-to-date
-√ buoyant-cloud-metrics Deployment exists
-√ buoyant-cloud-metrics Deployment is running
-√ buoyant-cloud-metrics Deployment is injected
-√ buoyant-cloud-metrics is up-to-date
+√ buoyant-cloud-agent Deployment is up-to-date
+√ buoyant-cloud-agent Deployment is running a single pod
+√ buoyant-cloud-metrics DaemonSet exists
+√ buoyant-cloud-metrics DaemonSet is running
+√ buoyant-cloud-metrics DaemonSet is injected
+√ buoyant-cloud-metrics DaemonSet is up-to-date
 
 Status check results are √
 `,
