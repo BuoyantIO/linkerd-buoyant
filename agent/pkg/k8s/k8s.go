@@ -13,6 +13,7 @@ import (
 	v1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/runtime/serializer/protobuf"
+	"k8s.io/client-go/dynamic"
 	"k8s.io/client-go/informers"
 	corev1informers "k8s.io/client-go/informers/core/v1"
 	"k8s.io/client-go/kubernetes"
@@ -23,7 +24,9 @@ import (
 )
 
 type Client struct {
-	k8sClient kubernetes.Interface
+	k8sClient    kubernetes.Interface
+	k8sDynClient dynamic.Interface
+
 	// the presence of the L5D k8s api signifies that we are running in local mode
 	// and that we should use it for port forwarding
 	l5dApi *l5dk8s.KubernetesAPI
@@ -66,7 +69,7 @@ const (
 
 var errSyncCache = errors.New("failed to sync caches")
 
-func NewClient(k8sClient kubernetes.Interface, sharedInformers informers.SharedInformerFactory, l5dApi *l5dk8s.KubernetesAPI) *Client {
+func NewClient(k8sClient kubernetes.Interface, k8sDynClient dynamic.Interface, sharedInformers informers.SharedInformerFactory, l5dApi *l5dk8s.KubernetesAPI) *Client {
 	log := log.WithField("client", "k8s")
 	log.Debug("initializing")
 
@@ -95,8 +98,9 @@ func NewClient(k8sClient kubernetes.Interface, sharedInformers informers.SharedI
 	eventInformerSynced := eventInformer.Informer().HasSynced
 
 	return &Client{
-		k8sClient: k8sClient,
-		encoders:  encoders,
+		k8sClient:    k8sClient,
+		k8sDynClient: k8sDynClient,
+		encoders:     encoders,
 
 		sharedInformers: sharedInformers,
 

@@ -45,6 +45,7 @@ func (h *LinkerdInfo) Start() {
 		select {
 		case <-ticker.C:
 			h.handleCertsInfo(context.Background())
+			h.handleAuthInfo(context.Background())
 		case <-h.stopCh:
 			return
 		}
@@ -55,6 +56,31 @@ func (h *LinkerdInfo) Start() {
 func (h *LinkerdInfo) Stop() {
 	h.log.Info("shutting down")
 	close(h.stopCh)
+}
+
+func (h *LinkerdInfo) handleAuthInfo(ctx context.Context) {
+	servers, err := h.k8s.GetServers(ctx)
+	if err != nil {
+		h.log.Errorf("error getting servers: %s", err)
+		return
+	}
+
+	serverAuths, err := h.k8s.GetServerAuths(ctx)
+	if err != nil {
+		h.log.Errorf("error getting server authorizations: %s", err)
+		return
+	}
+
+	m := &pb.AuthPolicyInfo{
+		Servers:              servers,
+		ServerAuthorizations: serverAuths,
+	}
+	h.log.Tracef("handleAuthInfo: %s", prototext.Format(m))
+
+	err = h.api.PolicyInfo(m)
+	if err != nil {
+		h.log.Errorf("error sending AuthPolicyInfo message: %s", err)
+	}
 }
 
 func (h *LinkerdInfo) handleCertsInfo(ctx context.Context) {

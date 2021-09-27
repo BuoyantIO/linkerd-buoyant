@@ -7,6 +7,17 @@ import (
 	"google.golang.org/protobuf/encoding/prototext"
 )
 
+func (c *Client) PolicyInfo(info *pb.AuthPolicyInfo) error {
+	msg := &pb.LinkerdMessage{
+		Auth: c.auth,
+		Message: &pb.LinkerdMessage_AuthPolicyInfo{
+			AuthPolicyInfo: info,
+		},
+	}
+
+	return c.sendLinkerdMsg(msg)
+}
+
 func (c *Client) CrtInfo(info *pb.CertificateInfo) error {
 	msg := &pb.LinkerdMessage{
 		Auth: c.auth,

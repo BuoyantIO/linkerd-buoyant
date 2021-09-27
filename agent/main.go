@@ -18,6 +18,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
 	"k8s.io/apimachinery/pkg/util/wait"
+	"k8s.io/client-go/dynamic"
 	"k8s.io/client-go/informers"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/tools/clientcmd"
@@ -109,12 +110,20 @@ func main() {
 	sharedInformers := informers.NewSharedInformerFactory(k8sCS, 10*time.Minute)
 
 	var l5dApi *l5dk8s.KubernetesAPI
+	var k8sDC dynamic.Interface
+
 	if *localMode {
+		// in this case we can reuse the dynamic client from Linkerd
+		// as it is already there
 		l5dApi, err = l5dk8s.NewAPIForConfig(k8sConfig, "", nil, 0)
+		dieIf(err)
+		k8sDC = l5dApi.DynamicClient
+	} else {
+		k8sDC, err = dynamic.NewForConfig(k8sConfig)
 		dieIf(err)
 	}
 
-	k8sClient := k8s.NewClient(k8sCS, sharedInformers, l5dApi)
+	k8sClient := k8s.NewClient(k8sCS, k8sDC, sharedInformers, l5dApi)
 
 	// wait for discovery API to load
 
