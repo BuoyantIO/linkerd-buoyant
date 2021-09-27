@@ -130,10 +130,71 @@ message CertificateInfo {
   }
 }
 
+
+message Server {
+  bytes server = 1;
+}
+
+message ServerMessage {
+  oneof message {
+    AddServer added = 1;
+    UpdateServer updated = 2;
+    DeleteServer deleted = 3;
+  }
+}
+
+message AddServer {
+  Server server = 1;
+}
+
+message DeleteServer {
+  Server server = 1;
+}
+
+message UpdateServer {
+  Server old_server = 1;
+  Server new_server = 2;
+  google.protobuf.Timestamp timestamp = 3;
+}
+
+message ServerAuthorization {
+  bytes server_authorization = 1;
+}
+
+message ServerAuthorizationMessage {
+  oneof message {
+    AddServerAuthorization added = 1;
+    UpdateServerAuthorization updated = 2;
+    DeleteServerAuthorization deleted = 3;
+  }
+}
+
+message AddServerAuthorization {
+  ServerAuthorization server_authorization = 1;
+}
+
+message DeleteServerAuthorization {
+  ServerAuthorization server_authorization = 1;
+}
+
+message UpdateServerAuthorization {
+  ServerAuthorization old_server_authorization = 1;
+  ServerAuthorization new_server_authorization = 2;
+  google.protobuf.Timestamp timestamp = 3;
+}
+
+message AuthPolicyInfo {
+  oneof info {
+    ServerMessage server = 1;
+    ServerAuthorizationMessage server_authorization = 2;
+  }
+}
+
 message LinkerdMessage {
   Auth auth = 1;
   oneof message {
     CertificateInfo crt_info = 2;
+    AuthPolicyInfo auth_policy_info = 3;
   }
 }
 
