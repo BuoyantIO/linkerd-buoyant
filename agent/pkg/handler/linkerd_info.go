@@ -45,7 +45,7 @@ func (h *LinkerdInfo) Start() {
 		select {
 		case <-ticker.C:
 			h.handleCertsInfo(context.Background())
-			h.handleAuthInfo(context.Background())
+			h.handleAuthPolicyInfo(context.Background())
 			h.handleMulticluster(context.Background())
 			h.handleServiceProfiles(context.Background())
 			h.handleTrafficSplits(context.Background())
@@ -115,7 +115,7 @@ func (h *LinkerdInfo) handleMulticluster(ctx context.Context) {
 	}
 }
 
-func (h *LinkerdInfo) handleAuthInfo(ctx context.Context) {
+func (h *LinkerdInfo) handleAuthPolicyInfo(ctx context.Context) {
 	servers, err := h.k8s.GetServers(ctx)
 	if err != nil {
 		h.log.Errorf("error getting servers: %s", err)
@@ -132,9 +132,9 @@ func (h *LinkerdInfo) handleAuthInfo(ctx context.Context) {
 		Servers:              servers,
 		ServerAuthorizations: serverAuths,
 	}
-	h.log.Tracef("handleAuthInfo: %s", prototext.Format(m))
+	h.log.Tracef("handleAuthPolicyInfo: %s", prototext.Format(m))
 
-	err = h.api.PolicyInfo(m)
+	err = h.api.AuthPolicyInfo(m)
 	if err != nil {
 		h.log.Errorf("error sending AuthPolicyInfo message: %s", err)
 	}

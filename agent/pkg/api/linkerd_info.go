@@ -40,7 +40,7 @@ func (c *Client) McInfo(info *pb.MulticlusterInfo) error {
 	return c.sendLinkerdMsg(msg)
 }
 
-func (c *Client) PolicyInfo(info *pb.AuthPolicyInfo) error {
+func (c *Client) AuthPolicyInfo(info *pb.AuthPolicyInfo) error {
 	msg := &pb.LinkerdMessage{
 		Auth: c.auth,
 		Message: &pb.LinkerdMessage_AuthPolicyInfo{
