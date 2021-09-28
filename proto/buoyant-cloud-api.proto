@@ -143,11 +143,38 @@ message AuthPolicyInfo {
   repeated ServerAuthorization server_authorizations = 2;
 }
 
+message TrafficSplit {
+  bytes traffic_split = 1;
+}
+
+message TrafficSplitInfo {
+  repeated TrafficSplit traffic_splits = 1;
+}
+
+message ServiceProfile {
+  bytes service_profile = 1;
+}
+
+message ServiceProfileInfo {
+  repeated ServiceProfile service_profiles = 1;
+}
+
+message MulticlusterLink {
+  bytes multicluster_link = 1;
+}
+
+message MulticlusterInfo {
+  repeated MulticlusterLink multicluster_links = 1;
+}
+
 message LinkerdMessage {
   Auth auth = 1;
   oneof message {
     CertificateInfo crt_info = 2;
     AuthPolicyInfo auth_policy_info = 3;
+    TrafficSplitInfo traffic_split_info = 4;
+    ServiceProfileInfo service_profile_info = 5;
+    MulticlusterInfo multicluster_info = 6;
   }
 }
 
