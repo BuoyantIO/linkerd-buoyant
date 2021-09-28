@@ -112,7 +112,7 @@ func (c *Client) extractRootsCerts(ctx context.Context, container *v1.Container,
 				return nil, fmt.Errorf("neither a Value nor a ConfigMapKeyRef for the %s env var are present on proxy container [%s]", identity.EnvTrustAnchors, container.Name)
 			}
 			cmName := ev.ValueFrom.ConfigMapKeyRef.Name
-			cm, err := c.k8sClient.CoreV1().ConfigMaps(namespace).Get(ctx, cmName, metav1.GetOptions{})
+			cm, err := c.l5dApi.CoreV1().ConfigMaps(namespace).Get(ctx, cmName, metav1.GetOptions{})
 			if err != nil {
 				return nil, fmt.Errorf("cannot obtain config map %s/%s", namespace, cmName)
 			}

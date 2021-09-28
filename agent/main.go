@@ -12,13 +12,13 @@ import (
 	"github.com/buoyantio/linkerd-buoyant/agent/pkg/handler"
 	"github.com/buoyantio/linkerd-buoyant/agent/pkg/k8s"
 	pb "github.com/buoyantio/linkerd-buoyant/gen/bcloud"
+	spclient "github.com/linkerd/linkerd2/controller/gen/client/clientset/versioned"
 	"github.com/linkerd/linkerd2/pkg/admin"
 	l5dk8s "github.com/linkerd/linkerd2/pkg/k8s"
 	log "github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
 	"k8s.io/apimachinery/pkg/util/wait"
-	"k8s.io/client-go/dynamic"
 	"k8s.io/client-go/informers"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/tools/clientcmd"
@@ -109,21 +109,13 @@ func main() {
 	dieIf(err)
 	sharedInformers := informers.NewSharedInformerFactory(k8sCS, 10*time.Minute)
 
-	var l5dApi *l5dk8s.KubernetesAPI
-	var k8sDC dynamic.Interface
+	l5dApi, err := l5dk8s.NewAPIForConfig(k8sConfig, "", nil, 0)
+	dieIf(err)
 
-	if *localMode {
-		// in this case we can reuse the dynamic client from Linkerd
-		// as it is already there
-		l5dApi, err = l5dk8s.NewAPIForConfig(k8sConfig, "", nil, 0)
-		dieIf(err)
-		k8sDC = l5dApi.DynamicClient
-	} else {
-		k8sDC, err = dynamic.NewForConfig(k8sConfig)
-		dieIf(err)
-	}
+	spClient, err := spclient.NewForConfig(k8sConfig)
+	dieIf(err)
 
-	k8sClient := k8s.NewClient(k8sCS, k8sDC, sharedInformers, l5dApi)
+	k8sClient := k8s.NewClient(sharedInformers, l5dApi, spClient, *localMode)
 
 	// wait for discovery API to load
 
@@ -176,7 +168,8 @@ func main() {
 	go manageAgentHandler.Start()
 
 	// run admin server
-	go admin.StartServer(*adminAddr)
+	adminServer := admin.NewServer(*adminAddr)
+	go adminServer.ListenAndServe()
 
 	// wait for shutdown
 	<-stop

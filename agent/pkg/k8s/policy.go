@@ -4,26 +4,21 @@ import (
 	"context"
 
 	pb "github.com/buoyantio/linkerd-buoyant/gen/bcloud"
+	l5dk8s "github.com/linkerd/linkerd2/pkg/k8s"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"k8s.io/apimachinery/pkg/runtime/schema"
 )
 
-// SazGVR is the GroupVersionResource for the ServerAuthorization resource.
-var sazGVR = schema.GroupVersionResource{
-	Group:    "policy.linkerd.io",
-	Version:  "v1alpha1",
-	Resource: "serverauthorizations",
-}
-
-// ServerGVR is the GroupVersionResource for the Server resource.
-var serverGVR = schema.GroupVersionResource{
-	Group:    "policy.linkerd.io",
-	Version:  "v1alpha1",
-	Resource: "servers",
-}
-
 func (c *Client) GetServers(ctx context.Context) ([]*pb.Server, error) {
-	servers, err := c.k8sDynClient.Resource(serverGVR).Namespace(metav1.NamespaceAll).List(ctx, metav1.ListOptions{})
+	supported, err := c.resourceSupported(l5dk8s.ServerGVR)
+	if err != nil {
+		return nil, err
+	}
+
+	if !supported {
+		return nil, nil
+	}
+
+	servers, err := c.l5dApi.DynamicClient.Resource(l5dk8s.ServerGVR).Namespace(metav1.NamespaceAll).List(ctx, metav1.ListOptions{})
 	if err != nil {
 		return nil, err
 	}
@@ -44,7 +39,16 @@ func (c *Client) GetServers(ctx context.Context) ([]*pb.Server, error) {
 }
 
 func (c *Client) GetServerAuths(ctx context.Context) ([]*pb.ServerAuthorization, error) {
-	servers, err := c.k8sDynClient.Resource(sazGVR).Namespace(metav1.NamespaceAll).List(ctx, metav1.ListOptions{})
+	supported, err := c.resourceSupported(l5dk8s.SazGVR)
+	if err != nil {
+		return nil, err
+	}
+
+	if !supported {
+		return nil, nil
+	}
+
+	servers, err := c.l5dApi.DynamicClient.Resource(l5dk8s.SazGVR).Namespace(metav1.NamespaceAll).List(ctx, metav1.ListOptions{})
 	if err != nil {
 		return nil, err
 	}

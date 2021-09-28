@@ -3,9 +3,10 @@ module github.com/buoyantio/linkerd-buoyant
 go 1.17
 
 require (
-	github.com/fatih/color v1.12.0
-	github.com/linkerd/linkerd2 v0.5.1-0.20210825215431-554e300fc836
+	github.com/fatih/color v1.13.0
+	github.com/linkerd/linkerd2 v0.5.1-0.20210924174712-22bbdad4d698
 	github.com/pkg/browser v0.0.0-20201112035734-206646e67786
+	github.com/servicemeshinterface/smi-sdk-go v0.5.0
 	github.com/sirupsen/logrus v1.8.1
 	github.com/spf13/cobra v1.2.1
 	google.golang.org/grpc v1.40.0
@@ -14,9 +15,9 @@ require (
 	k8s.io/api v0.22.1
 	k8s.io/apimachinery v0.22.1
 	k8s.io/client-go v0.22.1
-	k8s.io/klog/v2 v2.10.0
+	k8s.io/klog/v2 v2.20.0
 	k8s.io/kubectl v0.22.1
-	sigs.k8s.io/yaml v1.2.0
+	sigs.k8s.io/yaml v1.3.0
 )
 
 require (
@@ -55,8 +56,9 @@ require (
 	github.com/inconshreveable/mousetrap v1.0.0 // indirect
 	github.com/json-iterator/go v1.1.11 // indirect
 	github.com/linkerd/linkerd2-proxy-api v0.2.0 // indirect
-	github.com/mattn/go-colorable v0.1.8 // indirect
-	github.com/mattn/go-isatty v0.0.13 // indirect
+	github.com/linkerd/linkerd2-proxy-init v1.4.0 // indirect
+	github.com/mattn/go-colorable v0.1.9 // indirect
+	github.com/mattn/go-isatty v0.0.14 // indirect
 	github.com/matttproud/golang_protobuf_extensions v1.0.2-0.20181231171920-c182affec369 // indirect
 	github.com/mitchellh/copystructure v1.2.0 // indirect
 	github.com/mitchellh/reflectwalk v1.0.2 // indirect
@@ -68,7 +70,6 @@ require (
 	github.com/prometheus/client_model v0.2.0 // indirect
 	github.com/prometheus/common v0.30.0 // indirect
 	github.com/prometheus/procfs v0.7.3 // indirect
-	github.com/servicemeshinterface/smi-sdk-go v0.5.0 // indirect
 	github.com/shopspring/decimal v1.2.0 // indirect
 	github.com/spf13/cast v1.4.1 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
@@ -95,8 +96,3 @@ require (
 	k8s.io/utils v0.0.0-20210820185131-d34e5cb4466e // indirect
 	sigs.k8s.io/structured-merge-diff/v4 v4.1.2 // indirect
 )
-
-// This fix cribbed from https://github.com/stern/stern/pull/154
-// Workaround to deal with https://github.com/kubernetes/klog/issues/253
-// Should be deleted when https://github.com/kubernetes/klog/pull/242 is merged and released
-replace github.com/go-logr/logr => github.com/go-logr/logr v0.4.0

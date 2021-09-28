@@ -7,16 +7,22 @@ import (
 	"net/url"
 	"time"
 
+	sp "github.com/linkerd/linkerd2/controller/gen/apis/serviceprofile/v1alpha2"
+	spclient "github.com/linkerd/linkerd2/controller/gen/client/clientset/versioned"
+	spscheme "github.com/linkerd/linkerd2/controller/gen/client/clientset/versioned/scheme"
 	l5dk8s "github.com/linkerd/linkerd2/pkg/k8s"
+	ts "github.com/servicemeshinterface/smi-sdk-go/pkg/apis/split/v1alpha1"
+	tsscheme "github.com/servicemeshinterface/smi-sdk-go/pkg/gen/client/split/clientset/versioned/scheme"
 	log "github.com/sirupsen/logrus"
 	appsv1 "k8s.io/api/apps/v1"
 	v1 "k8s.io/api/core/v1"
+	kerrors "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/runtime"
+	"k8s.io/apimachinery/pkg/runtime/schema"
+	"k8s.io/apimachinery/pkg/runtime/serializer/json"
 	"k8s.io/apimachinery/pkg/runtime/serializer/protobuf"
-	"k8s.io/client-go/dynamic"
 	"k8s.io/client-go/informers"
 	corev1informers "k8s.io/client-go/informers/core/v1"
-	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/kubernetes/scheme"
 	appsv1listers "k8s.io/client-go/listers/apps/v1"
 	corev1listers "k8s.io/client-go/listers/core/v1"
@@ -24,12 +30,10 @@ import (
 )
 
 type Client struct {
-	k8sClient    kubernetes.Interface
-	k8sDynClient dynamic.Interface
-
 	// the presence of the L5D k8s api signifies that we are running in local mode
 	// and that we should use it for port forwarding
-	l5dApi *l5dk8s.KubernetesAPI
+	l5dApi   *l5dk8s.KubernetesAPI
+	spClient spclient.Interface
 
 	encoders map[runtime.GroupVersioner]runtime.Encoder
 
@@ -50,7 +54,8 @@ type Client struct {
 	eventInformer corev1informers.EventInformer
 	eventSynced   cache.InformerSynced
 
-	log *log.Entry
+	log   *log.Entry
+	local bool
 }
 
 type containerConnection struct {
@@ -69,14 +74,21 @@ const (
 
 var errSyncCache = errors.New("failed to sync caches")
 
-func NewClient(k8sClient kubernetes.Interface, k8sDynClient dynamic.Interface, sharedInformers informers.SharedInformerFactory, l5dApi *l5dk8s.KubernetesAPI) *Client {
+func NewClient(sharedInformers informers.SharedInformerFactory, l5dApi *l5dk8s.KubernetesAPI, spClient spclient.Interface, local bool) *Client {
 	log := log.WithField("client", "k8s")
 	log.Debug("initializing")
 
+	spscheme.AddToScheme(scheme.Scheme)
+	tsscheme.AddToScheme(scheme.Scheme)
+
 	protoSerializer := protobuf.NewSerializer(scheme.Scheme, scheme.Scheme)
+	yamlSerializer := json.NewYAMLSerializer(json.DefaultMetaFactory, scheme.Scheme, scheme.Scheme)
+
 	encoders := map[runtime.GroupVersioner]runtime.Encoder{
 		v1.SchemeGroupVersion:     scheme.Codecs.EncoderForVersion(protoSerializer, v1.SchemeGroupVersion),
 		appsv1.SchemeGroupVersion: scheme.Codecs.EncoderForVersion(protoSerializer, appsv1.SchemeGroupVersion),
+		ts.SchemeGroupVersion:     scheme.Codecs.EncoderForVersion(yamlSerializer, ts.SchemeGroupVersion),
+		sp.SchemeGroupVersion:     scheme.Codecs.EncoderForVersion(yamlSerializer, sp.SchemeGroupVersion),
 	}
 
 	podInformer := sharedInformers.Core().V1().Pods()
@@ -98,9 +110,7 @@ func NewClient(k8sClient kubernetes.Interface, k8sDynClient dynamic.Interface, s
 	eventInformerSynced := eventInformer.Informer().HasSynced
 
 	return &Client{
-		k8sClient:    k8sClient,
-		k8sDynClient: k8sDynClient,
-		encoders:     encoders,
+		encoders: encoders,
 
 		sharedInformers: sharedInformers,
 
@@ -119,8 +129,10 @@ func NewClient(k8sClient kubernetes.Interface, k8sDynClient dynamic.Interface, s
 		eventInformer: eventInformer,
 		eventSynced:   eventInformerSynced,
 
-		l5dApi: l5dApi,
-		log:    log,
+		l5dApi:   l5dApi,
+		spClient: spClient,
+		log:      log,
+		local:    local,
 	}
 }
 
@@ -167,7 +179,7 @@ func (c *Client) serialize(obj runtime.Object, gv runtime.GroupVersioner) []byte
 }
 
 func (c *Client) localMode() bool {
-	return c.l5dApi != nil
+	return c.local
 }
 
 // this method establishes a connection to a specific container in a pod
@@ -209,6 +221,27 @@ func (c *Client) getContainerConnection(pod *v1.Pod, container *v1.Container, po
 			cleanup: func() {}, // noop
 		}, nil
 	}
+}
+
+func (c *Client) resourceSupported(gvr schema.GroupVersionResource) (bool, error) {
+	gv := gvr.GroupVersion().String()
+	c.l5dApi.Apiregistration.Discovery()
+
+	res, err := c.l5dApi.Discovery().ServerResourcesForGroupVersion(gv)
+	if err != nil && !kerrors.IsNotFound(err) {
+		return false, err
+	}
+
+	if res != nil && res.GroupVersion == gv {
+		for _, apiRes := range res.APIResources {
+			if apiRes.Name == gvr.Resource {
+				return true, nil
+			}
+		}
+	}
+
+	c.log.Debugf("Resource %+v not supported", gvr)
+	return false, nil
 }
 
 func getContainerPort(container *v1.Container, portName string) (int32, error) {

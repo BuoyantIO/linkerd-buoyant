@@ -89,7 +89,7 @@ func TestFindIdentityPod(t *testing.T) {
 		t.Run(tc.testName, func(t *testing.T) {
 			c := fakeClient(tc.pods...)
 			c.Sync(nil, time.Second)
-			client := NewClient(nil, nil, c.sharedInformers, nil)
+			client := NewClient(c.sharedInformers, nil, nil, false)
 
 			pod, err := client.getControlPlaneComponentPod(identityComponentName)
 			if tc.expectedErr != nil {
@@ -440,7 +440,7 @@ AiAtuoI5XuCtrGVRzSmRTl2ra28aV9MyTU7d5qnTAFHKSgIgRKCvluOSgA5O21p5
 			}
 
 			c.Sync(nil, time.Second)
-			client := NewClient(c.k8sClient, nil, c.sharedInformers, nil)
+			client := NewClient(c.sharedInformers, c.l5dApi, nil, false)
 
 			roots, err := client.extractRootsCerts(context.Background(), tc.container, "linkerd")
 			if tc.expectedErr != nil {

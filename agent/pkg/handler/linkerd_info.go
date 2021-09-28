@@ -46,6 +46,9 @@ func (h *LinkerdInfo) Start() {
 		case <-ticker.C:
 			h.handleCertsInfo(context.Background())
 			h.handleAuthInfo(context.Background())
+			h.handleMulticluster(context.Background())
+			h.handleServiceProfiles(context.Background())
+			h.handleTrafficSplits(context.Background())
 		case <-h.stopCh:
 			return
 		}
@@ -56,6 +59,60 @@ func (h *LinkerdInfo) Start() {
 func (h *LinkerdInfo) Stop() {
 	h.log.Info("shutting down")
 	close(h.stopCh)
+}
+
+func (h *LinkerdInfo) handleTrafficSplits(ctx context.Context) {
+	trafficSplits, err := h.k8s.GetTrafficSplits(ctx)
+	if err != nil {
+		h.log.Errorf("error getting traffic splits: %s", err)
+		return
+	}
+
+	m := &pb.TrafficSplitInfo{
+		TrafficSplits: trafficSplits,
+	}
+	h.log.Tracef("handleLinkerdInfo: %s", prototext.Format(m))
+
+	err = h.api.TrafficSplitInfo(m)
+	if err != nil {
+		h.log.Errorf("error sending TrafficSplitInfo message: %s", err)
+	}
+}
+
+func (h *LinkerdInfo) handleServiceProfiles(ctx context.Context) {
+	serviceProfiles, err := h.k8s.GetServiceProfiles(ctx)
+	if err != nil {
+		h.log.Errorf("error getting service profiles: %s", err)
+		return
+	}
+
+	m := &pb.ServiceProfileInfo{
+		ServiceProfiles: serviceProfiles,
+	}
+	h.log.Tracef("handleLinkerdInfo: %s", prototext.Format(m))
+
+	err = h.api.SpInfo(m)
+	if err != nil {
+		h.log.Errorf("error sending ServiceProfileInfo message: %s", err)
+	}
+}
+
+func (h *LinkerdInfo) handleMulticluster(ctx context.Context) {
+	links, err := h.k8s.GetMulticlusterLinks(ctx)
+	if err != nil {
+		h.log.Errorf("error getting MC links: %s", err)
+		return
+	}
+
+	m := &pb.MulticlusterInfo{
+		MulticlusterLinks: links,
+	}
+	h.log.Tracef("handleLinkerdInfo: %s", prototext.Format(m))
+
+	err = h.api.McInfo(m)
+	if err != nil {
+		h.log.Errorf("error sending MulticlusterInfo message: %s", err)
+	}
 }
 
 func (h *LinkerdInfo) handleAuthInfo(ctx context.Context) {

@@ -7,6 +7,39 @@ import (
 	"google.golang.org/protobuf/encoding/prototext"
 )
 
+func (c *Client) TrafficSplitInfo(info *pb.TrafficSplitInfo) error {
+	msg := &pb.LinkerdMessage{
+		Auth: c.auth,
+		Message: &pb.LinkerdMessage_TrafficSplitInfo{
+			TrafficSplitInfo: info,
+		},
+	}
+
+	return c.sendLinkerdMsg(msg)
+}
+
+func (c *Client) SpInfo(info *pb.ServiceProfileInfo) error {
+	msg := &pb.LinkerdMessage{
+		Auth: c.auth,
+		Message: &pb.LinkerdMessage_ServiceProfileInfo{
+			ServiceProfileInfo: info,
+		},
+	}
+
+	return c.sendLinkerdMsg(msg)
+}
+
+func (c *Client) McInfo(info *pb.MulticlusterInfo) error {
+	msg := &pb.LinkerdMessage{
+		Auth: c.auth,
+		Message: &pb.LinkerdMessage_MulticlusterInfo{
+			MulticlusterInfo: info,
+		},
+	}
+
+	return c.sendLinkerdMsg(msg)
+}
+
 func (c *Client) PolicyInfo(info *pb.AuthPolicyInfo) error {
 	msg := &pb.LinkerdMessage{
 		Auth: c.auth,

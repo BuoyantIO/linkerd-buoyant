@@ -21,7 +21,7 @@ const k8sServiceName = "kubernetes"
 // GetProxyLogs retrieves the proxy logs of a pod
 func (c *Client) GetProxyLogs(ctx context.Context, podName, namespace string, includeTimestamps bool, tailLines *int64) ([]byte, error) {
 	podLogOptions := &v1.PodLogOptions{Container: l5dk8s.ProxyContainerName, Timestamps: includeTimestamps, TailLines: tailLines}
-	req := c.k8sClient.CoreV1().Pods(namespace).GetLogs(podName, podLogOptions)
+	req := c.l5dApi.CoreV1().Pods(namespace).GetLogs(podName, podLogOptions)
 	logs, err := req.Stream(ctx)
 	if err != nil {
 		return nil, err
@@ -39,7 +39,7 @@ func (c *Client) GetProxyLogs(ctx context.Context, podName, namespace string, in
 // GetPrometheusScrape retrieves the raw prom scrape from the proxy of a pod
 func (c *Client) GetPrometheusScrape(ctx context.Context, podName, namespace string) ([][]byte, error) {
 	// first get the pod
-	pod, err := c.k8sClient.CoreV1().Pods(namespace).Get(ctx, podName, metav1.GetOptions{})
+	pod, err := c.l5dApi.CoreV1().Pods(namespace).Get(ctx, podName, metav1.GetOptions{})
 	if err != nil {
 		return nil, err
 	}
@@ -88,7 +88,7 @@ func (c *Client) GetPrometheusScrape(ctx context.Context, podName, namespace str
 
 // GetPodSpec retrieves pod manifest
 func (c *Client) GetPodSpec(ctx context.Context, podName, namespace string) (*pb.Pod, error) {
-	pod, err := c.k8sClient.CoreV1().Pods(namespace).Get(ctx, podName, metav1.GetOptions{})
+	pod, err := c.l5dApi.CoreV1().Pods(namespace).Get(ctx, podName, metav1.GetOptions{})
 	if err != nil {
 		return nil, err
 	}
@@ -98,7 +98,7 @@ func (c *Client) GetPodSpec(ctx context.Context, podName, namespace string) (*pb
 
 // GetLinkerdConfigMap retrieves Linkerd config map
 func (c *Client) GetLinkerdConfigMap(ctx context.Context) (*pb.ConfigMap, error) {
-	cm, err := c.k8sClient.CoreV1().ConfigMaps(linkerdNamespace).Get(ctx, l5dk8s.ConfigConfigMapName, metav1.GetOptions{})
+	cm, err := c.l5dApi.CoreV1().ConfigMaps(linkerdNamespace).Get(ctx, l5dk8s.ConfigConfigMapName, metav1.GetOptions{})
 	if err != nil {
 		return nil, err
 	}
@@ -108,7 +108,7 @@ func (c *Client) GetLinkerdConfigMap(ctx context.Context) (*pb.ConfigMap, error)
 
 // GetNodeManifests retrieves all nodes in the cluster
 func (c *Client) GetNodeManifests(ctx context.Context) ([]*pb.Node, error) {
-	nodes, err := c.k8sClient.CoreV1().Nodes().List(ctx, metav1.ListOptions{})
+	nodes, err := c.l5dApi.CoreV1().Nodes().List(ctx, metav1.ListOptions{})
 	if err != nil {
 		return nil, err
 	}
@@ -123,7 +123,7 @@ func (c *Client) GetNodeManifests(ctx context.Context) ([]*pb.Node, error) {
 
 // GetK8sServiceManifest the manifest of the kubernetes service residing in the default namespace
 func (c *Client) GetK8sServiceManifest(ctx context.Context) (*pb.Service, error) {
-	svc, err := c.k8sClient.CoreV1().Services(v1.NamespaceDefault).Get(ctx, k8sServiceName, metav1.GetOptions{})
+	svc, err := c.l5dApi.CoreV1().Services(v1.NamespaceDefault).Get(ctx, k8sServiceName, metav1.GetOptions{})
 	if err != nil {
 		return nil, err
 	}
