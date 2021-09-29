@@ -52,8 +52,10 @@ type Client struct {
 	eventInformer corev1informers.EventInformer
 	eventSynced   cache.InformerSynced
 
-	log                   *log.Entry
-	local                 bool
+	log   *log.Entry
+	local bool
+
+	// for testing
 	ignoreCRDSupportCheck bool
 }
 
