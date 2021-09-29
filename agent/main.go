@@ -12,6 +12,7 @@ import (
 	"github.com/buoyantio/linkerd-buoyant/agent/pkg/handler"
 	"github.com/buoyantio/linkerd-buoyant/agent/pkg/k8s"
 	pb "github.com/buoyantio/linkerd-buoyant/gen/bcloud"
+	spclient "github.com/linkerd/linkerd2/controller/gen/client/clientset/versioned"
 	"github.com/linkerd/linkerd2/pkg/admin"
 	l5dk8s "github.com/linkerd/linkerd2/pkg/k8s"
 	log "github.com/sirupsen/logrus"
@@ -19,7 +20,6 @@ import (
 	"google.golang.org/grpc/credentials"
 	"k8s.io/apimachinery/pkg/util/wait"
 	"k8s.io/client-go/informers"
-	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/tools/clientcmd"
 	"k8s.io/klog/v2"
 
@@ -104,23 +104,21 @@ func main() {
 		ClientConfig()
 	dieIf(err)
 
-	k8sCS, err := kubernetes.NewForConfig(k8sConfig)
+	k8sAPI, err := l5dk8s.NewAPIForConfig(k8sConfig, "", nil, 0)
 	dieIf(err)
-	sharedInformers := informers.NewSharedInformerFactory(k8sCS, 10*time.Minute)
 
-	var l5dApi *l5dk8s.KubernetesAPI
-	if *localMode {
-		l5dApi, err = l5dk8s.NewAPIForConfig(k8sConfig, "", nil, 0)
-		dieIf(err)
-	}
+	spClient, err := spclient.NewForConfig(k8sConfig)
+	dieIf(err)
 
-	k8sClient := k8s.NewClient(k8sCS, sharedInformers, l5dApi)
+	sharedInformers := informers.NewSharedInformerFactory(k8sAPI.Interface, 10*time.Minute)
+
+	k8sClient := k8s.NewClient(sharedInformers, k8sAPI, spClient, *localMode)
 
 	// wait for discovery API to load
 
 	log.Info("waiting for Kubernetes API availability")
 	populateGroupList := func() (done bool, err error) {
-		_, err = k8sCS.DiscoveryClient.ServerGroups()
+		_, err = k8sAPI.Discovery().ServerGroups()
 		if err != nil {
 			log.Debug("cannot reach Kubernetes API; retrying")
 			return false, nil
@@ -167,7 +165,8 @@ func main() {
 	go manageAgentHandler.Start()
 
 	// run admin server
-	go admin.StartServer(*adminAddr)
+	adminServer := admin.NewServer(*adminAddr)
+	go adminServer.ListenAndServe()
 
 	// wait for shutdown
 	<-stop

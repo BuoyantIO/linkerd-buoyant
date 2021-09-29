@@ -7,6 +7,7 @@ import (
 
 	"github.com/buoyantio/linkerd-buoyant/agent/pkg/api"
 	"github.com/buoyantio/linkerd-buoyant/agent/pkg/k8s"
+	l5dk8s "github.com/linkerd/linkerd2/pkg/k8s"
 	appsv1 "k8s.io/api/apps/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
@@ -172,7 +173,10 @@ func TestWorkloadStream(t *testing.T) {
 			}
 			cs := fake.NewSimpleClientset(objs...)
 			sharedInformers := informers.NewSharedInformerFactory(cs, 10*time.Minute)
-			k8sClient := k8s.NewClient(cs, sharedInformers, nil)
+			k8sApi := &l5dk8s.KubernetesAPI{
+				Interface: cs,
+			}
+			k8sClient := k8s.NewClient(sharedInformers, k8sApi, nil, false)
 
 			m := &api.MockBcloudClient{}
 			apiClient := api.NewClient("", "", m)
