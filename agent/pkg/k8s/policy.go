@@ -25,13 +25,9 @@ func (c *Client) GetServers(ctx context.Context) ([]*pb.Server, error) {
 
 	results := make([]*pb.Server, len(servers.Items))
 	for i, s := range servers.Items {
-		raw, err := s.MarshalJSON()
-		if err != nil {
-			return nil, err
-		}
-
+		s := s
 		results[i] = &pb.Server{
-			Server: raw,
+			Server: c.serialize(&s, serverSGV),
 		}
 	}
 
@@ -55,13 +51,9 @@ func (c *Client) GetServerAuths(ctx context.Context) ([]*pb.ServerAuthorization,
 
 	results := make([]*pb.ServerAuthorization, len(servers.Items))
 	for i, s := range servers.Items {
-		raw, err := s.MarshalJSON()
-		if err != nil {
-			return nil, err
-		}
-
+		s := s
 		results[i] = &pb.ServerAuthorization{
-			ServerAuthorization: raw,
+			ServerAuthorization: c.serialize(&s, sazSGV),
 		}
 	}
 

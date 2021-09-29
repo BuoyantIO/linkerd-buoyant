@@ -25,13 +25,9 @@ func (c *Client) GetMulticlusterLinks(ctx context.Context) ([]*pb.MulticlusterLi
 
 	results := make([]*pb.MulticlusterLink, len(links.Items))
 	for i, s := range links.Items {
-		raw, err := s.MarshalJSON()
-		if err != nil {
-			return nil, err
-		}
-
+		s := s
 		results[i] = &pb.MulticlusterLink{
-			MulticlusterLink: raw,
+			MulticlusterLink: c.serialize(&s, linkSGV),
 		}
 	}
 

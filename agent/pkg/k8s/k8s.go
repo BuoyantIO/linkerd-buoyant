@@ -11,6 +11,7 @@ import (
 	spclient "github.com/linkerd/linkerd2/controller/gen/client/clientset/versioned"
 	spscheme "github.com/linkerd/linkerd2/controller/gen/client/clientset/versioned/scheme"
 	l5dk8s "github.com/linkerd/linkerd2/pkg/k8s"
+	"github.com/linkerd/linkerd2/pkg/multicluster"
 	ts "github.com/servicemeshinterface/smi-sdk-go/pkg/apis/split/v1alpha1"
 	tsscheme "github.com/servicemeshinterface/smi-sdk-go/pkg/gen/client/split/clientset/versioned/scheme"
 	log "github.com/sirupsen/logrus"
@@ -19,14 +20,13 @@ import (
 	kerrors "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/runtime/schema"
-	"k8s.io/apimachinery/pkg/runtime/serializer/json"
 	"k8s.io/apimachinery/pkg/runtime/serializer/protobuf"
 	"k8s.io/client-go/informers"
 	corev1informers "k8s.io/client-go/informers/core/v1"
-	"k8s.io/client-go/kubernetes/scheme"
 	appsv1listers "k8s.io/client-go/listers/apps/v1"
 	corev1listers "k8s.io/client-go/listers/core/v1"
 	"k8s.io/client-go/tools/cache"
+	"k8s.io/kubectl/pkg/scheme"
 )
 
 type Client struct {
@@ -73,6 +73,9 @@ const (
 )
 
 var errSyncCache = errors.New("failed to sync caches")
+var linkSGV = multicluster.LinkGVR.GroupVersion()
+var serverSGV = l5dk8s.ServerGVR.GroupVersion()
+var sazSGV = l5dk8s.SazGVR.GroupVersion()
 
 func NewClient(sharedInformers informers.SharedInformerFactory, l5dApi *l5dk8s.KubernetesAPI, spClient spclient.Interface, local bool) *Client {
 	log := log.WithField("client", "k8s")
@@ -82,13 +85,16 @@ func NewClient(sharedInformers informers.SharedInformerFactory, l5dApi *l5dk8s.K
 	tsscheme.AddToScheme(scheme.Scheme)
 
 	protoSerializer := protobuf.NewSerializer(scheme.Scheme, scheme.Scheme)
-	yamlSerializer := json.NewYAMLSerializer(json.DefaultMetaFactory, scheme.Scheme, scheme.Scheme)
+	jsonSerializer := scheme.DefaultJSONEncoder()
 
 	encoders := map[runtime.GroupVersioner]runtime.Encoder{
 		v1.SchemeGroupVersion:     scheme.Codecs.EncoderForVersion(protoSerializer, v1.SchemeGroupVersion),
 		appsv1.SchemeGroupVersion: scheme.Codecs.EncoderForVersion(protoSerializer, appsv1.SchemeGroupVersion),
-		ts.SchemeGroupVersion:     scheme.Codecs.EncoderForVersion(yamlSerializer, ts.SchemeGroupVersion),
-		sp.SchemeGroupVersion:     scheme.Codecs.EncoderForVersion(yamlSerializer, sp.SchemeGroupVersion),
+		ts.SchemeGroupVersion:     scheme.Codecs.EncoderForVersion(jsonSerializer, ts.SchemeGroupVersion),
+		sp.SchemeGroupVersion:     scheme.Codecs.EncoderForVersion(jsonSerializer, sp.SchemeGroupVersion),
+		linkSGV:                   scheme.Codecs.EncoderForVersion(jsonSerializer, linkSGV),
+		sazSGV:                    scheme.Codecs.EncoderForVersion(jsonSerializer, sazSGV),
+		serverSGV:                 scheme.Codecs.EncoderForVersion(jsonSerializer, serverSGV),
 	}
 
 	podInformer := sharedInformers.Core().V1().Pods()
