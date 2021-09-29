@@ -52,8 +52,9 @@ type Client struct {
 	eventInformer corev1informers.EventInformer
 	eventSynced   cache.InformerSynced
 
-	log   *log.Entry
-	local bool
+	log                   *log.Entry
+	local                 bool
+	ignoreCRDSupportCheck bool
 }
 
 type containerConnection struct {
@@ -241,6 +242,10 @@ func (c *Client) getContainerConnection(pod *v1.Pod, container *v1.Container, po
 }
 
 func (c *Client) resourceSupported(gvr schema.GroupVersionResource) (bool, error) {
+	if c.ignoreCRDSupportCheck {
+		return true, nil
+	}
+
 	gv := gvr.GroupVersion().String()
 	res, err := c.k8sClient.Discovery().ServerResourcesForGroupVersion(gv)
 	if err != nil && !kerrors.IsNotFound(err) {
