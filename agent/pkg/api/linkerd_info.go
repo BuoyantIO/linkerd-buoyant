@@ -18,7 +18,7 @@ func (c *Client) TrafficSplitInfo(info *pb.TrafficSplitInfo) error {
 	return c.sendLinkerdMsg(msg)
 }
 
-func (c *Client) SpInfo(info *pb.ServiceProfileInfo) error {
+func (c *Client) SPInfo(info *pb.ServiceProfileInfo) error {
 	msg := &pb.LinkerdMessage{
 		Auth: c.auth,
 		Message: &pb.LinkerdMessage_ServiceProfileInfo{
@@ -29,7 +29,7 @@ func (c *Client) SpInfo(info *pb.ServiceProfileInfo) error {
 	return c.sendLinkerdMsg(msg)
 }
 
-func (c *Client) McInfo(info *pb.MulticlusterInfo) error {
+func (c *Client) MCInfo(info *pb.MulticlusterInfo) error {
 	msg := &pb.LinkerdMessage{
 		Auth: c.auth,
 		Message: &pb.LinkerdMessage_MulticlusterInfo{

@@ -30,10 +30,8 @@ import (
 )
 
 type Client struct {
-	// the presence of the L5D k8s api signifies that we are running in local mode
-	// and that we should use it for port forwarding
-	l5dApi   *l5dk8s.KubernetesAPI
-	spClient spclient.Interface
+	k8sClient *l5dk8s.KubernetesAPI
+	spClient  spclient.Interface
 
 	encoders map[runtime.GroupVersioner]runtime.Encoder
 
@@ -77,7 +75,7 @@ var linkSGV = multicluster.LinkGVR.GroupVersion()
 var serverSGV = l5dk8s.ServerGVR.GroupVersion()
 var sazSGV = l5dk8s.SazGVR.GroupVersion()
 
-func NewClient(sharedInformers informers.SharedInformerFactory, l5dApi *l5dk8s.KubernetesAPI, spClient spclient.Interface, local bool) *Client {
+func NewClient(sharedInformers informers.SharedInformerFactory, k8sClient *l5dk8s.KubernetesAPI, spClient spclient.Interface, local bool) *Client {
 	log := log.WithField("client", "k8s")
 	log.Debug("initializing")
 
@@ -86,6 +84,19 @@ func NewClient(sharedInformers informers.SharedInformerFactory, l5dApi *l5dk8s.K
 
 	protoSerializer := protobuf.NewSerializer(scheme.Scheme, scheme.Scheme)
 	jsonSerializer := scheme.DefaultJSONEncoder()
+
+	// We handle the CRDs differently depending on whether we have a typed client provided
+	// For types that we do not have a cleint for we use the `unstructured` package. As we
+	// also do not have proto definitions for these CRDs, we serialize them to JSON.
+	//
+	// +-------------------------+-----------------------------+----------+------------+
+	// |          Group          |            Kind             |  Client  | Serializer |
+	// +-------------------------+-----------------------------+----------+------------+
+	// | policy.linkerd.io       | servers,serverAuthorizaions | dynamic  | json       |
+	// | multicluster.linkerd.io | links                       | dynamic  | json       |
+	// | linkerd.io              | serviceprofiles             | spclient | json       |
+	// | split.smi-spec.io       | trafficsplits               | tsclient | json       |
+	// +-------------------------+-----------------------------+----------+------------+
 
 	encoders := map[runtime.GroupVersioner]runtime.Encoder{
 		v1.SchemeGroupVersion:     scheme.Codecs.EncoderForVersion(protoSerializer, v1.SchemeGroupVersion),
@@ -135,10 +146,10 @@ func NewClient(sharedInformers informers.SharedInformerFactory, l5dApi *l5dk8s.K
 		eventInformer: eventInformer,
 		eventSynced:   eventInformerSynced,
 
-		l5dApi:   l5dApi,
-		spClient: spClient,
-		log:      log,
-		local:    local,
+		k8sClient: k8sClient,
+		spClient:  spClient,
+		log:       log,
+		local:     local,
 	}
 }
 
@@ -197,7 +208,7 @@ func (c *Client) localMode() bool {
 func (c *Client) getContainerConnection(pod *v1.Pod, container *v1.Container, portName string) (*containerConnection, error) {
 	if c.localMode() {
 		// running in local mode, we need a port forward
-		pf, err := l5dk8s.NewContainerMetricsForward(c.l5dApi, *pod, *container, false, l5dk8s.ProxyAdminPortName)
+		pf, err := l5dk8s.NewContainerMetricsForward(c.k8sClient, *pod, *container, false, l5dk8s.ProxyAdminPortName)
 		if err != nil {
 			return nil, err
 		}
@@ -231,9 +242,7 @@ func (c *Client) getContainerConnection(pod *v1.Pod, container *v1.Container, po
 
 func (c *Client) resourceSupported(gvr schema.GroupVersionResource) (bool, error) {
 	gv := gvr.GroupVersion().String()
-	c.l5dApi.Apiregistration.Discovery()
-
-	res, err := c.l5dApi.Discovery().ServerResourcesForGroupVersion(gv)
+	res, err := c.k8sClient.Discovery().ServerResourcesForGroupVersion(gv)
 	if err != nil && !kerrors.IsNotFound(err) {
 		return false, err
 	}

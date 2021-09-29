@@ -18,7 +18,7 @@ func (c *Client) GetServers(ctx context.Context) ([]*pb.Server, error) {
 		return nil, nil
 	}
 
-	servers, err := c.l5dApi.DynamicClient.Resource(l5dk8s.ServerGVR).Namespace(metav1.NamespaceAll).List(ctx, metav1.ListOptions{})
+	servers, err := c.k8sClient.DynamicClient.Resource(l5dk8s.ServerGVR).Namespace(metav1.NamespaceAll).List(ctx, metav1.ListOptions{})
 	if err != nil {
 		return nil, err
 	}
@@ -44,7 +44,7 @@ func (c *Client) GetServerAuths(ctx context.Context) ([]*pb.ServerAuthorization,
 		return nil, nil
 	}
 
-	servers, err := c.l5dApi.DynamicClient.Resource(l5dk8s.SazGVR).Namespace(metav1.NamespaceAll).List(ctx, metav1.ListOptions{})
+	servers, err := c.k8sClient.DynamicClient.Resource(l5dk8s.SazGVR).Namespace(metav1.NamespaceAll).List(ctx, metav1.ListOptions{})
 	if err != nil {
 		return nil, err
 	}

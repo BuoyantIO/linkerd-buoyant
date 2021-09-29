@@ -18,7 +18,7 @@ func (c *Client) GetMulticlusterLinks(ctx context.Context) ([]*pb.MulticlusterLi
 		return nil, nil
 	}
 
-	links, err := c.l5dApi.DynamicClient.Resource(multicluster.LinkGVR).Namespace(metav1.NamespaceAll).List(ctx, metav1.ListOptions{})
+	links, err := c.k8sClient.DynamicClient.Resource(multicluster.LinkGVR).Namespace(metav1.NamespaceAll).List(ctx, metav1.ListOptions{})
 	if err != nil {
 		return nil, err
 	}

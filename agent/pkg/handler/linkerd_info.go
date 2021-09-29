@@ -71,7 +71,7 @@ func (h *LinkerdInfo) handleTrafficSplits(ctx context.Context) {
 	m := &pb.TrafficSplitInfo{
 		TrafficSplits: trafficSplits,
 	}
-	h.log.Tracef("handleLinkerdInfo: %s", prototext.Format(m))
+	h.log.Tracef("handleTrafficSplits: %s", prototext.Format(m))
 
 	err = h.api.TrafficSplitInfo(m)
 	if err != nil {
@@ -89,9 +89,9 @@ func (h *LinkerdInfo) handleServiceProfiles(ctx context.Context) {
 	m := &pb.ServiceProfileInfo{
 		ServiceProfiles: serviceProfiles,
 	}
-	h.log.Tracef("handleLinkerdInfo: %s", prototext.Format(m))
+	h.log.Tracef("handleServiceProfiles: %s", prototext.Format(m))
 
-	err = h.api.SpInfo(m)
+	err = h.api.SPInfo(m)
 	if err != nil {
 		h.log.Errorf("error sending ServiceProfileInfo message: %s", err)
 	}
@@ -107,9 +107,9 @@ func (h *LinkerdInfo) handleMulticluster(ctx context.Context) {
 	m := &pb.MulticlusterInfo{
 		MulticlusterLinks: links,
 	}
-	h.log.Tracef("handleLinkerdInfo: %s", prototext.Format(m))
+	h.log.Tracef("handleMulticluster: %s", prototext.Format(m))
 
-	err = h.api.McInfo(m)
+	err = h.api.MCInfo(m)
 	if err != nil {
 		h.log.Errorf("error sending MulticlusterInfo message: %s", err)
 	}
@@ -152,7 +152,7 @@ func (h *LinkerdInfo) handleCertsInfo(ctx context.Context) {
 			ControlPlane: certs,
 		},
 	}
-	h.log.Tracef("handleLinkerdInfo: %s", prototext.Format(m))
+	h.log.Tracef("handleCertsInfo: %s", prototext.Format(m))
 
 	err = h.api.CrtInfo(m)
 	if err != nil {

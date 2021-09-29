@@ -440,7 +440,7 @@ AiAtuoI5XuCtrGVRzSmRTl2ra28aV9MyTU7d5qnTAFHKSgIgRKCvluOSgA5O21p5
 			}
 
 			c.Sync(nil, time.Second)
-			client := NewClient(c.sharedInformers, c.l5dApi, nil, false)
+			client := NewClient(c.sharedInformers, c.k8sClient, nil, false)
 
 			roots, err := client.extractRootsCerts(context.Background(), tc.container, "linkerd")
 			if tc.expectedErr != nil {
