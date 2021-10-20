@@ -105,6 +105,8 @@ func install(ctx context.Context, cfg *config, client k8s.Client, openURL openUR
 
 	fmt.Fprintf(cfg.stderr, "Agent manifest available at:\n%s\n\n", agentURL)
 
+	fmt.Fprint(cfg.stderr, "Need help? Message us in the #buoyant-cloud Slack channel:\nhttps://linkerd.slack.com/archives/C01QSTM20BY\n\n")
+
 	return nil
 }
 
