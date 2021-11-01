@@ -7,8 +7,10 @@ import (
 	"net/url"
 	"time"
 
+	server "github.com/linkerd/linkerd2/controller/gen/apis/server/v1beta1"
+	serverAuthorization "github.com/linkerd/linkerd2/controller/gen/apis/serverauthorization/v1beta1"
 	sp "github.com/linkerd/linkerd2/controller/gen/apis/serviceprofile/v1alpha2"
-	spclient "github.com/linkerd/linkerd2/controller/gen/client/clientset/versioned"
+	l5dApi "github.com/linkerd/linkerd2/controller/gen/client/clientset/versioned"
 	spscheme "github.com/linkerd/linkerd2/controller/gen/client/clientset/versioned/scheme"
 	l5dk8s "github.com/linkerd/linkerd2/pkg/k8s"
 	"github.com/linkerd/linkerd2/pkg/multicluster"
@@ -31,7 +33,7 @@ import (
 
 type Client struct {
 	k8sClient *l5dk8s.KubernetesAPI
-	spClient  spclient.Interface
+	l5dClient l5dApi.Interface
 
 	encoders map[runtime.GroupVersioner]runtime.Encoder
 
@@ -75,10 +77,8 @@ const (
 
 var errSyncCache = errors.New("failed to sync caches")
 var linkSGV = multicluster.LinkGVR.GroupVersion()
-var serverSGV = l5dk8s.ServerGVR.GroupVersion()
-var sazSGV = l5dk8s.SazGVR.GroupVersion()
 
-func NewClient(sharedInformers informers.SharedInformerFactory, k8sClient *l5dk8s.KubernetesAPI, spClient spclient.Interface, local bool) *Client {
+func NewClient(sharedInformers informers.SharedInformerFactory, k8sClient *l5dk8s.KubernetesAPI, l5dClient l5dApi.Interface, local bool) *Client {
 	log := log.WithField("client", "k8s")
 	log.Debug("initializing")
 
@@ -92,23 +92,24 @@ func NewClient(sharedInformers informers.SharedInformerFactory, k8sClient *l5dk8
 	// For types that we do not have a cleint for we use the `unstructured` package. As we
 	// also do not have proto definitions for these CRDs, we serialize them to JSON.
 	//
-	// +-------------------------+-----------------------------+----------+------------+
-	// |          Group          |            Kind             |  Client  | Serializer |
-	// +-------------------------+-----------------------------+----------+------------+
-	// | policy.linkerd.io       | servers,serverAuthorizaions | dynamic  | json       |
-	// | multicluster.linkerd.io | links                       | dynamic  | json       |
-	// | linkerd.io              | serviceprofiles             | spclient | json       |
-	// | split.smi-spec.io       | trafficsplits               | tsclient | json       |
-	// +-------------------------+-----------------------------+----------+------------+
+	// +-------------------------+---------------------+-----------+------------+
+	// |          Group          |        Kind         |  Client   | Serializer |
+	// +-------------------------+---------------------+-----------+------------+
+	// | policy.linkerd.io       | serverAuthorizaions | l5dClient | json       |
+	// | policy.linkerd.io       | servers             | l5dClient | json       |
+	// | multicluster.linkerd.io | links               | dynamic   | json       |
+	// | linkerd.io              | serviceprofiles     | spclient  | json       |
+	// | split.smi-spec.io       | trafficsplits       | tsclient  | json       |
+	// +-------------------------+---------------------+-----------+------------+
 
 	encoders := map[runtime.GroupVersioner]runtime.Encoder{
-		v1.SchemeGroupVersion:     scheme.Codecs.EncoderForVersion(protoSerializer, v1.SchemeGroupVersion),
-		appsv1.SchemeGroupVersion: scheme.Codecs.EncoderForVersion(protoSerializer, appsv1.SchemeGroupVersion),
-		ts.SchemeGroupVersion:     scheme.Codecs.EncoderForVersion(jsonSerializer, ts.SchemeGroupVersion),
-		sp.SchemeGroupVersion:     scheme.Codecs.EncoderForVersion(jsonSerializer, sp.SchemeGroupVersion),
-		linkSGV:                   scheme.Codecs.EncoderForVersion(jsonSerializer, linkSGV),
-		sazSGV:                    scheme.Codecs.EncoderForVersion(jsonSerializer, sazSGV),
-		serverSGV:                 scheme.Codecs.EncoderForVersion(jsonSerializer, serverSGV),
+		v1.SchemeGroupVersion:                  scheme.Codecs.EncoderForVersion(protoSerializer, v1.SchemeGroupVersion),
+		appsv1.SchemeGroupVersion:              scheme.Codecs.EncoderForVersion(protoSerializer, appsv1.SchemeGroupVersion),
+		ts.SchemeGroupVersion:                  scheme.Codecs.EncoderForVersion(jsonSerializer, ts.SchemeGroupVersion),
+		sp.SchemeGroupVersion:                  scheme.Codecs.EncoderForVersion(jsonSerializer, sp.SchemeGroupVersion),
+		linkSGV:                                scheme.Codecs.EncoderForVersion(jsonSerializer, linkSGV),
+		serverAuthorization.SchemeGroupVersion: scheme.Codecs.EncoderForVersion(jsonSerializer, serverAuthorization.SchemeGroupVersion),
+		server.SchemeGroupVersion:              scheme.Codecs.EncoderForVersion(jsonSerializer, server.SchemeGroupVersion),
 	}
 
 	podInformer := sharedInformers.Core().V1().Pods()
@@ -150,7 +151,7 @@ func NewClient(sharedInformers informers.SharedInformerFactory, k8sClient *l5dk8
 		eventSynced:   eventInformerSynced,
 
 		k8sClient: k8sClient,
-		spClient:  spClient,
+		l5dClient: l5dClient,
 		log:       log,
 		local:     local,
 	}

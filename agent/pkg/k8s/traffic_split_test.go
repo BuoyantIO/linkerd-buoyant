@@ -15,7 +15,7 @@ func TestGetTrafficSplits(t *testing.T) {
 	weight := resource.MustParse("500m")
 	trafficSplit := &ts.TrafficSplit{
 		TypeMeta: metav1.TypeMeta{
-			APIVersion: "v1alpha1",
+			APIVersion: ts.SchemeGroupVersion.Identifier(),
 			Kind:       "TrafficSplit",
 		},
 		ObjectMeta: metav1.ObjectMeta{

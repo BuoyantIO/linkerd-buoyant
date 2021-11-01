@@ -18,7 +18,7 @@ func (c *Client) GetServiceProfiles(ctx context.Context) ([]*pb.ServiceProfile, 
 		return nil, nil
 	}
 
-	spses, err := c.spClient.LinkerdV1alpha2().ServiceProfiles(metav1.NamespaceAll).List(ctx, metav1.ListOptions{})
+	spses, err := c.l5dClient.LinkerdV1alpha2().ServiceProfiles(metav1.NamespaceAll).List(ctx, metav1.ListOptions{})
 	if err != nil {
 		return nil, err
 	}
