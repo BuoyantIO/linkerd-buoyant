@@ -92,15 +92,15 @@ func NewClient(sharedInformers informers.SharedInformerFactory, k8sClient *l5dk8
 	// For types that we do not have a cleint for we use the `unstructured` package. As we
 	// also do not have proto definitions for these CRDs, we serialize them to JSON.
 	//
-	// +-------------------------+---------------------+-----------+------------+
-	// |          Group          |        Kind         |  Client   | Serializer |
-	// +-------------------------+---------------------+-----------+------------+
-	// | policy.linkerd.io       | serverAuthorizaions | l5dClient | json       |
-	// | policy.linkerd.io       | servers             | l5dClient | json       |
-	// | multicluster.linkerd.io | links               | dynamic   | json       |
-	// | linkerd.io              | serviceprofiles     | spclient  | json       |
-	// | split.smi-spec.io       | trafficsplits       | tsclient  | json       |
-	// +-------------------------+---------------------+-----------+------------+
+	// +-------------------------+----------------------+-----------+------------+
+	// |          Group          |        Kind          |  Client   | Serializer |
+	// +-------------------------+----------------------+-----------+------------+
+	// | policy.linkerd.io       | serverAuthorizations | l5dClient | json       |
+	// | policy.linkerd.io       | servers              | l5dClient | json       |
+	// | multicluster.linkerd.io | links                | dynamic   | json       |
+	// | linkerd.io              | serviceprofiles      | spclient  | json       |
+	// | split.smi-spec.io       | trafficsplits        | tsclient  | json       |
+	// +-------------------------+----------------------+-----------+------------+
 
 	encoders := map[runtime.GroupVersioner]runtime.Encoder{
 		v1.SchemeGroupVersion:                  scheme.Codecs.EncoderForVersion(protoSerializer, v1.SchemeGroupVersion),

@@ -12,7 +12,7 @@ import (
 	"github.com/buoyantio/linkerd-buoyant/agent/pkg/handler"
 	"github.com/buoyantio/linkerd-buoyant/agent/pkg/k8s"
 	pb "github.com/buoyantio/linkerd-buoyant/gen/bcloud"
-	spclient "github.com/linkerd/linkerd2/controller/gen/client/clientset/versioned"
+	l5dApi "github.com/linkerd/linkerd2/controller/gen/client/clientset/versioned"
 	"github.com/linkerd/linkerd2/pkg/admin"
 	l5dk8s "github.com/linkerd/linkerd2/pkg/k8s"
 	log "github.com/sirupsen/logrus"
@@ -107,12 +107,12 @@ func main() {
 	k8sAPI, err := l5dk8s.NewAPIForConfig(k8sConfig, "", nil, 0)
 	dieIf(err)
 
-	spClient, err := spclient.NewForConfig(k8sConfig)
+	l5dClient, err := l5dApi.NewForConfig(k8sConfig)
 	dieIf(err)
 
 	sharedInformers := informers.NewSharedInformerFactory(k8sAPI.Interface, 10*time.Minute)
 
-	k8sClient := k8s.NewClient(sharedInformers, k8sAPI, spClient, *localMode)
+	k8sClient := k8s.NewClient(sharedInformers, k8sAPI, l5dClient, *localMode)
 
 	// wait for discovery API to load
 
