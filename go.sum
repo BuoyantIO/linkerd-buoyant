@@ -580,6 +580,8 @@ github.com/linkerd/linkerd2 v0.5.1-0.20211028095552-4c0267338c54 h1:C9bV6nDOdd5Y
 github.com/linkerd/linkerd2 v0.5.1-0.20211028095552-4c0267338c54/go.mod h1:J8gr7X3zuYnwWvFyjQt2FrQc+YsXnvg6LwXdJ+/cBD4=
 github.com/linkerd/linkerd2 v0.5.1-0.20211028211414-798b4c3d6712 h1:cuhbW5o344icyXeqsGXOqAhlfs713Xj8tRCG+Q7zfHw=
 github.com/linkerd/linkerd2 v0.5.1-0.20211028211414-798b4c3d6712/go.mod h1:J8gr7X3zuYnwWvFyjQt2FrQc+YsXnvg6LwXdJ+/cBD4=
+github.com/linkerd/linkerd2 v0.5.1-0.20211101210204-ff8209b9cc86 h1:u07c1sJuDI+7LbnxaCIDEKnwXfpdK6Ox2JwiFAwHvj8=
+github.com/linkerd/linkerd2 v0.5.1-0.20211101210204-ff8209b9cc86/go.mod h1:ShHewkFV7bhByf9ePLW/RoFk+0R1iYsGV41dMx/DIPg=
 github.com/linkerd/linkerd2-proxy-api v0.3.0 h1:TUfIw+XffDQQ3SQEJcIiHnZgZZxKK/ZfsVx7SeZH2nM=
 github.com/linkerd/linkerd2-proxy-api v0.3.0/go.mod h1:BuA+jXhgCXiBJkNjQrA9h1PLsJN5z6NOYJI5KVYDc2U=
 github.com/linkerd/linkerd2-proxy-init v1.4.1 h1:SMzGss09bisWOb67Qh6x9U0UkDmPde4eXf17rVOx/PM=
@@ -1495,6 +1497,8 @@ k8s.io/code-generator v0.21.0/go.mod h1:hUlps5+9QaTrKx+jiM4rmq7YmH8wPOIko64uZCHD
 k8s.io/code-generator v0.21.3/go.mod h1:K3y0Bv9Cz2cOW2vXUrNZlFbflhuPvuadW6JdnN6gGKo=
 k8s.io/code-generator v0.22.1 h1:zAcKpn+xe9Iyc4qtZlfg4tD0f+SO2h5+e/s4pZPOVhs=
 k8s.io/code-generator v0.22.1/go.mod h1:eV77Y09IopzeXOJzndrDyCI88UBok2h6WxAlBwpxa+o=
+k8s.io/code-generator v0.22.3 h1:24xLuKySzFl1XupMarNBkpt10q0N+73R9dF7wzJO/hE=
+k8s.io/code-generator v0.22.3/go.mod h1:eV77Y09IopzeXOJzndrDyCI88UBok2h6WxAlBwpxa+o=
 k8s.io/component-base v0.21.0/go.mod h1:qvtjz6X0USWXbgmbfXR+Agik4RZ3jv2Bgr5QnZzdPYw=
 k8s.io/component-base v0.21.3/go.mod h1:kkuhtfEHeZM6LkX0saqSK8PbdO7A0HigUngmhhrwfGQ=
 k8s.io/component-base v0.22.1/go.mod h1:0D+Bl8rrnsPN9v0dyYvkqFfBeAd4u7n77ze+p8CMiPo=

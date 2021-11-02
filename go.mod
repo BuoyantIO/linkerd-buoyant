@@ -4,7 +4,7 @@ go 1.17
 
 require (
 	github.com/fatih/color v1.13.0
-	github.com/linkerd/linkerd2 v0.5.1-0.20211028095552-4c0267338c54
+	github.com/linkerd/linkerd2 v0.5.1-0.20211101210204-ff8209b9cc86
 	github.com/pkg/browser v0.0.0-20201112035734-206646e67786
 	github.com/servicemeshinterface/smi-sdk-go v0.5.0
 	github.com/sirupsen/logrus v1.8.1
@@ -104,7 +104,7 @@ require (
 	gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b // indirect
 	helm.sh/helm/v3 v3.6.3 // indirect
 	k8s.io/apiextensions-apiserver v0.22.1 // indirect
-	k8s.io/code-generator v0.22.1 // indirect
+	k8s.io/code-generator v0.22.3 // indirect
 	k8s.io/gengo v0.0.0-20201214224949-b6c5ce23f027 // indirect
 	k8s.io/kube-aggregator v0.22.1 // indirect
 	k8s.io/kube-openapi v0.0.0-20210817084001-7fbd8d59e5b8 // indirect
