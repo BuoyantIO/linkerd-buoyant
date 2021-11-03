@@ -10,14 +10,14 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/runtime/schema"
+	"k8s.io/apimachinery/pkg/types"
 	"k8s.io/client-go/kubernetes/scheme"
 )
 
 var (
-	om = metav1.ObjectMeta{
-		Name:      "name",
-		Namespace: "namespace",
-	}
+	ownerUID  = types.UID("owner")
+	ownerRefs = []metav1.OwnerReference{{UID: ownerUID}}
+
 	template = corev1.PodTemplateSpec{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      "template-name",
@@ -29,28 +29,58 @@ var (
 			},
 		},
 	}
+	lbls = map[string]string{"appname": "app"}
 )
+
+func objectMeta(name string, owners []metav1.OwnerReference) metav1.ObjectMeta {
+	return metav1.ObjectMeta{
+		Name:            name,
+		Namespace:       "namespace",
+		UID:             ownerUID,
+		Labels:          lbls,
+		OwnerReferences: owners,
+	}
+}
 
 func TestDSToWorkload(t *testing.T) {
 	fixtures := []*struct {
 		testName string
 		ds       *appsv1.DaemonSet
+		pods     []runtime.Object
 	}{
 		{
 			"empty object",
 			&appsv1.DaemonSet{
+				TypeMeta: metav1.TypeMeta{
+					APIVersion: appsv1.SchemeGroupVersion.Identifier(),
+					Kind:       "DaemonSet",
+				},
 				Spec: appsv1.DaemonSetSpec{
 					Selector: &metav1.LabelSelector{},
 				},
 			},
+			nil,
 		},
 		{
 			"populated object",
 			&appsv1.DaemonSet{
-				ObjectMeta: om,
+				TypeMeta: metav1.TypeMeta{
+					APIVersion: appsv1.SchemeGroupVersion.Identifier(),
+					Kind:       "DaemonSet",
+				},
+				ObjectMeta: objectMeta("ds", nil),
 				Spec: appsv1.DaemonSetSpec{
 					Template: template,
-					Selector: &metav1.LabelSelector{},
+					Selector: &metav1.LabelSelector{MatchLabels: lbls},
+				},
+			},
+			[]runtime.Object{
+				&corev1.Pod{
+					TypeMeta: metav1.TypeMeta{
+						APIVersion: corev1.SchemeGroupVersion.Identifier(),
+						Kind:       "Pod",
+					},
+					ObjectMeta: objectMeta("pod", ownerRefs),
 				},
 			},
 		},
@@ -59,7 +89,23 @@ func TestDSToWorkload(t *testing.T) {
 	for _, tc := range fixtures {
 		tc := tc
 		t.Run(tc.testName, func(t *testing.T) {
-			workload := fakeClient().DSToWorkload(tc.ds)
+			client := fakeClient(tc.pods...)
+			err := client.Sync(nil, time.Second)
+			if err != nil {
+				t.Error(err)
+			}
+			workload := client.DSToWorkload(tc.ds)
+
+			nonEmptyPods := 0
+			for _, p := range workload.GetDaemonset().Pods {
+				if p.Pod != nil {
+					nonEmptyPods = nonEmptyPods + 1
+				}
+			}
+
+			if nonEmptyPods != len(tc.pods) {
+				t.Errorf("Expected: [%d] pods, got: [%d]", len(tc.pods), len(workload.GetDaemonset().Pods))
+			}
 
 			obj, gvk, err := deserialize(
 				workload.GetDaemonset().DaemonSet,
@@ -88,22 +134,55 @@ func TestDeployToWorkload(t *testing.T) {
 	fixtures := []*struct {
 		testName string
 		deploy   *appsv1.Deployment
+		pods     []runtime.Object
+		rs       []runtime.Object
 	}{
 		{
 			"empty object",
 			&appsv1.Deployment{
+				TypeMeta: metav1.TypeMeta{
+					APIVersion: appsv1.SchemeGroupVersion.Identifier(),
+					Kind:       "Deployment",
+				},
 				Spec: appsv1.DeploymentSpec{
 					Selector: &metav1.LabelSelector{},
 				},
 			},
+			nil,
+			nil,
 		},
 		{
 			"populated object",
 			&appsv1.Deployment{
-				ObjectMeta: om,
+				ObjectMeta: objectMeta("deploy", nil),
+				TypeMeta: metav1.TypeMeta{
+					APIVersion: appsv1.SchemeGroupVersion.Identifier(),
+					Kind:       "Deployment",
+				},
 				Spec: appsv1.DeploymentSpec{
 					Template: template,
-					Selector: &metav1.LabelSelector{},
+					Selector: &metav1.LabelSelector{MatchLabels: lbls},
+				},
+			},
+			[]runtime.Object{
+				&corev1.Pod{
+					TypeMeta: metav1.TypeMeta{
+						APIVersion: corev1.SchemeGroupVersion.Identifier(),
+						Kind:       "Pod",
+					},
+					ObjectMeta: objectMeta("pod", ownerRefs),
+				},
+			},
+			[]runtime.Object{
+				&appsv1.ReplicaSet{
+					TypeMeta: metav1.TypeMeta{
+						APIVersion: appsv1.SchemeGroupVersion.Identifier(),
+						Kind:       "ReplicaSet",
+					},
+					ObjectMeta: objectMeta("rs", nil),
+					Spec: appsv1.ReplicaSetSpec{
+						Selector: &metav1.LabelSelector{MatchLabels: lbls},
+					},
 				},
 			},
 		},
@@ -112,7 +191,29 @@ func TestDeployToWorkload(t *testing.T) {
 	for _, tc := range fixtures {
 		tc := tc
 		t.Run(tc.testName, func(t *testing.T) {
-			workload := fakeClient().DeployToWorkload(tc.deploy)
+			objs := []runtime.Object{}
+			objs = append(objs, tc.rs...)
+			objs = append(objs, tc.pods...)
+
+			client := fakeClient(objs...)
+			err := client.Sync(nil, time.Second)
+			if err != nil {
+				t.Error(err)
+			}
+			workload := client.DeployToWorkload(tc.deploy)
+
+			nonEmptyPods := 0
+			for _, rs := range workload.GetDeployment().ReplicaSets {
+				for _, p := range rs.Pods {
+					if p.Pod != nil {
+						nonEmptyPods = nonEmptyPods + 1
+					}
+				}
+			}
+
+			if nonEmptyPods != len(tc.pods) {
+				t.Errorf("Expected: [%d] pods, got: [%d]", len(tc.pods), nonEmptyPods)
+			}
 
 			obj, gvk, err := deserialize(
 				workload.GetDeployment().Deployment,
@@ -141,22 +242,41 @@ func TestSTSToWorkload(t *testing.T) {
 	fixtures := []*struct {
 		testName string
 		sts      *appsv1.StatefulSet
+		pods     []runtime.Object
 	}{
 		{
 			"empty object",
 			&appsv1.StatefulSet{
+				TypeMeta: metav1.TypeMeta{
+					APIVersion: appsv1.SchemeGroupVersion.Identifier(),
+					Kind:       "StatefulSet",
+				},
 				Spec: appsv1.StatefulSetSpec{
 					Selector: &metav1.LabelSelector{},
 				},
 			},
+			nil,
 		},
 		{
 			"populated object",
 			&appsv1.StatefulSet{
-				ObjectMeta: om,
+				ObjectMeta: objectMeta("ss", nil),
+				TypeMeta: metav1.TypeMeta{
+					APIVersion: appsv1.SchemeGroupVersion.Identifier(),
+					Kind:       "StatefulSet",
+				},
 				Spec: appsv1.StatefulSetSpec{
 					Template: template,
-					Selector: &metav1.LabelSelector{},
+					Selector: &metav1.LabelSelector{MatchLabels: lbls},
+				},
+			},
+			[]runtime.Object{
+				&corev1.Pod{
+					TypeMeta: metav1.TypeMeta{
+						APIVersion: corev1.SchemeGroupVersion.Identifier(),
+						Kind:       "Pod",
+					},
+					ObjectMeta: objectMeta("pod", ownerRefs),
 				},
 			},
 		},
@@ -165,8 +285,19 @@ func TestSTSToWorkload(t *testing.T) {
 	for _, tc := range fixtures {
 		tc := tc
 		t.Run(tc.testName, func(t *testing.T) {
-			workload := fakeClient().STSToWorkload(tc.sts)
+			client := fakeClient(tc.pods...)
+			err := client.Sync(nil, time.Second)
+			if err != nil {
+				t.Error(err)
+			}
+			workload := client.STSToWorkload(tc.sts)
 
+			nonEmptyPods := 0
+			for _, p := range workload.GetStatefulset().Pods {
+				if p.Pod != nil {
+					nonEmptyPods = nonEmptyPods + 1
+				}
+			}
 			obj, gvk, err := deserialize(
 				workload.GetStatefulset().StatefulSet,
 			)

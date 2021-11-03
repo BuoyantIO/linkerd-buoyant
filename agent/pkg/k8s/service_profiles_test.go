@@ -14,7 +14,7 @@ import (
 func TestGetServiceProfile(t *testing.T) {
 	serviceProfile := sp.ServiceProfile{
 		TypeMeta: metav1.TypeMeta{
-			APIVersion: l5dk8s.ServiceProfileAPIVersion,
+			APIVersion: sp.SchemeGroupVersion.Identifier(),
 			Kind:       l5dk8s.ServiceProfileKind,
 		},
 		ObjectMeta: metav1.ObjectMeta{

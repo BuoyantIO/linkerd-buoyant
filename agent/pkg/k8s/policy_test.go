@@ -5,27 +5,30 @@ import (
 	"context"
 	"testing"
 
-	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
+	server "github.com/linkerd/linkerd2/controller/gen/apis/server/v1beta1"
+	serverauthorization "github.com/linkerd/linkerd2/controller/gen/apis/serverauthorization/v1beta1"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/util/intstr"
 	"k8s.io/kubectl/pkg/scheme"
 )
 
 func TestGetServers(t *testing.T) {
-	server := &unstructured.Unstructured{
-		Object: map[string]interface{}{
-			"apiVersion": "policy.linkerd.io/v1alpha1",
-			"kind":       "Server",
-			"metadata": map[string]interface{}{
-				"name":      "srv",
-				"namespace": "srvns",
-			},
-			"spec": map[string]interface{}{
-				"port":          "http",
-				"proxyProtocol": "HTTP/1",
-			},
+	srv := &server.Server{
+		TypeMeta: metav1.TypeMeta{
+			APIVersion: server.SchemeGroupVersion.Identifier(),
+			Kind:       "Server",
+		},
+		ObjectMeta: metav1.ObjectMeta{
+			Name:      "srv",
+			Namespace: "srvns",
+		},
+		Spec: server.ServerSpec{
+			Port:          intstr.FromString("http"),
+			ProxyProtocol: "HTTP/1",
 		},
 	}
 
-	client := fakeClient(server)
+	client := fakeClient(srv)
 
 	result, err := client.GetServers(context.Background())
 	if err != nil {
@@ -34,7 +37,7 @@ func TestGetServers(t *testing.T) {
 
 	var buf bytes.Buffer
 	jsonSerializer := scheme.DefaultJSONEncoder()
-	if err := jsonSerializer.Encode(server, &buf); err != nil {
+	if err := jsonSerializer.Encode(srv, &buf); err != nil {
 		t.Error(err)
 	}
 
@@ -47,26 +50,27 @@ func TestGetServers(t *testing.T) {
 }
 
 func TestGetServerAuths(t *testing.T) {
-	server := &unstructured.Unstructured{
-		Object: map[string]interface{}{
-			"apiVersion": "policy.linkerd.io/v1alpha1",
-			"kind":       "ServerAuthorization",
-			"metadata": map[string]interface{}{
-				"name":      "saz",
-				"namespace": "sazns",
+	srvAuth := &serverauthorization.ServerAuthorization{
+		TypeMeta: metav1.TypeMeta{
+			APIVersion: serverauthorization.SchemeGroupVersion.Identifier(),
+			Kind:       "ServerAuthorization",
+		},
+		ObjectMeta: metav1.ObjectMeta{
+			Name:      "saz",
+			Namespace: "sazns",
+		},
+
+		Spec: serverauthorization.ServerAuthorizationSpec{
+			Server: serverauthorization.Server{
+				Name: "web-http",
 			},
-			"spec": map[string]interface{}{
-				"server": map[string]interface{}{
-					"name": "web-http",
-				},
-				"client": map[string]interface{}{
-					"unauthenticated": "true",
-				},
+			Client: serverauthorization.Client{
+				Unauthenticated: true,
 			},
 		},
 	}
 
-	client := fakeClient(server)
+	client := fakeClient(srvAuth)
 
 	result, err := client.GetServerAuths(context.Background())
 	if err != nil {
@@ -75,7 +79,7 @@ func TestGetServerAuths(t *testing.T) {
 
 	var buf bytes.Buffer
 	jsonSerializer := scheme.DefaultJSONEncoder()
-	if err := jsonSerializer.Encode(server, &buf); err != nil {
+	if err := jsonSerializer.Encode(srvAuth, &buf); err != nil {
 		t.Error(err)
 	}
 

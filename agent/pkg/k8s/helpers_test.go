@@ -3,9 +3,9 @@ package k8s
 import (
 	"time"
 
-	spclient "github.com/linkerd/linkerd2/controller/gen/client/clientset/versioned"
-	spfake "github.com/linkerd/linkerd2/controller/gen/client/clientset/versioned/fake"
-	spscheme "github.com/linkerd/linkerd2/controller/gen/client/clientset/versioned/scheme"
+	l5dClient "github.com/linkerd/linkerd2/controller/gen/client/clientset/versioned"
+	l5dFake "github.com/linkerd/linkerd2/controller/gen/client/clientset/versioned/fake"
+	l5dScheme "github.com/linkerd/linkerd2/controller/gen/client/clientset/versioned/scheme"
 	l5dk8s "github.com/linkerd/linkerd2/pkg/k8s"
 	tsclient "github.com/servicemeshinterface/smi-sdk-go/pkg/gen/client/split/clientset/versioned"
 	tsfake "github.com/servicemeshinterface/smi-sdk-go/pkg/gen/client/split/clientset/versioned/fake"
@@ -20,7 +20,7 @@ import (
 )
 
 func fakeClient(objects ...runtime.Object) *Client {
-	cs, sp, ts, dyn := fakeClientSets(objects...)
+	cs, l5dApiClient, ts, dyn := fakeClientSets(objects...)
 
 	sharedInformers := informers.NewSharedInformerFactory(cs, 10*time.Minute)
 
@@ -30,31 +30,31 @@ func fakeClient(objects ...runtime.Object) *Client {
 		DynamicClient: dyn,
 	}
 
-	client := NewClient(sharedInformers, k8sApi, sp, false)
+	client := NewClient(sharedInformers, k8sApi, l5dApiClient, false)
 	client.ignoreCRDSupportCheck = true
 	return client
 }
 
-func fakeClientSets(objects ...runtime.Object) (kubernetes.Interface, spclient.Interface, tsclient.Interface, dynamic.Interface) {
-	spscheme.AddToScheme(scheme.Scheme)
+func fakeClientSets(objects ...runtime.Object) (kubernetes.Interface, l5dClient.Interface, tsclient.Interface, dynamic.Interface) {
+	l5dScheme.AddToScheme(scheme.Scheme)
 	tsscheme.AddToScheme(scheme.Scheme)
 
 	objs := []runtime.Object{}
-	spObjs := []runtime.Object{}
+	l5dObjects := []runtime.Object{}
 	tsObjs := []runtime.Object{}
 	dynamicObjs := []runtime.Object{}
 
 	for _, obj := range objects {
 		switch obj.GetObjectKind().GroupVersionKind().Kind {
 		case "ServiceProfile":
-			spObjs = append(spObjs, obj)
+			l5dObjects = append(l5dObjects, obj)
+		case "ServerAuthorization":
+			l5dObjects = append(l5dObjects, obj)
+		case "Server":
+			l5dObjects = append(l5dObjects, obj)
 		case "TrafficSplit":
 			tsObjs = append(tsObjs, obj)
 		case "Link":
-			dynamicObjs = append(tsObjs, obj)
-		case "ServerAuthorization":
-			dynamicObjs = append(tsObjs, obj)
-		case "Server":
 			dynamicObjs = append(tsObjs, obj)
 		default:
 			objs = append(objs, obj)
@@ -64,7 +64,7 @@ func fakeClientSets(objects ...runtime.Object) (kubernetes.Interface, spclient.I
 	cs := fake.NewSimpleClientset(objs...)
 
 	return cs,
-		spfake.NewSimpleClientset(spObjs...),
+		l5dFake.NewSimpleClientset(l5dObjects...),
 		tsfake.NewSimpleClientset(tsObjs...),
 		dynamicfakeclient.NewSimpleDynamicClient(scheme.Scheme, dynamicObjs...)
 }
