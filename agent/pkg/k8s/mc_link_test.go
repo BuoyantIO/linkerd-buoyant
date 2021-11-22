@@ -5,38 +5,42 @@ import (
 	"context"
 	"testing"
 
+	link "github.com/linkerd/linkerd2/controller/gen/apis/link/v1alpha1"
 	l5dk8s "github.com/linkerd/linkerd2/pkg/k8s"
-	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/labels"
 	"k8s.io/kubectl/pkg/scheme"
 )
 
 func TestGetMcLinks(t *testing.T) {
-	mcLink := &unstructured.Unstructured{
-		Object: map[string]interface{}{
-			"apiVersion": l5dk8s.LinkAPIGroupVersion,
-			"kind":       l5dk8s.LinkKind,
-			"metadata": map[string]interface{}{
-				"name":      "linkname",
-				"namespace": "linkns",
+	mcLink := link.Link{
+		TypeMeta: metav1.TypeMeta{
+			APIVersion: link.SchemeGroupVersion.Identifier(),
+			Kind:       l5dk8s.LinkKind,
+		},
+		ObjectMeta: metav1.ObjectMeta{
+			Name:      "linkname",
+			Namespace: "linkns",
+		},
+
+		Spec: link.LinkSpec{
+			TargetClusterName:             "tcn",
+			TargetClusterDomain:           "tcd",
+			TargetClusterLinkerdNamespace: "tcln",
+			ClusterCredentialsSecret:      "ccs",
+			GatewayAddress:                "ga",
+			GatewayPort:                   "555",
+			GatewayIdentity:               "identity",
+			ProbeSpec: link.ProbeSpec{
+				Path:   "pth",
+				Port:   "80",
+				Period: "8s",
 			},
-			"spec": map[string]interface{}{
-				"targetClusterName":             "tcn",
-				"targetClusterDomain":           "tcd",
-				"targetClusterLinkerdNamespace": "tcln",
-				"clusterCredentialsSecret":      "ccs",
-				"gatewayAddress":                "ga",
-				"gatewayPort":                   "555",
-				"gatewayIdentity":               "identity",
-				"probeSpec": map[string]interface{}{
-					"path":   "pth",
-					"port":   "80",
-					"period": "8s",
-				},
-			},
+			Selector: *metav1.SetAsLabelSelector(labels.Set(map[string]string{"l": "v"})),
 		},
 	}
 
-	client := fakeClient(mcLink)
+	client := fakeClient(&mcLink)
 
 	result, err := client.GetMulticlusterLinks(context.Background())
 	if err != nil {
@@ -45,7 +49,7 @@ func TestGetMcLinks(t *testing.T) {
 
 	var buf bytes.Buffer
 	jsonSerializer := scheme.DefaultJSONEncoder()
-	if err := jsonSerializer.Encode(mcLink, &buf); err != nil {
+	if err := jsonSerializer.Encode(&mcLink, &buf); err != nil {
 		t.Error(err)
 	}
 

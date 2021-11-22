@@ -11,8 +11,6 @@ import (
 	tsfake "github.com/servicemeshinterface/smi-sdk-go/pkg/gen/client/split/clientset/versioned/fake"
 	tsscheme "github.com/servicemeshinterface/smi-sdk-go/pkg/gen/client/split/clientset/versioned/scheme"
 	"k8s.io/apimachinery/pkg/runtime"
-	"k8s.io/client-go/dynamic"
-	dynamicfakeclient "k8s.io/client-go/dynamic/fake"
 	"k8s.io/client-go/informers"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/kubernetes/fake"
@@ -20,14 +18,13 @@ import (
 )
 
 func fakeClient(objects ...runtime.Object) *Client {
-	cs, l5dApiClient, ts, dyn := fakeClientSets(objects...)
+	cs, l5dApiClient, ts := fakeClientSets(objects...)
 
 	sharedInformers := informers.NewSharedInformerFactory(cs, 10*time.Minute)
 
 	k8sApi := &l5dk8s.KubernetesAPI{
-		Interface:     cs,
-		TsClient:      ts,
-		DynamicClient: dyn,
+		Interface: cs,
+		TsClient:  ts,
 	}
 
 	client := NewClient(sharedInformers, k8sApi, l5dApiClient, false)
@@ -35,14 +32,13 @@ func fakeClient(objects ...runtime.Object) *Client {
 	return client
 }
 
-func fakeClientSets(objects ...runtime.Object) (kubernetes.Interface, l5dClient.Interface, tsclient.Interface, dynamic.Interface) {
+func fakeClientSets(objects ...runtime.Object) (kubernetes.Interface, l5dClient.Interface, tsclient.Interface) {
 	l5dScheme.AddToScheme(scheme.Scheme)
 	tsscheme.AddToScheme(scheme.Scheme)
 
 	objs := []runtime.Object{}
 	l5dObjects := []runtime.Object{}
 	tsObjs := []runtime.Object{}
-	dynamicObjs := []runtime.Object{}
 
 	for _, obj := range objects {
 		switch obj.GetObjectKind().GroupVersionKind().Kind {
@@ -52,10 +48,10 @@ func fakeClientSets(objects ...runtime.Object) (kubernetes.Interface, l5dClient.
 			l5dObjects = append(l5dObjects, obj)
 		case "Server":
 			l5dObjects = append(l5dObjects, obj)
+		case "Link":
+			l5dObjects = append(l5dObjects, obj)
 		case "TrafficSplit":
 			tsObjs = append(tsObjs, obj)
-		case "Link":
-			dynamicObjs = append(tsObjs, obj)
 		default:
 			objs = append(objs, obj)
 		}
@@ -65,6 +61,5 @@ func fakeClientSets(objects ...runtime.Object) (kubernetes.Interface, l5dClient.
 
 	return cs,
 		l5dFake.NewSimpleClientset(l5dObjects...),
-		tsfake.NewSimpleClientset(tsObjs...),
-		dynamicfakeclient.NewSimpleDynamicClient(scheme.Scheme, dynamicObjs...)
+		tsfake.NewSimpleClientset(tsObjs...)
 }
