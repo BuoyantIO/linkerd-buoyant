@@ -4,7 +4,7 @@ go 1.17
 
 require (
 	github.com/fatih/color v1.13.0
-	github.com/linkerd/linkerd2 v0.5.1-0.20211101210204-ff8209b9cc86
+	github.com/linkerd/linkerd2 v0.5.1-0.20211123224914-40cdb7fc2363
 	github.com/pkg/browser v0.0.0-20201112035734-206646e67786
 	github.com/servicemeshinterface/smi-sdk-go v0.5.0
 	github.com/sirupsen/logrus v1.8.1
@@ -12,11 +12,11 @@ require (
 	google.golang.org/grpc v1.42.0
 	google.golang.org/grpc/cmd/protoc-gen-go-grpc v1.1.0
 	google.golang.org/protobuf v1.27.1
-	k8s.io/api v0.22.3
-	k8s.io/apimachinery v0.22.3
-	k8s.io/client-go v0.22.3
+	k8s.io/api v0.22.4
+	k8s.io/apimachinery v0.22.4
+	k8s.io/client-go v0.22.4
 	k8s.io/klog/v2 v2.30.0
-	k8s.io/kubectl v0.22.1
+	k8s.io/kubectl v0.22.4
 	sigs.k8s.io/yaml v1.3.0
 )
 
@@ -90,11 +90,9 @@ require (
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b // indirect
 	helm.sh/helm/v3 v3.7.1 // indirect
-	k8s.io/apiextensions-apiserver v0.22.3 // indirect
-	k8s.io/kube-aggregator v0.22.3 // indirect
-	k8s.io/kube-openapi v0.0.0-20210817084001-7fbd8d59e5b8 // indirect
+	k8s.io/apiextensions-apiserver v0.22.4 // indirect
+	k8s.io/kube-aggregator v0.22.4 // indirect
+	k8s.io/kube-openapi v0.0.0-20211109043538-20434351676c // indirect
 	k8s.io/utils v0.0.0-20210820185131-d34e5cb4466e // indirect
 	sigs.k8s.io/structured-merge-diff/v4 v4.1.2 // indirect
 )
-
-replace github.com/linkerd/linkerd2 v0.5.1-0.20211101210204-ff8209b9cc86 => github.com/zaharidichev/linkerd2 v0.5.1-0.20211122083058-d0fccb73fb7a
