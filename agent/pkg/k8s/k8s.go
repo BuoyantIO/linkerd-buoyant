@@ -7,13 +7,13 @@ import (
 	"net/url"
 	"time"
 
+	link "github.com/linkerd/linkerd2/controller/gen/apis/link/v1alpha1"
 	server "github.com/linkerd/linkerd2/controller/gen/apis/server/v1beta1"
 	serverAuthorization "github.com/linkerd/linkerd2/controller/gen/apis/serverauthorization/v1beta1"
 	sp "github.com/linkerd/linkerd2/controller/gen/apis/serviceprofile/v1alpha2"
 	l5dApi "github.com/linkerd/linkerd2/controller/gen/client/clientset/versioned"
-	spscheme "github.com/linkerd/linkerd2/controller/gen/client/clientset/versioned/scheme"
+	l5dscheme "github.com/linkerd/linkerd2/controller/gen/client/clientset/versioned/scheme"
 	l5dk8s "github.com/linkerd/linkerd2/pkg/k8s"
-	"github.com/linkerd/linkerd2/pkg/multicluster"
 	ts "github.com/servicemeshinterface/smi-sdk-go/pkg/apis/split/v1alpha1"
 	tsscheme "github.com/servicemeshinterface/smi-sdk-go/pkg/gen/client/split/clientset/versioned/scheme"
 	log "github.com/sirupsen/logrus"
@@ -76,13 +76,12 @@ const (
 )
 
 var errSyncCache = errors.New("failed to sync caches")
-var linkSGV = multicluster.LinkGVR.GroupVersion()
 
 func NewClient(sharedInformers informers.SharedInformerFactory, k8sClient *l5dk8s.KubernetesAPI, l5dClient l5dApi.Interface, local bool) *Client {
 	log := log.WithField("client", "k8s")
 	log.Debug("initializing")
 
-	spscheme.AddToScheme(scheme.Scheme)
+	l5dscheme.AddToScheme(scheme.Scheme)
 	tsscheme.AddToScheme(scheme.Scheme)
 
 	protoSerializer := protobuf.NewSerializer(scheme.Scheme, scheme.Scheme)
@@ -97,8 +96,8 @@ func NewClient(sharedInformers informers.SharedInformerFactory, k8sClient *l5dk8
 	// +-------------------------+----------------------+-----------+------------+
 	// | policy.linkerd.io       | serverAuthorizations | l5dClient | json       |
 	// | policy.linkerd.io       | servers              | l5dClient | json       |
-	// | multicluster.linkerd.io | links                | dynamic   | json       |
-	// | linkerd.io              | serviceprofiles      | spclient  | json       |
+	// | multicluster.linkerd.io | links                | l5dClient | json       |
+	// | linkerd.io              | serviceprofiles      | l5dClient | json       |
 	// | split.smi-spec.io       | trafficsplits        | tsclient  | json       |
 	// +-------------------------+----------------------+-----------+------------+
 
@@ -107,7 +106,7 @@ func NewClient(sharedInformers informers.SharedInformerFactory, k8sClient *l5dk8
 		appsv1.SchemeGroupVersion:              scheme.Codecs.EncoderForVersion(protoSerializer, appsv1.SchemeGroupVersion),
 		ts.SchemeGroupVersion:                  scheme.Codecs.EncoderForVersion(jsonSerializer, ts.SchemeGroupVersion),
 		sp.SchemeGroupVersion:                  scheme.Codecs.EncoderForVersion(jsonSerializer, sp.SchemeGroupVersion),
-		linkSGV:                                scheme.Codecs.EncoderForVersion(jsonSerializer, linkSGV),
+		link.SchemeGroupVersion:                scheme.Codecs.EncoderForVersion(jsonSerializer, link.SchemeGroupVersion),
 		serverAuthorization.SchemeGroupVersion: scheme.Codecs.EncoderForVersion(jsonSerializer, serverAuthorization.SchemeGroupVersion),
 		server.SchemeGroupVersion:              scheme.Codecs.EncoderForVersion(jsonSerializer, server.SchemeGroupVersion),
 	}
