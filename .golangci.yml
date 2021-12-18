@@ -1,7 +1,7 @@
 # This file specifies which linters golangci-lint should run.
 #
 # For descriptions of all available linters, run:
-# ./target/bin/.golangci-lint-1.32.2 linters
+# ./target/bin/.golangci-lint-1.42.0 linters
 # or browse to:
 # https://github.com/golangci/golangci-lint#supported-linters
 
@@ -16,6 +16,7 @@ linters:
   - deadcode
   - depguard
   - dogsled
+  - errname
   - exportloopref
   - goconst
   - goheader

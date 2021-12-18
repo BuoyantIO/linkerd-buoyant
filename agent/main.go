@@ -12,15 +12,16 @@ import (
 	"github.com/buoyantio/linkerd-buoyant/agent/pkg/handler"
 	"github.com/buoyantio/linkerd-buoyant/agent/pkg/k8s"
 	pb "github.com/buoyantio/linkerd-buoyant/gen/bcloud"
+	l5dApi "github.com/linkerd/linkerd2/controller/gen/client/clientset/versioned"
 	"github.com/linkerd/linkerd2/pkg/admin"
+	l5dk8s "github.com/linkerd/linkerd2/pkg/k8s"
 	log "github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
 	"k8s.io/apimachinery/pkg/util/wait"
 	"k8s.io/client-go/informers"
-	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/tools/clientcmd"
-	"k8s.io/klog"
+	"k8s.io/klog/v2"
 
 	// Load all the auth plugins for the cloud providers.
 	// This enables connecting to a k8s cluster from outside the cluster, during
@@ -41,8 +42,8 @@ func main() {
 	grpcAddr := flag.String("grpc-addr", "api.buoyant.cloud:443", "address of the Buoyant Cloud API")
 	kubeConfigPath := flag.String("kubeconfig", "", "path to kube config")
 	logLevel := flag.String("log-level", "info", "log level, must be one of: panic, fatal, error, warn, info, debug, trace")
+	localMode := flag.Bool("local-mode", false, "enable port forwarding for local development")
 	insecure := flag.Bool("insecure", false, "disable TLS in development mode")
-	proxyAddrOverride := flag.String("proxy-addr-override", "", "overrides the proxy address for development mode")
 
 	// klog flags
 	klog.InitFlags(nil)
@@ -93,12 +94,6 @@ func main() {
 	}
 
 	// setup kubernetes clients and shared informers
-
-	var proxyAddr string
-	if proxyAddrOverride != nil {
-		proxyAddr = *proxyAddrOverride
-	}
-
 	rules := clientcmd.NewDefaultClientConfigLoadingRules()
 	if *kubeConfigPath != "" {
 		rules.ExplicitPath = *kubeConfigPath
@@ -109,17 +104,21 @@ func main() {
 		ClientConfig()
 	dieIf(err)
 
-	k8sCS, err := kubernetes.NewForConfig(k8sConfig)
+	k8sAPI, err := l5dk8s.NewAPIForConfig(k8sConfig, "", nil, 0)
 	dieIf(err)
-	sharedInformers := informers.NewSharedInformerFactory(k8sCS, 10*time.Minute)
 
-	k8sClient := k8s.NewClient(sharedInformers, proxyAddr)
+	l5dClient, err := l5dApi.NewForConfig(k8sConfig)
+	dieIf(err)
+
+	sharedInformers := informers.NewSharedInformerFactory(k8sAPI.Interface, 10*time.Minute)
+
+	k8sClient := k8s.NewClient(sharedInformers, k8sAPI, l5dClient, *localMode)
 
 	// wait for discovery API to load
 
 	log.Info("waiting for Kubernetes API availability")
 	populateGroupList := func() (done bool, err error) {
-		_, err = k8sCS.DiscoveryClient.ServerGroups()
+		_, err = k8sAPI.Discovery().ServerGroups()
 		if err != nil {
 			log.Debug("cannot reach Kubernetes API; retrying")
 			return false, nil
@@ -148,24 +147,32 @@ func main() {
 	// create handlers
 	eventHandler := handler.NewEvent(k8sClient, apiClient)
 	workloadHandler := handler.NewWorkload(k8sClient, apiClient)
+
 	linkerdInfoHandler := handler.NewLinkerdInfo(k8sClient, apiClient)
+	manageAgentHandler := handler.NewManageAgent(k8sClient, apiClient)
 
 	// start shared informer and wait for sync
 	err = k8sClient.Sync(shutdown, 60*time.Second)
 	dieIf(err)
 
+	// start api client stream management logic
+	go apiClient.Start()
+
 	// start handlers
 	go eventHandler.Start(sharedInformers)
 	go workloadHandler.Start(sharedInformers)
 	go linkerdInfoHandler.Start()
+	go manageAgentHandler.Start()
 
 	// run admin server
-	go admin.StartServer(*adminAddr)
+	adminServer := admin.NewServer(*adminAddr)
+	go adminServer.ListenAndServe()
 
 	// wait for shutdown
 	<-stop
 	log.Info("shutting down")
 	workloadHandler.Stop()
 	linkerdInfoHandler.Stop()
+	manageAgentHandler.Stop()
 	close(shutdown)
 }

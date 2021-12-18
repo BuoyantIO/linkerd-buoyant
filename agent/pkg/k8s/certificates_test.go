@@ -1,6 +1,7 @@
 package k8s
 
 import (
+	"context"
 	"crypto/x509"
 	"errors"
 	"fmt"
@@ -8,7 +9,7 @@ import (
 	"time"
 
 	"github.com/linkerd/linkerd2/pkg/identity"
-	ldConsts "github.com/linkerd/linkerd2/pkg/k8s"
+	l5dk8s "github.com/linkerd/linkerd2/pkg/k8s"
 	ldTls "github.com/linkerd/linkerd2/pkg/tls"
 	v1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -29,7 +30,7 @@ func TestFindIdentityPod(t *testing.T) {
 						Name:      "linkerd-identity",
 						Namespace: "linkerd",
 						Labels: map[string]string{
-							ldConsts.ControllerComponentLabel: identityComponentName,
+							l5dk8s.ControllerComponentLabel: identityComponentName,
 						},
 					},
 					Status: v1.PodStatus{
@@ -53,7 +54,7 @@ func TestFindIdentityPod(t *testing.T) {
 						Name:      "linkerd-identity",
 						Namespace: "linkerd",
 						Labels: map[string]string{
-							ldConsts.ControllerComponentLabel: identityComponentName,
+							l5dk8s.ControllerComponentLabel: identityComponentName,
 						},
 					},
 					Status: v1.PodStatus{
@@ -88,7 +89,7 @@ func TestFindIdentityPod(t *testing.T) {
 		t.Run(tc.testName, func(t *testing.T) {
 			c := fakeClient(tc.pods...)
 			c.Sync(nil, time.Second)
-			client := NewClient(c.sharedInformers, "")
+			client := NewClient(c.sharedInformers, nil, nil, false)
 
 			pod, err := client.getControlPlaneComponentPod(identityComponentName)
 			if tc.expectedErr != nil {
@@ -120,7 +121,7 @@ func TestGetProxyContainer(t *testing.T) {
 				Spec: v1.PodSpec{
 					Containers: []v1.Container{
 						{
-							Name: ldConsts.ProxyContainerName,
+							Name: l5dk8s.ProxyContainerName,
 						},
 						{
 							Name: "some-other-container",
@@ -158,8 +159,8 @@ func TestGetProxyContainer(t *testing.T) {
 					t.Fatalf("exepected err %s, got %s", tc.expectedErr, err)
 				}
 			} else {
-				if container.Name != ldConsts.ProxyContainerName {
-					t.Fatalf("exepected container with name %s, got %s", ldConsts.ProxyContainerName, container.Name)
+				if container.Name != l5dk8s.ProxyContainerName {
+					t.Fatalf("exepected container with name %s, got %s", l5dk8s.ProxyContainerName, container.Name)
 				}
 			}
 		})
@@ -176,10 +177,10 @@ func TestGetAdminPort(t *testing.T) {
 		{
 			"container with admin port",
 			&v1.Container{
-				Name: ldConsts.ProxyContainerName,
+				Name: l5dk8s.ProxyContainerName,
 				Ports: []v1.ContainerPort{
 					{
-						Name:          ldConsts.ProxyAdminPortName,
+						Name:          l5dk8s.ProxyAdminPortName,
 						ContainerPort: 555,
 					},
 					{
@@ -194,7 +195,7 @@ func TestGetAdminPort(t *testing.T) {
 		{
 			"container without admin port",
 			&v1.Container{
-				Name: ldConsts.ProxyContainerName,
+				Name: l5dk8s.ProxyContainerName,
 				Ports: []v1.ContainerPort{
 					{
 						Name:          "another port",
@@ -203,14 +204,14 @@ func TestGetAdminPort(t *testing.T) {
 				},
 			},
 			0,
-			fmt.Errorf("could not find port linkerd-admin on proxy container [linkerd-proxy]"),
+			fmt.Errorf("could not find port linkerd-admin on container [linkerd-proxy]"),
 		},
 	}
 
 	for _, tc := range fixtures {
 		tc := tc
 		t.Run(tc.testName, func(t *testing.T) {
-			port, err := getProxyAdminPort(tc.container)
+			port, err := getContainerPort(tc.container, l5dk8s.ProxyAdminPortName)
 			if tc.expectedErr != nil {
 				if tc.expectedErr.Error() != err.Error() {
 					t.Fatalf("exepected err %s, got %s", tc.expectedErr, err)
@@ -237,7 +238,7 @@ func TestGetServerName(t *testing.T) {
 		{
 			"gets correct name",
 			&v1.Container{
-				Name: ldConsts.ProxyContainerName,
+				Name: l5dk8s.ProxyContainerName,
 				Env: []v1.EnvVar{
 					{
 						Name:  linkerdNsEnvVarName,
@@ -255,7 +256,7 @@ func TestGetServerName(t *testing.T) {
 		{
 			"missing ns env var",
 			&v1.Container{
-				Name: ldConsts.ProxyContainerName,
+				Name: l5dk8s.ProxyContainerName,
 				Env: []v1.EnvVar{
 					{
 						Name:  linkerdTrustDomainEnvVarName,
@@ -264,12 +265,12 @@ func TestGetServerName(t *testing.T) {
 				},
 			},
 			"",
-			fmt.Errorf("could not find %s env var on proxy container [%s]", linkerdNsEnvVarName, ldConsts.ProxyContainerName),
+			fmt.Errorf("could not find %s env var on proxy container [%s]", linkerdNsEnvVarName, l5dk8s.ProxyContainerName),
 		},
 		{
 			"missing trust domain env var",
 			&v1.Container{
-				Name: ldConsts.ProxyContainerName,
+				Name: l5dk8s.ProxyContainerName,
 				Env: []v1.EnvVar{
 					{
 						Name:  linkerdNsEnvVarName,
@@ -278,7 +279,7 @@ func TestGetServerName(t *testing.T) {
 				},
 			},
 			"",
-			fmt.Errorf("could not find %s env var on proxy container [%s]", linkerdTrustDomainEnvVarName, ldConsts.ProxyContainerName),
+			fmt.Errorf("could not find %s env var on proxy container [%s]", linkerdTrustDomainEnvVarName, l5dk8s.ProxyContainerName),
 		},
 	}
 
@@ -317,13 +318,14 @@ AiAtuoI5XuCtrGVRzSmRTl2ra28aV9MyTU7d5qnTAFHKSgIgRKCvluOSgA5O21p5
 	fixtures := []*struct {
 		testName      string
 		container     *v1.Container
+		crtConfigMap  *v1.ConfigMap
 		expectedCerts string
 		expectedErr   error
 	}{
 		{
-			"gets correct cert",
+			"gets correct cert from env value",
 			&v1.Container{
-				Name: ldConsts.ProxyContainerName,
+				Name: l5dk8s.ProxyContainerName,
 				Env: []v1.EnvVar{
 					{
 						Name:  identity.EnvTrustAnchors,
@@ -331,15 +333,99 @@ AiAtuoI5XuCtrGVRzSmRTl2ra28aV9MyTU7d5qnTAFHKSgIgRKCvluOSgA5O21p5
 					},
 				},
 			},
+			nil,
 			expectedRoots,
 			nil,
 		},
 		{
-			"no roots",
+			"gets correct cert from config map",
 			&v1.Container{
-				Name: ldConsts.ProxyContainerName,
+				Name: l5dk8s.ProxyContainerName,
+				Env: []v1.EnvVar{
+					{
+						Name: identity.EnvTrustAnchors,
+						ValueFrom: &v1.EnvVarSource{
+							ConfigMapKeyRef: &v1.ConfigMapKeySelector{
+								LocalObjectReference: v1.LocalObjectReference{
+									Name: trustRootsConfigMapName,
+								},
+								Key: trustRootsConfigMapKeyName,
+							},
+						},
+					},
+				},
+			},
+			&v1.ConfigMap{
+				ObjectMeta: metav1.ObjectMeta{
+					Name:      trustRootsConfigMapName,
+					Namespace: "linkerd",
+				},
+				Data: map[string]string{
+					trustRootsConfigMapKeyName: expectedRoots,
+				},
+			},
+			expectedRoots,
+			nil,
+		},
+		{
+			"errors when config map not present",
+			&v1.Container{
+				Name: l5dk8s.ProxyContainerName,
+				Env: []v1.EnvVar{
+					{
+						Name: identity.EnvTrustAnchors,
+						ValueFrom: &v1.EnvVarSource{
+							ConfigMapKeyRef: &v1.ConfigMapKeySelector{
+								LocalObjectReference: v1.LocalObjectReference{
+									Name: trustRootsConfigMapName,
+								},
+								Key: trustRootsConfigMapKeyName,
+							},
+						},
+					},
+				},
+			},
+			nil,
+			expectedRoots,
+			fmt.Errorf("cannot obtain config map linkerd/%s", trustRootsConfigMapName),
+		},
+		{
+			"errors when config map key not present",
+			&v1.Container{
+				Name: l5dk8s.ProxyContainerName,
+				Env: []v1.EnvVar{
+					{
+						Name: identity.EnvTrustAnchors,
+						ValueFrom: &v1.EnvVarSource{
+							ConfigMapKeyRef: &v1.ConfigMapKeySelector{
+								LocalObjectReference: v1.LocalObjectReference{
+									Name: trustRootsConfigMapName,
+								},
+								Key: trustRootsConfigMapKeyName,
+							},
+						},
+					},
+				},
+			},
+			&v1.ConfigMap{
+				ObjectMeta: metav1.ObjectMeta{
+					Name:      trustRootsConfigMapName,
+					Namespace: "linkerd",
+				},
+				Data: map[string]string{
+					"nonsense.key": expectedRoots,
+				},
+			},
+			expectedRoots,
+			fmt.Errorf("config map linkerd/%s does not have %s key", trustRootsConfigMapName, trustRootsConfigMapKeyName),
+		},
+		{
+			"no roots env var",
+			&v1.Container{
+				Name: l5dk8s.ProxyContainerName,
 				Env:  []v1.EnvVar{},
 			},
+			nil,
 			"",
 			fmt.Errorf("could not find env var with name %s on proxy container [linkerd-proxy]", identity.EnvTrustAnchors),
 		},
@@ -348,7 +434,15 @@ AiAtuoI5XuCtrGVRzSmRTl2ra28aV9MyTU7d5qnTAFHKSgIgRKCvluOSgA5O21p5
 	for _, tc := range fixtures {
 		tc := tc
 		t.Run(tc.testName, func(t *testing.T) {
-			roots, err := extractRootsCerts(tc.container)
+			c := fakeClient()
+			if tc.crtConfigMap != nil {
+				c = fakeClient(tc.crtConfigMap)
+			}
+
+			c.Sync(nil, time.Second)
+			client := NewClient(c.sharedInformers, c.k8sClient, nil, false)
+
+			roots, err := client.extractRootsCerts(context.Background(), tc.container, "linkerd")
 			if tc.expectedErr != nil {
 				if tc.expectedErr.Error() != err.Error() {
 					t.Fatalf("exepected err %s, got %s", tc.expectedErr, err)
