@@ -1,108 +1,12 @@
 #
-# Secrets to identify and authenticate this agent
+# Metrics Agent config
 #
----
-kind: Secret
-apiVersion: v1
-metadata:
-  name: buoyant-cloud-id
-  namespace: {{ .Values.namespace }}
-  labels:
-    app.kubernetes.io/part-of: buoyant-cloud
-type: Opaque
-data:
-  id: {{ b64enc (required "Please provide the ID for this agent in the agentID value" .Values.agentID | trim) }}
-  key: {{ b64enc (required "Please provide the key for this agent in the agentKey value" .Values.agentKey | trim) }}
-  downloadKey: {{ b64enc (required "Please provide the download key for this agent in the agentDownloadKey value" .Values.agentDownloadKey | trim) }}
-  name: {{ b64enc (required "Please provide the cluster name for this agent in the agentClusterName value" .Values.agentClusterName | trim) }}
----
-#
-# Buoyant Cloud Agent
-#
----
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: buoyant-cloud-agent
-  namespace: {{ .Values.namespace }}
-  annotations:
-    buoyant.cloud/is-agent: "true"
-    buoyant.cloud/version: v0.2.0
-    buoyant.cloud/service-name: agent
-  labels:
-    app.kubernetes.io/name: agent
-    app.kubernetes.io/version: v0.2.0
-    app.kubernetes.io/part-of: buoyant-cloud
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: buoyant-cloud-agent
-  template:
-    metadata:
-      labels:
-        app: buoyant-cloud-agent
-      annotations:
-        config.linkerd.io/skip-outbound-ports: "4191"
-    spec:
-      securityContext:
-        fsGroup: 1000
-      serviceAccount: buoyant-cloud-agent
-      containers:
-      - name: buoyant-cloud-agent
-        image: ghcr.io/buoyantio/linkerd-buoyant:v0.2.0
-        imagePullPolicy: Always
-        args:
-        - "-grpc-addr={{ .Values.agent.apiAddress }}"
-        - "-log-level={{ .Values.agent.logLevel }}"
-        {{- if .Values.agent.insecure }}
-        - "-insecure"
-        {{- end }}
-        env:
-        - name: BUOYANT_CLOUD_ID
-          valueFrom:
-            secretKeyRef:
-              key: id
-              name: buoyant-cloud-id
-        - name: BUOYANT_CLOUD_KEY
-          valueFrom:
-            secretKeyRef:
-              key: key
-              name: buoyant-cloud-id
-        ports:
-        - name: admin
-          containerPort: 9990
-        livenessProbe:
-          httpGet:
-            path: /ping
-            port: 9990
-        readinessProbe:
-          httpGet:
-            path: /ready
-            port: 9990
-        resources:
-          requests:
-            cpu: 10m
-            memory: 10Mi
-          limits:
-            cpu: "2"
-            memory: 5000Mi
-        securityContext:
-          allowPrivilegeEscalation: false
-          privileged: false
-          readOnlyRootFilesystem: true
-          runAsGroup: 1000
-          runAsNonRoot: true
-          runAsUser: 1000
----
-#
-# Metrics Agent
-#
----
 kind: ConfigMap
 metadata:
   name: buoyant-cloud-metrics
-  namespace: {{ .Values.namespace }}
+  {{- if eq .Release.Service "Buoyant Cloud" }}
+  namespace: {{.Release.Namespace}}
+  {{- end }}
   labels:
     app.kubernetes.io/part-of: buoyant-cloud
 apiVersion: v1
@@ -111,7 +15,7 @@ data:
     server:
       log_level: {{ .Values.metrics.logLevel }}
       http_listen_port: 9991
-    prometheus:
+    metrics:
       wal_directory: /tmp/wal
       global:
         scrape_interval: 10s
@@ -119,17 +23,44 @@ data:
           cluster_id: ${BUOYANT_CLOUD_ID}
           cluster_name: ${BUOYANT_CLOUD_NAME}
       configs:
-      - host_filter: false
+      - host_filter: true
         name: buoyant-cloud-metrics
         wal_truncate_frequency: "1m"
         remote_write:
-        - url: {{ .Values.metrics.apiAddress }}/remote-write
+        - url: http{{- if not .Values.metrics.insecure}}s{{- end}}://{{.Values.metrics.apiAddress}}/remote-write
           basic_auth:
             username: ${BUOYANT_CLOUD_ID}
             password: ${BUOYANT_CLOUD_KEY}
+          queue_config:
+            capacity: 1500
+            max_shards: 20
+            max_backoff: 10s
+
+        scrape_configs:
+
+        - job_name: 'buoyant-cloud-agent'
+          kubernetes_sd_configs:
+          - role: pod
+            namespaces:
+              names:
+              - 'buoyant-cloud'
+          relabel_configs:
+          - source_labels: [__meta_kubernetes_pod_container_port_name]
+            regex:         ^admin$
+            action:        keep
+          - source_labels: [__meta_kubernetes_pod_container_name]
+            regex:         ^buoyant-cloud-agent|buoyant-cloud-metrics$
+            action:        keep
+          - source_labels: [__meta_kubernetes_namespace]
+            action: replace
+            target_label: namespace
+          - source_labels: [__meta_kubernetes_pod_name]
+            action: replace
+            target_label: pod
+          - action: labelmap
+            regex: __meta_kubernetes_pod_label_(.+)
 
         # scrape_configs copied from `linkerd install`
-        scrape_configs:
 
         - job_name: 'kubernetes-nodes-cadvisor'
           scheme: https
@@ -154,32 +85,42 @@ data:
             action: keep
           - source_labels: [pod]
             target_label: workload_kind
-            regex: (.*)-[0-9]+$
+            regex: ^(.*)-[bcdfghjklmnpqrstvwxz2456789]{5,15}$
+            action: replace
+            replacement: Deployment
+          - source_labels: [pod]
+            target_label: workload_kind
+            regex: ^(.*)-[0-9]+$
             action: replace
             replacement: StatefulSet
           - source_labels: [pod]
             target_label: workload_kind
-            regex: (.*)-[bcdfghjklmnpqrstvwxz2456789]{5}$
+            regex: ^(.*)-[bcdfghjklmnpqrstvwxz2456789]{5}$
             action: replace
             replacement: DaemonSet
           - source_labels: [pod]
             target_label: workload_kind
-            regex: (.*)-[456789bcdf]{1,10}-[bcdfghjklmnpqrstvwxz2456789]{5}$
+            regex: ^(.*)-[456789bcdf]{1,10}-[bcdfghjklmnpqrstvwxz2456789]{5}$
             action: replace
             replacement: Deployment
           - source_labels: [pod]
             target_label: workload_name
-            regex: (.*)-[0-9]+$
+            regex: ^(.*)-[bcdfghjklmnpqrstvwxz2456789]{5,15}$
             action: replace
             replacement: $1
           - source_labels: [pod]
             target_label: workload_name
-            regex: (.*)-[bcdfghjklmnpqrstvwxz2456789]{5}$
+            regex: ^(.*)-[0-9]+$
             action: replace
             replacement: $1
           - source_labels: [pod]
             target_label: workload_name
-            regex: (.*)-[456789bcdf]{1,10}-[bcdfghjklmnpqrstvwxz2456789]{5}$
+            regex: ^(.*)-[bcdfghjklmnpqrstvwxz2456789]{5}$
+            action: replace
+            replacement: $1
+          - source_labels: [pod]
+            target_label: workload_name
+            regex: ^(.*)-[456789bcdf]{1,10}-[bcdfghjklmnpqrstvwxz2456789]{5}$
             action: replace
             replacement: $1
 
@@ -247,7 +188,7 @@ data:
 
           # keep linkerd metrics relevant to buoyant cloud
           - source_labels: [__name__]
-            regex: ^response_total|response_latency_ms_bucket|tcp_open_connections|tcp_read_bytes_total|tcp_write_bytes_total$
+            regex: ^response_total|response_latency_ms_bucket|route_response_total|route_response_latency_ms_bucket|tcp_open_connections|tcp_read_bytes_total|tcp_write_bytes_total|inbound_http_authz_allow_total|inbound_http_authz_deny_total|inbound_tcp_authz_allow_total|inbound_tcp_authz_deny_total$
             action: keep
 
           # drop high-cardinality outbound latency histograms
@@ -355,21 +296,26 @@ data:
           - action: labeldrop
             regex: 'workload_ns'
 ---
+#
+# Metrics Agent
+#
 apiVersion: apps/v1
-kind: Deployment
+kind: DaemonSet
 metadata:
   name: buoyant-cloud-metrics
-  namespace: {{ .Values.namespace }}
+  {{- if eq .Release.Service "Buoyant Cloud" }}
+  namespace: {{.Release.Namespace}}
+  {{- end }}
   annotations:
     buoyant.cloud/is-metrics: "true"
-    buoyant.cloud/version: v0.2.0
+    buoyant.cloud/version: v{{ .Chart.Version }}
     buoyant.cloud/service-name: metrics
   labels:
     app.kubernetes.io/name: metrics
-    app.kubernetes.io/version: v0.2.0
+    app.kubernetes.io/version: v{{ .Chart.Version }}
     app.kubernetes.io/part-of: buoyant-cloud
+    linkerd.io/extension: buoyant
 spec:
-  replicas: 1
   selector:
     matchLabels:
       app: buoyant-cloud-metrics
@@ -381,9 +327,12 @@ spec:
       securityContext:
         fsGroup: 1000
       serviceAccount: buoyant-cloud-agent
+      tolerations:
+      - operator: Exists
+        effect: NoSchedule
       containers:
       - name: buoyant-cloud-metrics
-        image: grafana/agent:v0.15.0
+        image: grafana/agent:v0.20.0
         args:
         - -config.file=/buoyant-cloud-metrics/agent.yml
         - -config.expand-env
@@ -413,6 +362,10 @@ spec:
           runAsNonRoot: true
           runAsUser: 1000
         env:
+        - name: HOSTNAME
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName
         - name: BUOYANT_CLOUD_ID
           valueFrom:
             secretKeyRef:

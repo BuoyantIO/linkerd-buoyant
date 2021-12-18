@@ -1,0 +1,94 @@
+{{ if ne .Release.Namespace "buoyant-cloud" }}
+  {{ fail "Namespace must be 'buoyant-cloud'" }}
+{{ end }}
+kind: ServiceAccount
+apiVersion: v1
+metadata:
+  name: namespace-metadata
+  annotations:
+    helm.sh/hook: pre-install
+    helm.sh/hook-weight: "0"
+    helm.sh/hook-delete-policy: before-hook-creation,hook-succeeded
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: namespace-metadata
+  annotations:
+    helm.sh/hook: pre-install
+    helm.sh/hook-weight: "0"
+    helm.sh/hook-delete-policy: before-hook-creation,hook-succeeded
+rules:
+- apiGroups: [""]
+  resources: ["namespaces"]
+  verbs: ["get", "patch"]
+  resourceNames: ["{{.Release.Namespace}}"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: namespace-metadata
+  annotations:
+    helm.sh/hook: pre-install
+    helm.sh/hook-weight: "0"
+    helm.sh/hook-delete-policy: before-hook-creation,hook-succeeded
+roleRef:
+  kind: Role
+  name: namespace-metadata
+  apiGroup: rbac.authorization.k8s.io
+subjects:
+- kind: ServiceAccount
+  name: namespace-metadata
+  namespace: {{.Release.Namespace}}
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: namespace-metadata
+  annotations:
+    helm.sh/hook: pre-install
+    helm.sh/hook-weight: "0"
+    helm.sh/hook-delete-policy: before-hook-creation,hook-succeeded
+  labels:
+    app.kubernetes.io/name: namespace-metadata
+    app.kubernetes.io/part-of: buoyant-cloud
+    app.kubernetes.io/version: v{{ .Chart.Version }}
+spec:
+  template:
+    metadata:
+      annotations:
+        linkerd.io/inject: disabled
+      labels:
+        app.kubernetes.io/name: namespace-metadata
+        app.kubernetes.io/part-of: buoyant-cloud
+        app.kubernetes.io/version: v{{ .Chart.Version }}
+    spec:
+      restartPolicy: Never
+      serviceAccountName: namespace-metadata
+      containers:
+      - name: namespace-metadata
+        image: curlimages/curl:7.80.0
+        command: ["/bin/sh"]
+        args:
+        - -c
+        - |
+          ops=''
+          token=$(cat /var/run/secrets/kubernetes.io/serviceaccount/token)
+          ns=$(curl -kfv -H "Authorization: Bearer $token" \
+            "https://kubernetes.default.svc/api/v1/namespaces/{{.Release.Namespace}}")
+
+          if echo "$ns" | grep -vq 'labels'; then
+            ops="$ops{\"op\": \"add\",\"path\": \"/metadata/labels\",\"value\": {}},"
+          fi
+          if echo "$ns" | grep -vq 'annotations'; then
+            ops="$ops{\"op\": \"add\", \"path\": \"/metadata/annotations\", \"value\": {}},"
+          fi
+
+          ops="$ops{\"op\": \"add\", \"path\": \"/metadata/labels/app.kubernetes.io~1part-of\", \"value\": \"buoyant-cloud\"},"
+          ops="$ops{\"op\": \"add\", \"path\": \"/metadata/labels/linkerd.io~1extension\", \"value\": \"buoyant\"},"
+
+          ops="$ops{\"op\": \"add\", \"path\": \"/metadata/annotations/linkerd.io~1inject\", \"value\": \"enabled\"}"
+
+          curl -kfv -XPATCH -H "Content-Type: application/json-patch+json" -H "Authorization: Bearer $token" \
+            -d "[$ops]" \
+            "https://kubernetes.default.svc/api/v1/namespaces/{{.Release.Namespace}}?fieldManager=kubectl-label"

@@ -1,0 +1,34 @@
+# -- The ID for this agent. Required.
+agentID:
+
+# -- The key for this agent. Required.
+agentKey:
+
+# -- The download key for this agent. Required.
+agentDownloadKey:
+
+# -- The name of the cluster observed by this agent, as it should appear in Buoyant Cloud. Required.
+agentClusterName:
+
+agent:
+  # -- API address for buoyant cloud
+  apiAddress: api.buoyant.cloud:443
+
+  # -- imageVersion of the buoyant-cloud-agent
+  imageVersion:
+
+  # -- Disable TLS. Only use for testing.
+  insecure: false
+
+  # -- Log level for the buoyant-cloud-agent pod
+  logLevel: info
+
+metrics:
+  # -- API address for buoyant cloud
+  apiAddress: api.buoyant.cloud:443
+
+  # -- Disable TLS. Only use for testing.
+  insecure: false
+
+  # -- Log level for the buoyant-cloud-metrics pod
+  logLevel: info

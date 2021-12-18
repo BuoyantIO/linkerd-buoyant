@@ -1,8 +1,11 @@
-{{- if (.Values.installNamespace) -}}
+{{- if eq .Release.Service "Buoyant Cloud" -}}
+#
+# Buoyant Cloud Namespace
+#
 kind: Namespace
 apiVersion: v1
 metadata:
-  name: {{ .Values.namespace }}
+  name: {{ .Release.Namespace }}
   annotations:
     linkerd.io/inject: enabled
   labels:
