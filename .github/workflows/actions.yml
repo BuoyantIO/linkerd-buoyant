@@ -127,10 +127,62 @@ jobs:
         chmod +x ${{ env.linkerd-buoyant-bin }}
         ./${{ env.linkerd-buoyant-bin }} version --cli
 
+  helm_tests:
+    name: Helm Tests
+    runs-on: ubuntu-20.04
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+
+    - name: Set up Helm
+      uses: azure/setup-helm@v1
+      with:
+        version: v3.7.1
+
+    - uses: actions/setup-python@v2
+      with:
+        python-version: 3.7
+
+    - name: Set up chart-testing
+      uses: helm/chart-testing-action@v2.1.0
+
+    - name: Validate chart README.md is up to date
+      run: |
+        bin/helm-docs --chart-search-root=charts
+        git diff --exit-code charts/linkerd-buoyant/README.md
+
+    - name: Update Chart version
+      run: |
+        sed -i "s/0.0.0-undefined/0.0.0/g" charts/linkerd-buoyant/Chart.yaml
+
+    - name: Run chart-testing (list-changed)
+      id: list-changed
+      run: |
+        changed=$(ct list-changed --config charts/ct.yaml)
+        if [[ -n "$changed" ]]; then
+          echo "::set-output name=changed::true"
+        fi
+
+    - name: Run chart-testing (lint)
+      run: ct lint --config charts/ct.yaml
+
+    - name: Create kind cluster
+      uses: helm/kind-action@v1.2.0
+      if: steps.list-changed.outputs.changed == 'true'
+
+    - name: Create buoyant-cloud namespace
+      run: |
+        kubectl create ns buoyant-cloud
+
+    - name: Run chart-testing (install)
+      run: ct install --config charts/ct.yaml
+
   # everything below here for main merges or releases (tags)
   docker_build_and_push:
     name: Docker Build and Push
-    if: startsWith(github.ref, 'refs/tags') || github.ref == 'refs/heads/main'
+    if: startsWith(github.ref, 'refs/tags/v') || github.ref == 'refs/heads/main'
     needs:
     - go_unit_tests
     - go_lint
@@ -164,7 +216,7 @@ jobs:
           echo "platforms=linux/amd64" >> $GITHUB_ENV
           echo "docker_tags=ghcr.io/buoyantio/linkerd-buoyant:latest" >> $GITHUB_ENV
       - name: Generate Docker tags (for tagged release)
-        if: startsWith(github.ref, 'refs/tags')
+        if: startsWith(github.ref, 'refs/tags/v')
         run: |
           echo "platforms=linux/amd64,linux/arm64,linux/arm/v6,linux/arm/v7" >> $GITHUB_ENV
           echo "docker_tags=ghcr.io/buoyantio/linkerd-buoyant:latest,ghcr.io/buoyantio/linkerd-buoyant:${GITHUB_REF##*/}" >> $GITHUB_ENV
@@ -189,12 +241,13 @@ jobs:
 
   # everything below here for releases (tags)
   create_release:
-    if: startsWith(github.ref, 'refs/tags')
+    if: startsWith(github.ref, 'refs/tags/v')
     name: Create Release
     needs:
     - go_unit_tests
     - go_lint
     - smoke_test_cli
+    - helm_tests
     - docker_build_and_push
     runs-on: ubuntu-20.04
     outputs:
@@ -212,7 +265,7 @@ jobs:
         prerelease: false
 
   upload_release_assets:
-    if: startsWith(github.ref, 'refs/tags')
+    if: startsWith(github.ref, 'refs/tags/v')
     name: Upload Release Assets
     needs:
     - create_release
@@ -252,4 +305,58 @@ jobs:
         upload_url: ${{ needs.create_release.outputs.upload_url }}
         asset_path: ./${{ env.linkerd-buoyant-bin }}
         asset_name: ${{ env.linkerd-buoyant-bin }}
+        asset_content_type: application/octet-stream
+
+  create_helm_release:
+    if: startsWith(github.ref, 'refs/tags/v')
+    name: Create Helm Release
+    needs:
+    - create_release
+    - upload_release_assets
+    runs-on: ubuntu-20.04
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+
+    - name: Set Helm tag version
+      run: |
+        echo "helm_tag=${GITHUB_REF##*/v}" >> $GITHUB_ENV
+
+    - name: Set Helm package name
+      run: echo "helm_package=linkerd-buoyant-${{ env.helm_tag }}.tgz" >> $GITHUB_ENV
+
+    # this step modifies the Helm chart in-place, in preparation for release
+    - name: Update Chart version
+      env:
+        helm_tag: ${{ env.helm_tag }}
+      run: |
+        sed -i "s/0.0.0-undefined/$helm_tag/g" charts/linkerd-buoyant/Chart.yaml
+
+    - name: Configure Git
+      run: |
+        git config user.name "Helm Releaser"
+        git config user.email info@buoyant.io
+
+    - name: Set up Helm
+      uses: azure/setup-helm@v1
+      with:
+        version: v3.4.0
+
+    - name: Run chart-releaser
+      uses: helm/chart-releaser-action@v1.2.1
+      with:
+        config: charts/cr.yaml
+      env:
+        CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+
+    - name: Upload Helm chart to release
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ needs.create_release.outputs.upload_url }}
+        asset_path: ./.cr-release-packages/${{ env.helm_package }}
+        asset_name: ${{ env.helm_package }}
         asset_content_type: application/octet-stream

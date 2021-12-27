@@ -1,0 +1,13 @@
+agentID: fake-agent-id
+agentKey: fake-agent-key
+agentDownloadKey: fake-agent-download-key
+agentClusterName: fake-agent-cluster-name
+agent:
+  apiAddress: dockerhost:8086
+  imageVersion: latest
+  insecure: true
+  logLevel: debug
+metrics:
+  apiAddress: dockerhost:8087
+  insecure: true
+  logLevel: debug

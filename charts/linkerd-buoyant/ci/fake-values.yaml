@@ -1,0 +1,6 @@
+agentID: fake-agent-id
+agentKey: fake-agent-key
+agentDownloadKey: fake-agent-download-key
+agentClusterName: fake-agent-cluster-name
+agent:
+  imageVersion: latest
