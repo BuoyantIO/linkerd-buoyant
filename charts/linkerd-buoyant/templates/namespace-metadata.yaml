@@ -1,17 +1,19 @@
-# This pre-install hook is based on:
-# https://github.com/linkerd/linkerd2/blob/140c197032b7b11a670f80039ec5ed79aa29bdf3/viz/charts/linkerd-viz/templates/namespace-metadata.yaml
-#
-# To create a namespace for the `linkerd-buoyant` extension, we instruct the
-# user to run `helm install --create-namespace`, or create the namespace
-# themselves. This pre-install hook then ensures the following:
-# 1. The `linkerd-buoyant` extension is installed in the `buoyant-cloud`
-#    namespace.
-# 2. The `buoyant-cloud` namespace has the following annotations and labels:
-#    annotations:
-#      linkerd.io/inject: enabled
-#    labels:
-#      app.kubernetes.io/part-of: buoyant-cloud
-#      linkerd.io/extension: buoyant
+{{- /*
+This pre-install hook is based on:
+https://github.com/linkerd/linkerd2/blob/140c197032b7b11a670f80039ec5ed79aa29bdf3/viz/charts/linkerd-viz/templates/namespace-metadata.yaml
+
+To create a namespace for the `linkerd-buoyant` extension, we instruct the
+user to run `helm install --create-namespace`, or create the namespace
+themselves. This pre-install hook then ensures the following:
+1. The `linkerd-buoyant` extension is installed in the `buoyant-cloud`
+   namespace.
+2. The `buoyant-cloud` namespace has the following annotations and labels:
+   annotations:
+     linkerd.io/inject: enabled
+   labels:
+     app.kubernetes.io/part-of: buoyant-cloud
+     linkerd.io/extension: buoyant
+*/}}
 {{ if ne .Release.Namespace "buoyant-cloud" }}
   {{ fail "Namespace must be 'buoyant-cloud'" }}
 {{ end }}
