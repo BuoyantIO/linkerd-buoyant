@@ -24,15 +24,15 @@ Kubernetes: `>=1.20.0-0`
 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
-| agent.apiAddress | string | `"api.buoyant.cloud:443"` | API address for buoyant cloud |
-| agent.imageVersion | string | `nil` | imageVersion of the buoyant-cloud-agent |
+| agent.apiAddress | string | `"api.buoyant.cloud:443"` | API address for Buoyant Cloud |
+| agent.imageVersion | string | `nil` | imageVersion of the buoyant-cloud-agent pod |
 | agent.insecure | bool | `false` | Disable TLS. Only use for testing. |
 | agent.logLevel | string | `"info"` | Log level for the buoyant-cloud-agent pod |
 | agentClusterName | string | `nil` | The name of the cluster observed by this agent, as it should appear in Buoyant Cloud. Required. |
 | agentDownloadKey | string | `nil` | The download key for this agent. Required. |
 | agentID | string | `nil` | The ID for this agent. Required. |
 | agentKey | string | `nil` | The key for this agent. Required. |
-| metrics.apiAddress | string | `"api.buoyant.cloud:443"` | API address for buoyant cloud |
+| metrics.apiAddress | string | `"api.buoyant.cloud:443"` | API address for Buoyant Cloud |
 | metrics.insecure | bool | `false` | Disable TLS. Only use for testing. |
 | metrics.logLevel | string | `"info"` | Log level for the buoyant-cloud-metrics pod |
 

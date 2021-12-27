@@ -2,11 +2,13 @@ Thank you for installing {{ .Chart.Name }}.
 
 Your release is named {{ .Release.Name }}.
 
-To help you manage your Buoyant Cloud agent, you can install the CLI extension by running:
+To help you manage your Buoyant Cloud agent, you can install the CLI extension
+by running:
 
   curl -sL https://buoyant.cloud/install | sh
 
-Alternatively, you can download the CLI directly via the linkerd-buoyant releases page:
+Alternatively, you can download the CLI directly via the linkerd-buoyant
+releases page:
 
   https://github.com/BuoyantIO/linkerd-buoyant/releases
 

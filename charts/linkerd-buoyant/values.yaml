@@ -11,10 +11,10 @@ agentDownloadKey:
 agentClusterName:
 
 agent:
-  # -- API address for buoyant cloud
+  # -- API address for Buoyant Cloud
   apiAddress: api.buoyant.cloud:443
 
-  # -- imageVersion of the buoyant-cloud-agent
+  # -- imageVersion of the buoyant-cloud-agent pod
   imageVersion:
 
   # -- Disable TLS. Only use for testing.
@@ -24,7 +24,7 @@ agent:
   logLevel: info
 
 metrics:
-  # -- API address for buoyant cloud
+  # -- API address for Buoyant Cloud
   apiAddress: api.buoyant.cloud:443
 
   # -- Disable TLS. Only use for testing.
