@@ -1,2 +1,11 @@
+owner: BuoyantIO
+git-repo: linkerd-buoyant
+charts-repo: https://helm.buoyant.cloud
+index-path: .cr-index/index.yaml
+package-path: .cr-release-packages
+git-base-url: https://api.github.com/
+git-upload-url: https://uploads.github.com/
+push: true
+remote: origin
 release-name-template: "v{{ .Version }}"
 skip-existing: true

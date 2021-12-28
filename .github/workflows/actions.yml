@@ -261,7 +261,7 @@ jobs:
       with:
         tag_name: ${{ github.ref }}
         release_name: ${{ github.ref }}
-        draft: true
+        draft: false
         prerelease: false
 
   upload_release_assets:
@@ -334,24 +334,16 @@ jobs:
       run: |
         sed -i "s/0.0.0-undefined/$helm_tag/g" charts/linkerd-buoyant/Chart.yaml
 
-    - name: Configure Git
-      run: |
-        git config user.name "Helm Releaser"
-        git config user.email info@buoyant.io
-
     - name: Set up Helm
       uses: azure/setup-helm@v1
       with:
         version: v3.4.0
 
-    - name: Run chart-releaser
-      uses: helm/chart-releaser-action@v1.2.1
-      with:
-        config: charts/cr.yaml
-      env:
-        CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+    - name: Package Helm chart
+      run: |
+        bin/cr package charts/linkerd-buoyant --config charts/cr.yaml
 
-    - name: Upload Helm chart to release
+    - name: Upload Helm chart package to GitHub Release
       uses: actions/upload-release-asset@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -360,3 +352,18 @@ jobs:
         asset_path: ./.cr-release-packages/${{ env.helm_package }}
         asset_name: ${{ env.helm_package }}
         asset_content_type: application/octet-stream
+
+    - name: Configure Git
+      run: |
+        git config user.name "Helm Releaser"
+        git config user.email info@buoyant.io
+
+    # TODO: `cr index` downloads the helm package from the GitHub Release. It
+    # attempts to unpack the first asset it sees. This only works for us because
+    # our Helm package is listed first alphabetically in the GitHub Release.
+    - name: Update Helm chart index.yaml
+      env:
+        CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+      run: |
+        mkdir .cr-index
+        bin/cr index --config charts/cr.yaml
