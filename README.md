@@ -15,7 +15,9 @@ helm repo add linkerd-buoyant https://helm.buoyant.cloud
 
 Install:
 ```bash
-VALUES_URL=[values.yml file from buoyant.cloud]
+# Helm values.yaml URL is nearly identical to your agent manifest URL, simply
+# replace `agent` with `agent-helm-values`:
+VALUES_URL=https://buoyant.cloud/agent-helm-values/buoyant-cloud-k8s-XXX.yml
 helm install --create-namespace --namespace buoyant-cloud --values $VALUES_URL linkerd-buoyant linkerd-buoyant/linkerd-buoyant
 ```
 
