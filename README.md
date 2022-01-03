@@ -114,7 +114,7 @@ helm install --create-namespace --namespace buoyant-cloud --values charts/linker
 To install a live agent from buoyant.cloud, register a new agent, get its
 `values.yml`:
 ```bash
-VALLUES_URL=https://buoyant.cloud/agent-helm-values/buoyant-cloud-k8s-XXX.yml
+VALUES_URL=https://buoyant.cloud/agent-helm-values/buoyant-cloud-k8s-XXX.yml
 helm install --create-namespace --namespace buoyant-cloud --values $VALUES_URL linkerd-buoyant charts/linkerd-buoyant
 ```
 
