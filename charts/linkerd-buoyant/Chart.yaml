@@ -2,7 +2,7 @@ apiVersion: v2
 appVersion: 0.0.0-undefined
 description: The Linkerd Buoyant extension connects your Linkerd-enabled Kubernetes cluster to Buoyant Cloud, the global platform health dashboard for Linkerd.
 home: https://buoyant.io/cloud
-icon: https://buoyant.io/images/buoyant_logo.svg
+icon: https://buoyant.io/images/buoyant-icon.svg
 keywords:
 - linkerd
 - Buoyant
