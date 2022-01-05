@@ -295,6 +295,26 @@ data:
             regex: 'dst_control_plane_ns'
           - action: labeldrop
             regex: 'workload_ns'
+
+        - job_name: 'multicluster-link'
+          kubernetes_sd_configs:
+          - role: pod
+          relabel_configs:
+          - source_labels:
+            - __meta_kubernetes_pod_container_name
+            - __meta_kubernetes_pod_container_port_name
+            action: keep
+            regex: ^service-mirror;admin-http$
+          - source_labels: [__meta_kubernetes_namespace]
+            action: replace
+            target_label: namespace
+
+          metric_relabel_configs:
+
+          # keep link metrics relevant to buoyant cloud
+          - source_labels: [__name__]
+            regex: ^gateway_alive|gateway_probe_latency_ms_bucket$
+            action: keep
 ---
 #
 # Metrics Agent
