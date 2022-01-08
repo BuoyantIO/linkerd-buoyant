@@ -136,7 +136,7 @@ git push origin $TAG
 
 ## License
 
-Copyright 2021 Buoyant, Inc. All rights reserved.
+Copyright 2022 Buoyant, Inc. All rights reserved.
 
 Licensed under the Apache License, Version 2.0 (the "License"); you may not use
 these files except in compliance with the License. You may obtain a copy of the
