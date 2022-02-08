@@ -9,7 +9,6 @@ import (
 
 func (c *Client) TrafficSplitInfo(info *pb.TrafficSplitInfo) error {
 	msg := &pb.LinkerdMessage{
-		Auth: c.auth,
 		Message: &pb.LinkerdMessage_TrafficSplitInfo{
 			TrafficSplitInfo: info,
 		},
@@ -20,7 +19,6 @@ func (c *Client) TrafficSplitInfo(info *pb.TrafficSplitInfo) error {
 
 func (c *Client) SPInfo(info *pb.ServiceProfileInfo) error {
 	msg := &pb.LinkerdMessage{
-		Auth: c.auth,
 		Message: &pb.LinkerdMessage_ServiceProfileInfo{
 			ServiceProfileInfo: info,
 		},
@@ -31,7 +29,6 @@ func (c *Client) SPInfo(info *pb.ServiceProfileInfo) error {
 
 func (c *Client) MCInfo(info *pb.MulticlusterInfo) error {
 	msg := &pb.LinkerdMessage{
-		Auth: c.auth,
 		Message: &pb.LinkerdMessage_MulticlusterInfo{
 			MulticlusterInfo: info,
 		},
@@ -42,7 +39,6 @@ func (c *Client) MCInfo(info *pb.MulticlusterInfo) error {
 
 func (c *Client) AuthPolicyInfo(info *pb.AuthPolicyInfo) error {
 	msg := &pb.LinkerdMessage{
-		Auth: c.auth,
 		Message: &pb.LinkerdMessage_AuthPolicyInfo{
 			AuthPolicyInfo: info,
 		},
@@ -53,7 +49,6 @@ func (c *Client) AuthPolicyInfo(info *pb.AuthPolicyInfo) error {
 
 func (c *Client) CrtInfo(info *pb.CertificateInfo) error {
 	msg := &pb.LinkerdMessage{
-		Auth: c.auth,
 		Message: &pb.LinkerdMessage_CrtInfo{
 			CrtInfo: info,
 		},

@@ -137,7 +137,7 @@ func TestEvent(t *testing.T) {
 			k8sClient := k8s.NewClient(sharedInformers, k8sApi, nil, false)
 
 			m := &api.MockBcloudClient{}
-			apiClient := api.NewClient("", "", m)
+			apiClient := api.NewClient(m)
 
 			eh := NewEvent(k8sClient, apiClient)
 			if len(m.Events()) != 0 {

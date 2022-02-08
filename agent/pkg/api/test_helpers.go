@@ -10,11 +10,6 @@ import (
 	"google.golang.org/grpc/metadata"
 )
 
-const (
-	fakeID  = "fake-id"
-	fakeKey = "fake-key"
-)
-
 type MockAPI_ManageAgentClient struct {
 	agentCommandMessages []*pb.AgentCommand
 	grpc.ClientStream
@@ -53,14 +48,11 @@ type MockBcloudClient struct {
 	err error
 
 	// output
-	id                      string
-	key                     string
 	messages                []*pb.WorkloadMessage
 	events                  []*pb.Event
 	linkerdMessages         []*pb.LinkerdMessage
 	proxyDiagnosticMessages []*pb.ProxyDiagnostic
 	proxyLogMessages        []*pb.ProxyLog
-	proxyDiagnosticAuth     *pb.Auth
 
 	// simulates commands received from bcloud-api
 	agentCommandMessages []*pb.AgentCommand
@@ -103,12 +95,6 @@ func (m *MockBcloudClient) ProxyLogsMessages() []*pb.ProxyLog {
 	return m.proxyLogMessages
 }
 
-func (m *MockBcloudClient) ProxyDiagnosticsAuth() *pb.Auth {
-	m.Lock()
-	defer m.Unlock()
-	return m.proxyDiagnosticAuth
-}
-
 //
 // bcloud.ApiClient methods
 //
@@ -125,8 +111,6 @@ func (m *MockBcloudClient) AddEvent(
 	m.Lock()
 	defer m.Unlock()
 
-	m.id = event.GetAuth().GetAgentId()
-	m.key = event.GetAuth().GetAgentKey()
 	m.events = append(m.events, event)
 	return nil, m.err
 }
@@ -137,8 +121,6 @@ func (m *MockBcloudClient) LinkerdInfo(
 	m.Lock()
 	defer m.Unlock()
 
-	m.id = message.GetAuth().GetAgentId()
-	m.key = message.GetAuth().GetAgentKey()
 	m.linkerdMessages = append(m.linkerdMessages, message)
 	return nil, m.err
 }
@@ -147,7 +129,6 @@ func (m *MockBcloudClient) ManageAgent(
 	ctx context.Context, auth *pb.Auth, opts ...grpc.CallOption) (pb.Api_ManageAgentClient, error) {
 	m.Lock()
 	defer m.Unlock()
-	m.proxyDiagnosticAuth = auth
 	stream := &MockAPI_ManageAgentClient{
 		agentCommandMessages: m.agentCommandMessages,
 	}
@@ -158,8 +139,6 @@ func (m *MockBcloudClient) ProxyDiagnostics(ctx context.Context, message *pb.Pro
 	m.Lock()
 	defer m.Unlock()
 
-	m.id = message.GetAuth().GetAgentId()
-	m.key = message.GetAuth().GetAgentKey()
 	m.proxyDiagnosticMessages = append(m.proxyDiagnosticMessages, message)
 	return nil, m.err
 }
@@ -168,8 +147,6 @@ func (m *MockBcloudClient) ProxyLogs(ctx context.Context, message *pb.ProxyLog, 
 	m.Lock()
 	defer m.Unlock()
 
-	m.id = message.GetAuth().GetAgentId()
-	m.key = message.GetAuth().GetAgentKey()
 	m.proxyLogMessages = append(m.proxyLogMessages, message)
 	return nil, m.err
 }
@@ -181,12 +158,6 @@ func (m *MockBcloudClient) ProxyLogs(ctx context.Context, message *pb.ProxyLog, 
 func (m *MockBcloudClient) Send(msg *pb.WorkloadMessage) error {
 	m.Lock()
 	defer m.Unlock()
-
-	_, ok := msg.Message.(*pb.WorkloadMessage_Auth)
-	if ok {
-		m.id = msg.GetAuth().GetAgentId()
-		m.key = msg.GetAuth().GetAgentKey()
-	}
 
 	m.messages = append(m.messages, msg)
 	return nil

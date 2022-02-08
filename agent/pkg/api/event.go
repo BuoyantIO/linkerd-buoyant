@@ -9,9 +9,7 @@ import (
 
 // AddEvent wraps the Buoyant Cloud API AddEvent gRPC unary endpoint.
 func (c *Client) AddEvent(event *pb.Event) error {
-	// create new message with Auth
 	bcloudEvent := &pb.Event{
-		Auth:  c.auth,
 		Event: event.Event,
 		Owner: event.Owner,
 	}

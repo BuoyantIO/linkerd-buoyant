@@ -30,7 +30,7 @@ func TestCrtInfo(t *testing.T) {
 			tc := tc
 			t.Run(tc.testName, func(t *testing.T) {
 				m := &MockBcloudClient{err: tc.err}
-				c := NewClient("", "", m)
+				c := NewClient(m)
 
 				err := c.CrtInfo(tc.info)
 				if tc.err != err {
@@ -41,23 +41,6 @@ func TestCrtInfo(t *testing.T) {
 					t.Errorf("Expected 1 message, got %d", len(m.LinkerdMessages()))
 				}
 			})
-		}
-	})
-
-	t.Run("sets auth info", func(t *testing.T) {
-		m := &MockBcloudClient{}
-		c := NewClient(fakeID, fakeKey, m)
-
-		err := c.CrtInfo(&pb.CertificateInfo{})
-		if err != nil {
-			t.Error(err)
-		}
-
-		if m.id != fakeID {
-			t.Errorf("Expected %s, got %s", fakeID, m.id)
-		}
-		if m.key != fakeKey {
-			t.Errorf("Expected %s, got %s", fakeKey, m.key)
 		}
 	})
 }

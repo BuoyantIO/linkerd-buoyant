@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"crypto/tls"
 	"flag"
 	"os"
@@ -9,8 +10,11 @@ import (
 	"time"
 
 	"github.com/buoyantio/linkerd-buoyant/agent/pkg/api"
+	pkgauth "github.com/buoyantio/linkerd-buoyant/agent/pkg/auth"
 	"github.com/buoyantio/linkerd-buoyant/agent/pkg/handler"
 	"github.com/buoyantio/linkerd-buoyant/agent/pkg/k8s"
+	"github.com/buoyantio/linkerd-buoyant/agent/pkg/registrator"
+
 	pb "github.com/buoyantio/linkerd-buoyant/gen/bcloud"
 	l5dApi "github.com/linkerd/linkerd2/controller/gen/client/clientset/versioned"
 	"github.com/linkerd/linkerd2/pkg/admin"
@@ -36,10 +40,11 @@ func dieIf(err error) {
 }
 
 func main() {
-	bcloudID := flag.String("bcloud-id", "", "bcloud id, takes precedence over BUOYANT_CLOUD_ID env var")
-	bcloudKey := flag.String("bcloud-key", "", "bcloud key, takes precedence over BUOYANT_CLOUD_KEY env var")
+	clientID := flag.String("client-id", "", "bcloud client id, takes precedence over CLIENT_ID env var")
+	clientSecret := flag.String("client-secret", "", "bcloud client secret, takes precedence over CLIENT_SECRET env var")
+	apiAddr := flag.String("api-addr", "api.buoyant.cloud:443", "address of the Buoyant Cloud API")
 	adminAddr := flag.String("admin-addr", ":9990", "address of agent admin server")
-	grpcAddr := flag.String("grpc-addr", "api.buoyant.cloud:443", "address of the Buoyant Cloud API")
+	grpcAddr := flag.String("grpc-addr", "api.buoyant.cloud:443", "address of the Buoyant Cloud Grpc API")
 	kubeConfigPath := flag.String("kubeconfig", "", "path to kube config")
 	logLevel := flag.String("log-level", "info", "log level, must be one of: panic, fatal, error, warn, info, debug, trace")
 	localMode := flag.Bool("local-mode", false, "enable port forwarding for local development")
@@ -73,25 +78,6 @@ func main() {
 	stop := make(chan os.Signal, 1)
 	signal.Notify(stop, os.Interrupt, syscall.SIGTERM)
 	shutdown := make(chan struct{}, 1)
-
-	// read the bcloud ID from flag or environment variable
-
-	id := os.Getenv("BUOYANT_CLOUD_ID")
-	if *bcloudID != "" {
-		id = *bcloudID
-	}
-	if id == "" {
-		log.Fatal("missing bcloud id! set -bcloud-id flag or BUOYANT_CLOUD_ID env var")
-	}
-	log.Debugf("using bcloud id %s", id)
-
-	key := os.Getenv("BUOYANT_CLOUD_KEY")
-	if *bcloudKey != "" {
-		key = *bcloudKey
-	}
-	if key == "" {
-		log.Fatal("missing bcloud key! set -bcloud-key flag or BUOYANT_CLOUD_KEY env var")
-	}
 
 	// setup kubernetes clients and shared informers
 	rules := clientcmd.NewDefaultClientConfigLoadingRules()
@@ -129,20 +115,47 @@ func main() {
 	err = wait.PollImmediate(time.Second, time.Minute, populateGroupList)
 	dieIf(err)
 
-	// create bcloud grpc api client and streams
+	// perform agent registration
 
-	var opts grpc.DialOption
+	id := os.Getenv("CLIENT_ID")
+	if *clientID != "" {
+		id = *clientID
+	}
+	if id == "" {
+		log.Fatal("missing client id! set -client-id flag or CLIENT_ID env var")
+	}
+	log.Debugf("using bcloud client id %s", id)
+
+	secret := os.Getenv("CLIENT_SECRET")
+	if *clientSecret != "" {
+		secret = *clientSecret
+	}
+	if secret == "" {
+		log.Fatal("missing bcloud client secret! set -client-secret flag or CLIENT_SECRET env var")
+	}
+
+	secure := !*insecure
+	agentRegistrator := registrator.NewAgentRegistrator(id, secret, *apiAddr, secure, k8sAPI)
+
+	agentInfo, err := agentRegistrator.EnsureRegistered(context.Background())
+	dieIf(err)
+	log.Infof("Obtained agent info: %+v", agentInfo)
+
+	// create bcloud grpc api client and streams
+	perRPCCreds := pkgauth.NewTokenPerRPCCreds(id, secret, *apiAddr, agentInfo.AgentID, secure)
+	opts := []grpc.DialOption{grpc.WithPerRPCCredentials(perRPCCreds)}
 	if *insecure {
-		opts = grpc.WithInsecure()
+		opts = append(opts, grpc.WithInsecure())
 	} else {
 		creds := credentials.NewTLS(&tls.Config{})
-		opts = grpc.WithTransportCredentials(creds)
+		opts = append(opts, grpc.WithTransportCredentials(creds))
 	}
-	conn, err := grpc.Dial(*grpcAddr, opts)
+
+	conn, err := grpc.Dial(*grpcAddr, opts...)
 	dieIf(err)
 
 	bcloudClient := pb.NewApiClient(conn)
-	apiClient := api.NewClient(id, key, bcloudClient)
+	apiClient := api.NewClient(bcloudClient)
 
 	// create handlers
 	eventHandler := handler.NewEvent(k8sClient, apiClient)

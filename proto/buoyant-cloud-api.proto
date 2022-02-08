@@ -13,6 +13,7 @@ import "google/protobuf/timestamp.proto";
 message Empty {}
 
 message Auth {
+  option deprecated = true;
   string agent_id = 1;
   string agent_key = 2;
 }
@@ -67,7 +68,7 @@ message Service {
 
 message WorkloadMessage {
   oneof message {
-    Auth auth = 1;
+    Auth auth = 1 [deprecated=true];
 
     AddWorkload added = 2;
     UpdateWorkload updated = 3;
@@ -99,7 +100,7 @@ message ListWorkloads {
 //
 
 message Event {
-  Auth auth = 1;
+  Auth auth = 1 [deprecated=true];
   bytes event = 2;
   Workload owner = 3;
 }
@@ -168,7 +169,7 @@ message MulticlusterInfo {
 }
 
 message LinkerdMessage {
-  Auth auth = 1;
+  Auth auth = 1 [deprecated=true];
   oneof message {
     CertificateInfo crt_info = 2;
     AuthPolicyInfo auth_policy_info = 3;
@@ -207,7 +208,7 @@ message AgentCommand {
 
 
 message ProxyDiagnostic {
-  Auth auth = 1;
+  Auth auth = 1 [deprecated=true];
   string diagnostic_id = 2;
   bytes logs = 3;
   repeated bytes metrics = 4;
@@ -222,7 +223,7 @@ message ProxyDiagnostic {
 //
 
 message ProxyLog {
-  Auth auth = 1;
+  Auth auth = 1 [deprecated=true];
   string pod_name = 2;
   string pod_namespace = 3;
   bytes lines = 4;

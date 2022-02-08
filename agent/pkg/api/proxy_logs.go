@@ -16,7 +16,6 @@ func (c *Client) ProxyLogs(
 	logs []byte) error {
 	now := time.Now()
 	logMessage := &pb.ProxyLog{
-		Auth:         c.auth,
 		PodName:      podName,
 		PodNamespace: namespace,
 		Lines:        logs,
