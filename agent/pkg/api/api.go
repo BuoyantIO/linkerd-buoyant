@@ -25,7 +25,7 @@ func NewClient(client pb.ApiClient) *Client {
 		workloadStream:    newWorkloadStream(client),
 		manageAgentStream: newManageAgentStream(client),
 		client:            client,
-		log:               log.WithField("api", "some-id"),
+		log:               log.WithField("client", "gRPC"),
 	}
 }
 

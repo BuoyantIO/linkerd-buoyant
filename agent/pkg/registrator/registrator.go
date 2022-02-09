@@ -2,137 +2,84 @@ package registrator
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
-	"io"
-	"net/http"
 
+	"github.com/buoyantio/linkerd-buoyant/agent/pkg/bcloudapi"
+	pkgk8s "github.com/buoyantio/linkerd-buoyant/agent/pkg/k8s"
 	"github.com/linkerd/linkerd2/pkg/k8s"
 	log "github.com/sirupsen/logrus"
 	"golang.org/x/oauth2"
-	"golang.org/x/oauth2/clientcredentials"
 	kerrors "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
 const (
-	namespace              = "buoyant-cloud"
 	agentMetadataConfigMap = "agent-metadata"
-	agentIDKey             = "agent_id"
-	agentNameKey           = "agent_name"
 )
 
-type AgentInfo struct {
-	AgentName  string `json:"agent_name"`
-	AgentID    string `json:"agent_id"`
-	IsNewAgent bool   `json:"is_new_agent"`
+// Registrator is used to ensure that the agent that will be running on the
+// cluster is fully registered. If the agent is not it will perform an automatic
+// agent registration using the provided client id and client secret
+// credentials.
+type Registrator struct {
+	bcloudApiClient bcloudapi.Client
+	k8sAPI          *k8s.KubernetesAPI
 }
 
-// AgentRegistrator is used to ensure that the agent that will be
-// running on the cluster is fully registered. If the agent is not
-// it will perform an automatic agent registration using the provided
-// client id and client secret credentials
-type AgentRegistrator struct {
-	clientID     string
-	clientSecret string
-	apiAddr      string
-	secure       bool
-	k8sAPI       *k8s.KubernetesAPI
-}
-
-func NewAgentRegistrator(clientID, clientSecret, apiAddr string, secure bool, k8sAPI *k8s.KubernetesAPI) *AgentRegistrator {
-	return &AgentRegistrator{
-		clientID:     clientID,
-		clientSecret: clientSecret,
-		apiAddr:      apiAddr,
-		secure:       secure,
-		k8sAPI:       k8sAPI,
+// New creates a new Registrator.
+func New(bcloudApiClient bcloudapi.Client, k8sAPI *k8s.KubernetesAPI) *Registrator {
+	return &Registrator{
+		bcloudApiClient: bcloudApiClient,
+		k8sAPI:          k8sAPI,
 	}
 }
 
-func (ar *AgentRegistrator) EnsureRegistered(ctx context.Context) (*AgentInfo, error) {
+// EnsureRegistered performes agent registration if necessary. It inspects the
+// config map containing the agent metadata and decides whether this is a new agent
+// that needs to be registered.
+func (ar *Registrator) EnsureRegistered(ctx context.Context) (*bcloudapi.AgentInfo, oauth2.TokenSource, error) {
 	cm, err := ar.k8sAPI.
 		CoreV1().
-		ConfigMaps(namespace).
+		ConfigMaps(pkgk8s.AgentNamespace).
 		Get(ctx, agentMetadataConfigMap, metav1.GetOptions{})
 	if err != nil {
 		if kerrors.IsNotFound(err) {
-			return nil, fmt.Errorf("could not find %s config map", agentMetadataConfigMap)
+			return nil, nil, fmt.Errorf("could not find %s config map", agentMetadataConfigMap)
 		}
-		return nil, err
+		return nil, nil, err
 	}
 
-	agentID, hasAgentID := cm.Data[agentIDKey]
-	agentName, hasAgentName := cm.Data[agentNameKey]
+	agentID, hasAgentID := cm.Data[pkgk8s.AgentIDKey]
+	agentName, hasAgentName := cm.Data[pkgk8s.AgentNameKey]
 
 	if !hasAgentName {
-		return nil, fmt.Errorf("%s config map needs to have an %s key", agentMetadataConfigMap, agentNameKey)
+		return nil, nil, fmt.Errorf("%s config map needs to have an %s key", agentMetadataConfigMap, pkgk8s.AgentNameKey)
 	}
 
 	if hasAgentID {
 		log.Debugf("Agent with ID %s already registered", agentID)
-		return &AgentInfo{
+		ai := &bcloudapi.AgentInfo{
 			AgentName:  agentName,
 			AgentID:    agentID,
 			IsNewAgent: false,
-		}, nil
+		}
+
+		return ai, ar.bcloudApiClient.AgentTokenSource(ctx, agentID), nil
 	}
 
-	info, err := ar.registerAgent(ctx, agentName)
+	info, err := ar.bcloudApiClient.RegisterAgent(ctx, agentName)
 	if err != nil {
-		return nil, fmt.Errorf("agent registration failed: %w", err)
+		return nil, nil, fmt.Errorf("agent registration failed: %w", err)
 	}
 
-	cm.Data[agentIDKey] = info.AgentID
+	cm.Data[pkgk8s.AgentIDKey] = info.AgentID
 	_, err = ar.k8sAPI.
 		CoreV1().
-		ConfigMaps(namespace).
+		ConfigMaps(pkgk8s.AgentNamespace).
 		Update(ctx, cm, metav1.UpdateOptions{})
 	if err != nil {
-		return nil, fmt.Errorf("failed to update %s configm map: %w", agentMetadataConfigMap, err)
+		return nil, nil, fmt.Errorf("failed to update %s configm map: %w", agentMetadataConfigMap, err)
 	}
 
-	return info, nil
-}
-
-func (ar *AgentRegistrator) registerAgent(ctx context.Context, agentName string) (*AgentInfo, error) {
-	addrScheme := "http"
-	if ar.secure {
-		addrScheme = "https"
-	}
-
-	authConfig := &clientcredentials.Config{
-		ClientID:     ar.clientID,
-		ClientSecret: ar.clientSecret,
-		TokenURL:     fmt.Sprintf("%s://%s/token", addrScheme, ar.apiAddr),
-		AuthStyle:    oauth2.AuthStyleInHeader,
-	}
-
-	client := authConfig.Client(ctx)
-	url := fmt.Sprintf("%s://%s/register-agent?%s=%s", addrScheme, ar.apiAddr, agentNameKey, agentName)
-	req, err := http.NewRequest(http.MethodPut, url, nil)
-	if err != nil {
-		return nil, err
-	}
-	rsp, err := client.Do(req)
-	if err != nil {
-		return nil, err
-	}
-	defer rsp.Body.Close()
-
-	if rsp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("agent registration api returned: %d", rsp.StatusCode)
-	}
-
-	data, err := io.ReadAll(rsp.Body)
-	if err != nil {
-		return nil, err
-	}
-
-	info := &AgentInfo{}
-	if err := json.Unmarshal(data, info); err != nil {
-		return nil, err
-	}
-
-	return info, nil
+	return info, ar.bcloudApiClient.AgentTokenSource(ctx, info.AgentID), nil
 }

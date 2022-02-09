@@ -10,11 +10,11 @@ import (
 	"time"
 
 	"github.com/buoyantio/linkerd-buoyant/agent/pkg/api"
-	pkgauth "github.com/buoyantio/linkerd-buoyant/agent/pkg/auth"
+	"github.com/buoyantio/linkerd-buoyant/agent/pkg/auth"
+	"github.com/buoyantio/linkerd-buoyant/agent/pkg/bcloudapi"
 	"github.com/buoyantio/linkerd-buoyant/agent/pkg/handler"
 	"github.com/buoyantio/linkerd-buoyant/agent/pkg/k8s"
 	"github.com/buoyantio/linkerd-buoyant/agent/pkg/registrator"
-
 	pb "github.com/buoyantio/linkerd-buoyant/gen/bcloud"
 	l5dApi "github.com/linkerd/linkerd2/controller/gen/client/clientset/versioned"
 	"github.com/linkerd/linkerd2/pkg/admin"
@@ -44,7 +44,7 @@ func main() {
 	clientSecret := flag.String("client-secret", "", "bcloud client secret, takes precedence over CLIENT_SECRET env var")
 	apiAddr := flag.String("api-addr", "api.buoyant.cloud:443", "address of the Buoyant Cloud API")
 	adminAddr := flag.String("admin-addr", ":9990", "address of agent admin server")
-	grpcAddr := flag.String("grpc-addr", "api.buoyant.cloud:443", "address of the Buoyant Cloud Grpc API")
+	grpcAddr := flag.String("grpc-addr", "api.buoyant.cloud:443", "address of the Buoyant Cloud gRPC API")
 	kubeConfigPath := flag.String("kubeconfig", "", "path to kube config")
 	logLevel := flag.String("log-level", "info", "log level, must be one of: panic, fatal, error, warn, info, debug, trace")
 	localMode := flag.Bool("local-mode", false, "enable port forwarding for local development")
@@ -135,14 +135,15 @@ func main() {
 	}
 
 	secure := !*insecure
-	agentRegistrator := registrator.NewAgentRegistrator(id, secret, *apiAddr, secure, k8sAPI)
+	bcloudApiClient := bcloudapi.New(id, secret, *apiAddr, secure)
+	agentRegistrator := registrator.New(bcloudApiClient, k8sAPI)
 
-	agentInfo, err := agentRegistrator.EnsureRegistered(context.Background())
+	agentInfo, ts, err := agentRegistrator.EnsureRegistered(context.Background())
 	dieIf(err)
 	log.Infof("Obtained agent info: %+v", agentInfo)
 
 	// create bcloud grpc api client and streams
-	perRPCCreds := pkgauth.NewTokenPerRPCCreds(id, secret, *apiAddr, agentInfo.AgentID, secure)
+	perRPCCreds := auth.NewTokenPerRPCCreds(ts, secure)
 	opts := []grpc.DialOption{grpc.WithPerRPCCredentials(perRPCCreds)}
 	if *insecure {
 		opts = append(opts, grpc.WithInsecure())

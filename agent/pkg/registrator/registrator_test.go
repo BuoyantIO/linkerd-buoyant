@@ -2,17 +2,15 @@ package registrator
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
-	"net/http"
-	"net/http/httptest"
 	"reflect"
-	"strings"
 	"testing"
 
 	"k8s.io/client-go/kubernetes/fake"
 	k8stest "k8s.io/client-go/testing"
 
+	"github.com/buoyantio/linkerd-buoyant/agent/pkg/bcloudapi"
+	"github.com/buoyantio/linkerd-buoyant/agent/pkg/k8s"
 	l5dk8s "github.com/linkerd/linkerd2/pkg/k8s"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -26,16 +24,11 @@ const (
 	newAgentID   = "new-agent-id"
 )
 
-type token struct {
-	AccessToken string `json:"access_token"`
-	ExpiresIn   int64  `json:"expires_in"`
-}
-
 func TestRegistrator(t *testing.T) {
 	fixtures := []*struct {
 		testName           string
 		configMap          *corev1.ConfigMap
-		expInfo            *AgentInfo
+		expInfo            *bcloudapi.AgentInfo
 		expErr             error
 		expectRegistration bool
 	}{
@@ -44,14 +37,14 @@ func TestRegistrator(t *testing.T) {
 			&corev1.ConfigMap{
 				ObjectMeta: metav1.ObjectMeta{
 					Name:      agentMetadataConfigMap,
-					Namespace: namespace,
+					Namespace: k8s.AgentNamespace,
 				},
 				Data: map[string]string{
-					agentIDKey:   "agent-id",
-					agentNameKey: "agent-name",
+					k8s.AgentIDKey:   "agent-id",
+					k8s.AgentNameKey: "agent-name",
 				},
 			},
-			&AgentInfo{
+			&bcloudapi.AgentInfo{
 				AgentName:  "agent-name",
 				AgentID:    "agent-id",
 				IsNewAgent: false,
@@ -64,13 +57,13 @@ func TestRegistrator(t *testing.T) {
 			&corev1.ConfigMap{
 				ObjectMeta: metav1.ObjectMeta{
 					Name:      agentMetadataConfigMap,
-					Namespace: namespace,
+					Namespace: k8s.AgentNamespace,
 				},
 				Data: map[string]string{
-					agentNameKey: "agent-name",
+					k8s.AgentNameKey: "agent-name",
 				},
 			},
-			&AgentInfo{
+			&bcloudapi.AgentInfo{
 				AgentName:  "agent-name",
 				AgentID:    newAgentID,
 				IsNewAgent: true,
@@ -83,10 +76,10 @@ func TestRegistrator(t *testing.T) {
 			&corev1.ConfigMap{
 				ObjectMeta: metav1.ObjectMeta{
 					Name:      agentMetadataConfigMap,
-					Namespace: namespace,
+					Namespace: k8s.AgentNamespace,
 				},
 				Data: map[string]string{
-					agentIDKey: "agent-id",
+					k8s.AgentIDKey: "agent-id",
 				},
 			},
 			nil,
@@ -114,51 +107,25 @@ func TestRegistrator(t *testing.T) {
 				Interface: cs,
 			}
 
-			tokenRequests := 0
-			registrationRequests := 0
-			apiSrv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				if r.URL.String() == "/token" {
-					id, secret, _ := r.BasicAuth()
-					if id != clientID {
-						t.Fatalf("wrong client id: %s", id)
-					}
+			expectedAgentName := ""
+			if tc.configMap != nil {
+				expectedAgentName = tc.configMap.Data[k8s.AgentNameKey]
+			}
 
-					if secret != clientSecret {
-						t.Fatalf("wrong client secret: %s", secret)
-					}
+			mockApiSrv := bcloudapi.NewMockApiSrv(
+				clientID,
+				clientSecret,
+				accessToken,
+				expectedAgentName,
+				newAgentID,
+			)
 
-					data, _ := json.Marshal(&token{AccessToken: accessToken, ExpiresIn: 3600})
-					tokenRequests += 1
-					w.Header().Set("Content-Type", "application/json")
-					w.Write(data)
-					return
-				} else if strings.Contains(r.URL.String(), "register-agent") {
-					auth := r.Header.Get("Authorization")
-					expectedAuth := fmt.Sprintf("Bearer %s", accessToken)
-					if auth != expectedAuth {
-						t.Errorf("expected Authorization header: %s but got: %s", expectedAuth, auth)
-					}
+			apiAddr := mockApiSrv.Start()
+			defer mockApiSrv.Stop()
 
-					expectedName := tc.configMap.Data[agentNameKey]
-					actualName := r.URL.Query().Get(agentNameKey)
-
-					if expectedName != actualName {
-						t.Errorf("expected to register agent with name: %s but got name: %s", expectedName, actualName)
-					}
-
-					data, _ := json.Marshal(&AgentInfo{AgentName: actualName, AgentID: newAgentID, IsNewAgent: true})
-					registrationRequests += 1
-					w.Header().Set("Content-Type", "application/json")
-					w.Write(data)
-					return
-				} else {
-					t.Errorf("Unexpected request: %s", r.URL.String())
-				}
-			}))
-			defer apiSrv.Close()
-
-			registrator := NewAgentRegistrator(clientID, clientSecret, apiSrv.Listener.Addr().String(), false, k8sApi)
-			info, err := registrator.EnsureRegistered(context.Background())
+			apiClient := bcloudapi.New(clientID, clientSecret, apiAddr, false)
+			registrator := New(apiClient, k8sApi)
+			info, _, err := registrator.EnsureRegistered(context.Background())
 			if err != nil {
 				if tc.expErr == nil {
 					t.Fatalf("Got unexpected error: %s", err)
@@ -169,17 +136,21 @@ func TestRegistrator(t *testing.T) {
 				}
 			}
 
+			if err := mockApiSrv.GetError(); err != nil {
+				t.Fatalf("Got unexpected error: %s", err)
+			}
+
 			if !reflect.DeepEqual(tc.expInfo, info) {
 				t.Errorf("Expected info: %+v, got %+v", tc.expInfo, info)
 			}
 
 			if tc.expectRegistration {
-				if tokenRequests != 1 {
-					t.Errorf("Expected 1 token request, got %d", tokenRequests)
+				if mockApiSrv.GetTokenRequests() != 1 {
+					t.Errorf("Expected 1 token request, got %d", mockApiSrv.GetTokenRequests())
 				}
 
-				if registrationRequests != 1 {
-					t.Errorf("Expected 1 registrationRequests request, got %d", registrationRequests)
+				if mockApiSrv.GetRegistrationRequests() != 1 {
+					t.Errorf("Expected 1 registrationRequests request, got %d", mockApiSrv.GetRegistrationRequests())
 				}
 
 				found := false
@@ -188,7 +159,7 @@ func TestRegistrator(t *testing.T) {
 					if ok {
 						cm, ok := upd.GetObject().(*corev1.ConfigMap)
 						if ok {
-							found = cm.Name == agentMetadataConfigMap && cm.Namespace == namespace
+							found = cm.Name == agentMetadataConfigMap && cm.Namespace == k8s.AgentNamespace
 						}
 					}
 				}
