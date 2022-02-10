@@ -125,7 +125,7 @@ func TestRegistrator(t *testing.T) {
 
 			apiClient := bcloudapi.New(clientID, clientSecret, apiAddr, false)
 			registrator := New(apiClient, k8sApi)
-			info, _, err := registrator.EnsureRegistered(context.Background())
+			info, err := registrator.EnsureRegistered(context.Background())
 			if err != nil {
 				if tc.expErr == nil {
 					t.Fatalf("Got unexpected error: %s", err)

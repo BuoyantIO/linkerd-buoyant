@@ -8,7 +8,6 @@ import (
 	pkgk8s "github.com/buoyantio/linkerd-buoyant/agent/pkg/k8s"
 	"github.com/linkerd/linkerd2/pkg/k8s"
 	log "github.com/sirupsen/logrus"
-	"golang.org/x/oauth2"
 	kerrors "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
@@ -37,23 +36,23 @@ func New(bcloudApiClient bcloudapi.Client, k8sAPI *k8s.KubernetesAPI) *Registrat
 // EnsureRegistered performes agent registration if necessary. It inspects the
 // config map containing the agent metadata and decides whether this is a new agent
 // that needs to be registered.
-func (ar *Registrator) EnsureRegistered(ctx context.Context) (*bcloudapi.AgentInfo, oauth2.TokenSource, error) {
+func (ar *Registrator) EnsureRegistered(ctx context.Context) (*bcloudapi.AgentInfo, error) {
 	cm, err := ar.k8sAPI.
 		CoreV1().
 		ConfigMaps(pkgk8s.AgentNamespace).
 		Get(ctx, agentMetadataConfigMap, metav1.GetOptions{})
 	if err != nil {
 		if kerrors.IsNotFound(err) {
-			return nil, nil, fmt.Errorf("could not find %s config map", agentMetadataConfigMap)
+			return nil, fmt.Errorf("could not find %s config map", agentMetadataConfigMap)
 		}
-		return nil, nil, err
+		return nil, err
 	}
 
 	agentID, hasAgentID := cm.Data[pkgk8s.AgentIDKey]
 	agentName, hasAgentName := cm.Data[pkgk8s.AgentNameKey]
 
 	if !hasAgentName {
-		return nil, nil, fmt.Errorf("%s config map needs to have an %s key", agentMetadataConfigMap, pkgk8s.AgentNameKey)
+		return nil, fmt.Errorf("%s config map needs to have an %s key", agentMetadataConfigMap, pkgk8s.AgentNameKey)
 	}
 
 	if hasAgentID {
@@ -64,12 +63,12 @@ func (ar *Registrator) EnsureRegistered(ctx context.Context) (*bcloudapi.AgentIn
 			IsNewAgent: false,
 		}
 
-		return ai, ar.bcloudApiClient.AgentTokenSource(ctx, agentID), nil
+		return ai, nil
 	}
 
 	info, err := ar.bcloudApiClient.RegisterAgent(ctx, agentName)
 	if err != nil {
-		return nil, nil, fmt.Errorf("agent registration failed: %w", err)
+		return nil, fmt.Errorf("agent registration failed: %w", err)
 	}
 
 	cm.Data[pkgk8s.AgentIDKey] = info.AgentID
@@ -78,8 +77,8 @@ func (ar *Registrator) EnsureRegistered(ctx context.Context) (*bcloudapi.AgentIn
 		ConfigMaps(pkgk8s.AgentNamespace).
 		Update(ctx, cm, metav1.UpdateOptions{})
 	if err != nil {
-		return nil, nil, fmt.Errorf("failed to update %s configm map: %w", agentMetadataConfigMap, err)
+		return nil, fmt.Errorf("failed to update %s configm map: %w", agentMetadataConfigMap, err)
 	}
 
-	return info, ar.bcloudApiClient.AgentTokenSource(ctx, info.AgentID), nil
+	return info, nil
 }

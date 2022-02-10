@@ -6,6 +6,7 @@ import (
 	"reflect"
 	"testing"
 
+	"github.com/buoyantio/linkerd-buoyant/agent/pkg/k8s"
 	appsv1 "k8s.io/api/apps/v1"
 	v1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -30,7 +31,7 @@ func TestAgent(t *testing.T) {
 			"secret found",
 			[]runtime.Object{
 				&v1.Secret{
-					ObjectMeta: metav1.ObjectMeta{Name: agentSecret, Namespace: Namespace},
+					ObjectMeta: metav1.ObjectMeta{Name: agentSecret, Namespace: k8s.AgentNamespace},
 					Data: map[string][]byte{
 						"name":        []byte("fake-name"),
 						"id":          []byte("fake-id"),
@@ -48,7 +49,7 @@ func TestAgent(t *testing.T) {
 			"secret and deployment found",
 			[]runtime.Object{
 				&v1.Secret{
-					ObjectMeta: metav1.ObjectMeta{Name: agentSecret, Namespace: Namespace},
+					ObjectMeta: metav1.ObjectMeta{Name: agentSecret, Namespace: k8s.AgentNamespace},
 					Data: map[string][]byte{
 						"name":        []byte("fake-name"),
 						"id":          []byte("fake-id"),
@@ -58,7 +59,7 @@ func TestAgent(t *testing.T) {
 				&appsv1.Deployment{
 					ObjectMeta: metav1.ObjectMeta{
 						Name:      AgentName,
-						Namespace: Namespace,
+						Namespace: k8s.AgentNamespace,
 						Labels:    map[string]string{VersionLabel: "fake-version"},
 					},
 				},

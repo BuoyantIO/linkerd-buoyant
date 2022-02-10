@@ -7,6 +7,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	agentk8s "github.com/buoyantio/linkerd-buoyant/agent/pkg/k8s"
 	"github.com/buoyantio/linkerd-buoyant/cli/pkg/k8s"
 	"github.com/buoyantio/linkerd-buoyant/cli/pkg/version"
 	"github.com/linkerd/linkerd2/pkg/healthcheck"
@@ -84,14 +85,14 @@ Status check results are ×
 			"Success",
 			func() *HealthChecker {
 				objMeta := metav1.ObjectMeta{
-					Name: k8s.Namespace,
+					Name: agentk8s.AgentNamespace,
 					Labels: map[string]string{
 						l5dk8s.LinkerdExtensionLabel: "buoyant",
 						k8s.PartOfKey:                k8s.PartOfVal,
 					},
 				}
 				objMetaDeploy := metav1.ObjectMeta{
-					Name: k8s.Namespace,
+					Name: agentk8s.AgentNamespace,
 					Labels: map[string]string{
 						l5dk8s.LinkerdExtensionLabel: "buoyant",
 						k8s.PartOfKey:                k8s.PartOfVal,

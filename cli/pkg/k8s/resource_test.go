@@ -6,6 +6,7 @@ import (
 	"reflect"
 	"testing"
 
+	"github.com/buoyantio/linkerd-buoyant/agent/pkg/k8s"
 	v1 "k8s.io/api/core/v1"
 	rbacv1 "k8s.io/api/rbac/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -31,7 +32,7 @@ func TestResources(t *testing.T) {
 			[]runtime.Object{
 				&v1.Namespace{
 					ObjectMeta: metav1.ObjectMeta{
-						Name:   Namespace,
+						Name:   k8s.AgentNamespace,
 						Labels: map[string]string{PartOfKey: PartOfVal + "bad"},
 					},
 				},
@@ -44,7 +45,7 @@ func TestResources(t *testing.T) {
 			[]runtime.Object{
 				&v1.Namespace{
 					ObjectMeta: metav1.ObjectMeta{
-						Name:   Namespace,
+						Name:   k8s.AgentNamespace,
 						Labels: map[string]string{PartOfKey: PartOfVal},
 					},
 				},
@@ -64,7 +65,7 @@ metadata:
 			[]runtime.Object{
 				&v1.Namespace{
 					ObjectMeta: metav1.ObjectMeta{
-						Name:   Namespace,
+						Name:   k8s.AgentNamespace,
 						Labels: map[string]string{PartOfKey: PartOfVal},
 					},
 				},

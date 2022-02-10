@@ -8,8 +8,6 @@ import (
 )
 
 const (
-	// Namespace is the namespace where the Buoyant Cloud agent is installed.
-	Namespace = "buoyant-cloud"
 	// AgentName is the name of the Buoyant Cloud Agent deployment.
 	AgentName = "buoyant-cloud-agent"
 	// MetricsName is the name of the Buoyant Cloud Metrics deployment.

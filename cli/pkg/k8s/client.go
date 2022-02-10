@@ -3,6 +3,7 @@ package k8s
 import (
 	"context"
 
+	"github.com/buoyantio/linkerd-buoyant/agent/pkg/k8s"
 	appsv1 "k8s.io/api/apps/v1"
 	v1 "k8s.io/api/core/v1"
 	rbacv1 "k8s.io/api/rbac/v1"
@@ -78,7 +79,7 @@ func (c *client) Namespace(ctx context.Context) (*v1.Namespace, error) {
 	return c.
 		CoreV1().
 		Namespaces().
-		Get(ctx, Namespace, metav1.GetOptions{})
+		Get(ctx, k8s.AgentNamespace, metav1.GetOptions{})
 }
 
 func (c *client) ClusterRole(ctx context.Context) (*rbacv1.ClusterRole, error) {
@@ -98,35 +99,35 @@ func (c *client) ClusterRoleBinding(ctx context.Context) (*rbacv1.ClusterRoleBin
 func (c *client) Secret(ctx context.Context) (*v1.Secret, error) {
 	return c.
 		CoreV1().
-		Secrets(Namespace).
+		Secrets(k8s.AgentNamespace).
 		Get(ctx, agentSecret, metav1.GetOptions{})
 }
 
 func (c *client) ServiceAccount(ctx context.Context) (*v1.ServiceAccount, error) {
 	return c.
 		CoreV1().
-		ServiceAccounts(Namespace).
+		ServiceAccounts(k8s.AgentNamespace).
 		Get(ctx, AgentName, metav1.GetOptions{})
 }
 
 func (c *client) DaemonSet(ctx context.Context, name string) (*appsv1.DaemonSet, error) {
 	return c.
 		AppsV1().
-		DaemonSets(Namespace).
+		DaemonSets(k8s.AgentNamespace).
 		Get(ctx, name, metav1.GetOptions{})
 }
 
 func (c *client) Deployment(ctx context.Context, name string) (*appsv1.Deployment, error) {
 	return c.
 		AppsV1().
-		Deployments(Namespace).
+		Deployments(k8s.AgentNamespace).
 		Get(ctx, name, metav1.GetOptions{})
 }
 
 func (c *client) Pods(ctx context.Context, labelSelector string) (*v1.PodList, error) {
 	return c.
 		CoreV1().
-		Pods(Namespace).
+		Pods(k8s.AgentNamespace).
 		List(ctx, metav1.ListOptions{LabelSelector: labelSelector})
 }
 

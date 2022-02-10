@@ -63,7 +63,7 @@ func (mas *MockAPIServer) Start() string {
 			w.Header().Set("Content-Type", "application/json")
 			w.Write(data)
 			return
-		} else if strings.Contains(r.URL.String(), regiserAgentEndpoint) {
+		} else if strings.Contains(r.URL.String(), registerAgentEndpoint) {
 			auth := r.Header.Get("Authorization")
 			expectedAuth := fmt.Sprintf("Bearer %s", mas.expectedAccessToken)
 			if auth != expectedAuth {

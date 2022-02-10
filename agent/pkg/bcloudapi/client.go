@@ -6,16 +6,18 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"net/url"
 
 	"github.com/buoyantio/linkerd-buoyant/agent/pkg/k8s"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/clientcredentials"
+	"google.golang.org/grpc/credentials"
 )
 
 const (
-	agentTokenEndpoint   = "/agent-token"
-	tokenEndpoint        = "/token"
-	regiserAgentEndpoint = "/register-agent"
+	agentTokenEndpoint    = "/agent-token"
+	tokenEndpoint         = "/token"
+	registerAgentEndpoint = "/register-agent"
 )
 
 // AgentInfo contains all data to describe an agent that has been
@@ -28,46 +30,54 @@ type AgentInfo struct {
 
 type Client interface {
 	RegisterAgent(ctx context.Context, agentName string) (*AgentInfo, error)
-	AgentTokenSource(ctx context.Context, agentID string) oauth2.TokenSource
+	Credentials(ctx context.Context, agentID string) credentials.PerRPCCredentials
 }
 
-// ApiClient is a client that talks to the Bcloud client API
-type ApiClient struct {
+type client struct {
 	clientID        string
 	clientSecret    string
 	tokenAuthConfig *clientcredentials.Config
-	addrScheme      string
-	apiAddr         string
+	base            url.URL
+	secure          bool
 }
 
 // New creates a new ApiClient
-func New(clientID, clientSecret, apiAddr string, secure bool) *ApiClient {
+func New(clientID, clientSecret, apiAddr string, secure bool) Client {
 	addrScheme := "http"
 	if secure {
 		addrScheme = "https"
 	}
 
+	base := url.URL{Scheme: addrScheme, Host: apiAddr}
+
+	tokenURL := base
+	tokenURL.Path = tokenEndpoint
+
 	tokenAuthConfig := &clientcredentials.Config{
 		ClientID:     clientID,
 		ClientSecret: clientSecret,
-		TokenURL:     fmt.Sprintf("%s://%s%s", addrScheme, apiAddr, tokenEndpoint),
+		TokenURL:     tokenURL.String(),
 		AuthStyle:    oauth2.AuthStyleInHeader,
 	}
 
-	return &ApiClient{
+	return &client{
 		clientID:        clientID,
 		clientSecret:    clientSecret,
 		tokenAuthConfig: tokenAuthConfig,
-		addrScheme:      addrScheme,
-		apiAddr:         apiAddr,
+		base:            base,
+		secure:          secure,
 	}
 }
 
 // RegisterAgent registers the agent with Bcloud
-func (c *ApiClient) RegisterAgent(ctx context.Context, agentName string) (*AgentInfo, error) {
+func (c *client) RegisterAgent(ctx context.Context, agentName string) (*AgentInfo, error) {
 	client := c.tokenAuthConfig.Client(ctx)
-	url := fmt.Sprintf("%s://%s%s?%s=%s", c.addrScheme, c.apiAddr, regiserAgentEndpoint, k8s.AgentNameKey, agentName)
-	req, err := http.NewRequest(http.MethodPut, url, nil)
+
+	registerURL := c.base
+	registerURL.Path = registerAgentEndpoint
+	registerURL.RawQuery = url.Values{k8s.AgentNameKey: []string{agentName}}.Encode()
+
+	req, err := http.NewRequest(http.MethodPut, registerURL.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -94,14 +104,20 @@ func (c *ApiClient) RegisterAgent(ctx context.Context, agentName string) (*Agent
 	return info, nil
 }
 
-// AgentTokenSource returns a token source for a particular agent
-func (c *ApiClient) AgentTokenSource(ctx context.Context, agentID string) oauth2.TokenSource {
+// Credentials returns a token source for a particular agent
+func (c *client) Credentials(ctx context.Context, agentID string) credentials.PerRPCCredentials {
+	agentTokenURL := c.base
+	agentTokenURL.Path = agentTokenEndpoint
+	agentTokenURL.RawQuery = url.Values{k8s.AgentIDKey: []string{agentID}}.Encode()
+
 	authConfig := &clientcredentials.Config{
 		ClientID:     c.clientID,
 		ClientSecret: c.clientSecret,
-		TokenURL:     fmt.Sprintf("%s://%s%s?agent_id=%s", c.addrScheme, c.apiAddr, agentTokenEndpoint, agentID),
+		TokenURL:     agentTokenURL.String(),
 		AuthStyle:    oauth2.AuthStyleInHeader,
 	}
 
-	return authConfig.TokenSource(ctx)
+	ts := authConfig.TokenSource(ctx)
+
+	return newTokenPerRPCCreds(ts, c.secure)
 }
