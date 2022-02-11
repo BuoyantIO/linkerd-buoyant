@@ -6,6 +6,11 @@ import (
 
 	"github.com/buoyantio/linkerd-buoyant/agent/cmd/agent"
 	"github.com/buoyantio/linkerd-buoyant/agent/cmd/registrator"
+
+	// Load all the auth plugins for the cloud providers.
+	// This enables connecting to a k8s cluster from outside the cluster, during
+	// development.
+	_ "k8s.io/client-go/plugin/pkg/client/auth"
 )
 
 func main() {

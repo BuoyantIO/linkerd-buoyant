@@ -56,12 +56,43 @@ Use "linkerd-buoyant [command] --help" for more information about a command.
 
 ### Agent
 
-Build and run:
-```bash
-bin/go-run agent
+#### Setup credentials and env vars
+
+```
+export CLIENT_ID="org-client-id"
+export CLIENT_SECRET="org-client-secret"
+export AGENT_NAME="agent-name"
 ```
 
-Docker build:
+#### Build and run agent registrator:
+```bash
+# Create agent-metadata config map with the desired agent name
+cat <<EOF | kubectl apply -f -
+kind: ConfigMap
+metadata:
+  name: agent-metadata
+  namespace: buoyant-cloud
+  labels:
+    app.kubernetes.io/part-of: buoyant-cloud
+apiVersion: v1
+data:
+  agent_name: $AGENT_NAME
+EOF
+
+# Run the registrator using the credentials
+bin/go-run agent registrator --client-id=$CLIENT_ID --client-secret=$CLIENT_SECRET
+```
+
+#### Build and run agent:
+```bash
+# Read the agent id field (populated by the registrator) in the agent-metadata config map
+export AGENT_ID=$(kubectl get cm/agent-metadata -n buoyant-cloud -o jsonpath='{.data.agent_id}')
+
+# Run the agent with the credentials and agent id
+bin/go-run agent agent --client-id=$CLIENT_ID --client-secret=$CLIENT_SECRET --agent-id=$AGENT_ID
+```
+
+#### Docker build:
 ```bash
 docker buildx build -f agent/Dockerfile -t ghcr.io/buoyantio/linkerd-buoyant:latest .
 ```

@@ -77,7 +77,7 @@ func (ar *Registrator) EnsureRegistered(ctx context.Context) (*bcloudapi.AgentIn
 		ConfigMaps(pkgk8s.AgentNamespace).
 		Update(ctx, cm, metav1.UpdateOptions{})
 	if err != nil {
-		return nil, fmt.Errorf("failed to update %s configm map: %w", agentMetadataConfigMap, err)
+		return nil, fmt.Errorf("failed to update %s config map: %w", agentMetadataConfigMap, err)
 	}
 
 	return info, nil

@@ -11,6 +11,7 @@ import (
 
 	"github.com/buoyantio/linkerd-buoyant/agent/pkg/api"
 	"github.com/buoyantio/linkerd-buoyant/agent/pkg/bcloudapi"
+	"github.com/buoyantio/linkerd-buoyant/agent/pkg/flags"
 	"github.com/buoyantio/linkerd-buoyant/agent/pkg/handler"
 	"github.com/buoyantio/linkerd-buoyant/agent/pkg/k8s"
 	pb "github.com/buoyantio/linkerd-buoyant/gen/bcloud"
@@ -23,12 +24,6 @@ import (
 	"k8s.io/apimachinery/pkg/util/wait"
 	"k8s.io/client-go/informers"
 	"k8s.io/client-go/tools/clientcmd"
-	"k8s.io/klog/v2"
-
-	// Load all the auth plugins for the cloud providers.
-	// This enables connecting to a k8s cluster from outside the cluster, during
-	// development.
-	_ "k8s.io/client-go/plugin/pkg/client/auth"
 )
 
 func dieIf(err error) {
@@ -41,42 +36,22 @@ func dieIf(err error) {
 func Main(args []string) {
 	cmd := flag.NewFlagSet("agent", flag.ExitOnError)
 
-	clientID := cmd.String("client-id", "", "bcloud client id, takes precedence over CLIENT_ID env var")
-	clientSecret := cmd.String("client-secret", "", "bcloud client secret, takes precedence over CLIENT_SECRET env var")
 	apiAddr := cmd.String("api-addr", "api.buoyant.cloud:443", "address of the Buoyant Cloud API")
 	adminAddr := cmd.String("admin-addr", ":9990", "address of agent admin server")
 	grpcAddr := cmd.String("grpc-addr", "api.buoyant.cloud:443", "address of the Buoyant Cloud gRPC API")
 	kubeConfigPath := cmd.String("kubeconfig", "", "path to kube config")
-	logLevel := cmd.String("log-level", "info", "log level, must be one of: panic, fatal, error, warn, info, debug, trace")
 	localMode := cmd.Bool("local-mode", false, "enable port forwarding for local development")
 	insecure := cmd.Bool("insecure", false, "disable TLS in development mode")
 	agentID := cmd.String("agent-id", "", "the ID of the agent")
 
-	// klog flags
-	klog.InitFlags(nil)
-	flag.Set("stderrthreshold", "FATAL")
-	flag.Set("logtostderr", "true")
-	flag.Set("v", "0")
+	flags.ConfigureAndParse(cmd, args)
 
-	cmd.Parse(args)
-
-	// set global log level and format
-
-	level, err := log.ParseLevel(*logLevel)
-	dieIf(err)
-	log.SetLevel(level)
-	log.SetFormatter(&log.TextFormatter{FullTimestamp: true})
-
-	// klog flags for debugging
-	if level >= log.DebugLevel {
-		flag.Set("stderrthreshold", "INFO")
-		flag.Set("v", "6") // At 7 and higher, authorization tokens get logged.
+	clientID, clientSecret := flags.Credentials(cmd)
+	if agentID == nil || *agentID == "" {
+		log.Fatal("missing agent id! set -agent-id flag")
 	}
-	// pipe klog entries to logrus
-	klog.SetOutput(log.StandardLogger().Writer())
 
 	// handle interrupts
-
 	stop := make(chan os.Signal, 1)
 	signal.Notify(stop, os.Interrupt, syscall.SIGTERM)
 	shutdown := make(chan struct{}, 1)
@@ -119,29 +94,8 @@ func Main(args []string) {
 
 	// create bcloud grpc api client and streams
 
-	id := os.Getenv("CLIENT_ID")
-	if *clientID != "" {
-		id = *clientID
-	}
-	if id == "" {
-		log.Fatal("missing client id! set -client-id flag or CLIENT_ID env var")
-	}
-	log.Debugf("using bcloud client id %s", id)
-
-	secret := os.Getenv("CLIENT_SECRET")
-	if *clientSecret != "" {
-		secret = *clientSecret
-	}
-	if secret == "" {
-		log.Fatal("missing bcloud client secret! set -client-secret flag or CLIENT_SECRET env var")
-	}
-
-	if agentID == nil && *agentID == "" {
-		log.Fatal("missing agent id! set -agent-id flag")
-	}
-
 	secure := !*insecure
-	bcloudApiClient := bcloudapi.New(id, secret, *apiAddr, secure)
+	bcloudApiClient := bcloudapi.New(clientID, clientSecret, *apiAddr, secure)
 	perRPCCreds := bcloudApiClient.Credentials(context.Background(), *agentID)
 	opts := []grpc.DialOption{grpc.WithPerRPCCredentials(perRPCCreds)}
 	if *insecure {
