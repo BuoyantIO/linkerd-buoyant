@@ -26,9 +26,7 @@ func Main(args []string) {
 	kubeConfigPath := cmd.String("kubeconfig", "", "path to kube config")
 	insecure := cmd.Bool("insecure", false, "disable TLS in development mode")
 
-	flags.ConfigureAndParse(cmd, args)
-
-	clientID, clientSecret := flags.Credentials(cmd)
+	clientID, clientSecret := flags.ConfigureAndParseAgentParams(cmd, args)
 
 	// setup kubernetes client
 	rules := clientcmd.NewDefaultClientConfigLoadingRules()

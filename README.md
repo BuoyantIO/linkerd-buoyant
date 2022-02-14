@@ -64,7 +64,7 @@ export CLIENT_SECRET="org-client-secret"
 export AGENT_NAME="agent-name"
 ```
 
-#### Build and run agent registrator:
+#### Build and run agent registrator
 ```bash
 # Create agent-metadata config map with the desired agent name
 cat <<EOF | kubectl apply -f -
@@ -83,7 +83,7 @@ EOF
 bin/go-run agent registrator --client-id=$CLIENT_ID --client-secret=$CLIENT_SECRET
 ```
 
-#### Build and run agent:
+#### Build and run agent
 ```bash
 # Read the agent id field (populated by the registrator) in the agent-metadata config map
 export AGENT_ID=$(kubectl get cm/agent-metadata -n buoyant-cloud -o jsonpath='{.data.agent_id}')

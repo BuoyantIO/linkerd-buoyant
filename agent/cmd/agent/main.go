@@ -44,9 +44,7 @@ func Main(args []string) {
 	insecure := cmd.Bool("insecure", false, "disable TLS in development mode")
 	agentID := cmd.String("agent-id", "", "the ID of the agent")
 
-	flags.ConfigureAndParse(cmd, args)
-
-	clientID, clientSecret := flags.Credentials(cmd)
+	clientID, clientSecret := flags.ConfigureAndParseAgentParams(cmd, args)
 	if agentID == nil || *agentID == "" {
 		log.Fatal("missing agent id! set -agent-id flag")
 	}
