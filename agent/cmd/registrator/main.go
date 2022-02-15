@@ -25,6 +25,7 @@ func Main(args []string) {
 	apiAddr := cmd.String("api-addr", "api.buoyant.cloud:443", "address of the Buoyant Cloud API")
 	kubeConfigPath := cmd.String("kubeconfig", "", "path to kube config")
 	insecure := cmd.Bool("insecure", false, "disable TLS in development mode")
+	agentMetadataMap := cmd.String("agent-metadata-map", registrator.DefaultAgentMetadataConfigMap, "the name of the agent metadata map")
 
 	clientID, clientSecret := flags.ConfigureAndParseAgentParams(cmd, args)
 
@@ -46,7 +47,7 @@ func Main(args []string) {
 
 	secure := !*insecure
 	bcloudApiClient := bcloudapi.New(clientID, clientSecret, *apiAddr, secure)
-	agentRegistrator := registrator.New(bcloudApiClient, k8sAPI)
+	agentRegistrator := registrator.New(bcloudApiClient, k8sAPI, *agentMetadataMap)
 
 	agentInfo, err := agentRegistrator.EnsureRegistered(context.Background())
 	dieIf(err)

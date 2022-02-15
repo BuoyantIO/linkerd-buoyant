@@ -18,10 +18,11 @@ import (
 )
 
 const (
-	clientID     = "client-id"
-	clientSecret = "client-secret"
-	accessToken  = "eyJhbGciOiJIUzI6IkpXVCJ9.eyJzdWIiOiIxMjMNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2Q6yJV_adQssw5c"
-	newAgentID   = "new-agent-id"
+	clientID      = "client-id"
+	clientSecret  = "client-secret"
+	accessToken   = "eyJhbGciOiJIUzI6IkpXVCJ9.eyJzdWIiOiIxMjMNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2Q6yJV_adQssw5c"
+	newAgentID    = "new-agent-id"
+	configMapName = "agent-metadata-map-name"
 )
 
 func TestRegistrator(t *testing.T) {
@@ -36,7 +37,7 @@ func TestRegistrator(t *testing.T) {
 			"manifest fully hydrated (does not perform registration)",
 			&corev1.ConfigMap{
 				ObjectMeta: metav1.ObjectMeta{
-					Name:      agentMetadataConfigMap,
+					Name:      configMapName,
 					Namespace: k8s.AgentNamespace,
 				},
 				Data: map[string]string{
@@ -56,7 +57,7 @@ func TestRegistrator(t *testing.T) {
 			"only name present (performs registration)",
 			&corev1.ConfigMap{
 				ObjectMeta: metav1.ObjectMeta{
-					Name:      agentMetadataConfigMap,
+					Name:      configMapName,
 					Namespace: k8s.AgentNamespace,
 				},
 				Data: map[string]string{
@@ -75,7 +76,7 @@ func TestRegistrator(t *testing.T) {
 			"missing agent name",
 			&corev1.ConfigMap{
 				ObjectMeta: metav1.ObjectMeta{
-					Name:      agentMetadataConfigMap,
+					Name:      configMapName,
 					Namespace: k8s.AgentNamespace,
 				},
 				Data: map[string]string{
@@ -83,14 +84,14 @@ func TestRegistrator(t *testing.T) {
 				},
 			},
 			nil,
-			fmt.Errorf("%s config map needs to have an agent_name key", agentMetadataConfigMap),
+			fmt.Errorf("%s config map needs to have an agent_name key", configMapName),
 			false,
 		},
 		{
 			"missing config map",
 			nil,
 			nil,
-			fmt.Errorf("could not find %s config map", agentMetadataConfigMap),
+			fmt.Errorf("could not find %s config map", configMapName),
 			false,
 		},
 	}
@@ -124,7 +125,7 @@ func TestRegistrator(t *testing.T) {
 			defer mockApiSrv.Stop()
 
 			apiClient := bcloudapi.New(clientID, clientSecret, apiAddr, false)
-			registrator := New(apiClient, k8sApi)
+			registrator := New(apiClient, k8sApi, configMapName)
 			info, err := registrator.EnsureRegistered(context.Background())
 			if err != nil {
 				if tc.expErr == nil {
@@ -159,7 +160,7 @@ func TestRegistrator(t *testing.T) {
 					if ok {
 						cm, ok := upd.GetObject().(*corev1.ConfigMap)
 						if ok {
-							found = cm.Name == agentMetadataConfigMap && cm.Namespace == k8s.AgentNamespace
+							found = cm.Name == configMapName && cm.Namespace == k8s.AgentNamespace
 						}
 					}
 				}
