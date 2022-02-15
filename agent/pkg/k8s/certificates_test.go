@@ -236,7 +236,7 @@ func TestGetServerName(t *testing.T) {
 		expectedErr  error
 	}{
 		{
-			"gets correct name",
+			"gets correct name (_l5d_ns and _l5d_trustdomain env vars)",
 			&v1.Container{
 				Name: l5dk8s.ProxyContainerName,
 				Env: []v1.EnvVar{
@@ -252,6 +252,31 @@ func TestGetServerName(t *testing.T) {
 			},
 			fmt.Sprintf("%s.%s.serviceaccount.identity.linkerd.cluster.local", podSa, podNs),
 			nil,
+		},
+		{
+			"gets correct name (LINKERD2_PROXY_IDENTITY_LOCAL_NAME env var)",
+			&v1.Container{
+				Name: l5dk8s.ProxyContainerName,
+				Env: []v1.EnvVar{
+					{
+						Name:  linkerdProxyIdentityEnvVarName,
+						Value: "$(_pod_sa).$(_pod_ns).serviceaccount.identity.linkerd.cluster.local",
+					},
+				},
+			},
+			fmt.Sprintf("%s.%s.serviceaccount.identity.linkerd.cluster.local", podSa, podNs),
+			nil,
+		},
+		{
+			"no env vars",
+			&v1.Container{
+				Name: l5dk8s.ProxyContainerName,
+				Env: []v1.EnvVar{
+					{},
+				},
+			},
+			"",
+			fmt.Errorf("could not find %s env var on proxy container [%s]", linkerdProxyIdentityEnvVarName, l5dk8s.ProxyContainerName),
 		},
 		{
 			"missing ns env var",
