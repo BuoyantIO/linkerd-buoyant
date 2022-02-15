@@ -412,7 +412,7 @@ AiAtuoI5XuCtrGVRzSmRTl2ra28aV9MyTU7d5qnTAFHKSgIgRKCvluOSgA5O21p5
 			},
 			nil,
 			expectedRoots,
-			fmt.Errorf("cannot obtain config map linkerd/%s", trustRootsConfigMapName),
+			fmt.Errorf("cannot obtain config map linkerd/%s: configmaps \"%s\" not found", trustRootsConfigMapName, trustRootsConfigMapName),
 		},
 		{
 			"errors when config map key not present",
