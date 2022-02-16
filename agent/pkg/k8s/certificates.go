@@ -98,7 +98,16 @@ func getServerName(podsa string, podns string, container *v1.Container) (string,
 	}
 
 	if l5dns == "" && l5dtrustdomain == "" {
-		// on newer versions of Linkerd these are not set, rely on the proxy local name for this
+		// on newer versions of Linkerd these are not set and the shape of the
+		// LINKERD2_PROXY_IDENTITY_LOCAL_NAME is different:
+		//
+		// edge-21.12.2
+		// _l5d_ns: linkerd
+		// _l5d_trustdomain: cluster.local
+		// LINKERD2_PROXY_IDENTITY_LOCAL_NAME: $(_pod_sa).$(_pod_ns).serviceaccount.identity.$(_l5d_ns).$(_l5d_trustdomain)
+		//
+		// edge-21.12.3
+		// LINKERD2_PROXY_IDENTITY_LOCAL_NAME: $(_pod_sa).$(_pod_ns).serviceaccount.identity.linkerd.cluster.local
 		if localName == "" {
 			return "", fmt.Errorf("could not find %s env var on proxy container [%s]", linkerdProxyIdentityEnvVarName, container.Name)
 		}
@@ -135,7 +144,7 @@ func (c *Client) extractRootsCerts(ctx context.Context, container *v1.Container,
 			cmName := ev.ValueFrom.ConfigMapKeyRef.Name
 			cm, err := c.k8sClient.CoreV1().ConfigMaps(namespace).Get(ctx, cmName, metav1.GetOptions{})
 			if err != nil {
-				return nil, fmt.Errorf("cannot obtain config map %s/%s: %s", namespace, cmName, err)
+				return nil, fmt.Errorf("cannot obtain config map %s/%s: %w", namespace, cmName, err)
 			}
 
 			var ok bool
