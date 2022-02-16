@@ -23,7 +23,7 @@ metrics:
 
 metadata:
   # -- The ID for this agent
-  agentId:
+  agentID:
 
   # -- The name for this agent. Required.
   agentName:

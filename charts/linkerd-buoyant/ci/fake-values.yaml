@@ -1,6 +1,6 @@
 metadata:
   agentID: fake-agent-id
-  agentname: fake-agent-name
+  agentName: fake-agent-name
 api:
   clientID: fake-client-id
   clientSecret: fake-client-secret

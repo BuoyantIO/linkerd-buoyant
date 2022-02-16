@@ -31,7 +31,7 @@ Kubernetes: `>=1.20.0-0`
 | api.apiAddress | string | `"api.buoyant.cloud:443"` | API address for Buoyant Cloud |
 | api.clientID | string | `nil` | The client id. Required. |
 | api.clientSecret | string | `nil` | The client secret. Required. |
-| metadata.agentId | string | `nil` | The ID for this agent |
+| metadata.agentID | string | `nil` | The ID for this agent |
 | metadata.agentName | string | `nil` | The name for this agent. Required. |
 | metrics.apiAddress | string | `"api.buoyant.cloud:443"` | API address for Buoyant Cloud |
 | metrics.insecure | bool | `false` | Disable TLS. Only use for testing. |
