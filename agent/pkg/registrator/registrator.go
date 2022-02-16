@@ -12,10 +12,6 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-const (
-	DefaultAgentMetadataConfigMap = "agent-metadata"
-)
-
 // Registrator is used to ensure that the agent that will be running on the
 // cluster is fully registered. If the agent is not it will perform an automatic
 // agent registration using the provided client id and client secret
