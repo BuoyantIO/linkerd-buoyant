@@ -36,22 +36,30 @@ spec:
       - name: buoyant-cloud-agent
         image: ghcr.io/buoyantio/linkerd-buoyant:{{ default (printf "v%s" .Chart.Version) .Values.agent.imageVersion }}
         args:
+        - "agent"
         - "-grpc-addr={{ .Values.agent.apiAddress }}"
         - "-log-level={{ .Values.agent.logLevel }}"
+        - "-api-addr={{ .Values.api.apiAddress }}"
+        - "-agent-id=$(AGENT_ID)"
         {{- if .Values.agent.insecure }}
         - "-insecure"
         {{- end }}
         env:
-        - name: BUOYANT_CLOUD_ID
+        - name: CLIENT_ID
           valueFrom:
             secretKeyRef:
-              key: id
-              name: buoyant-cloud-id
-        - name: BUOYANT_CLOUD_KEY
+              key: client_id
+              name: buoyant-cloud-org-credentials
+        - name: CLIENT_SECRET
           valueFrom:
             secretKeyRef:
-              key: key
-              name: buoyant-cloud-id
+              key: client_secret
+              name: buoyant-cloud-org-credentials
+        - name: AGENT_ID
+          valueFrom:
+            configMapKeyRef:
+              key: agent_id
+              name: agent-metadata
         ports:
         - name: admin
           containerPort: 9990
@@ -77,3 +85,25 @@ spec:
           runAsGroup: 1000
           runAsNonRoot: true
           runAsUser: 1000
+      initContainers:
+      - name: buoyant-cloud-agent-registrator
+        image: ghcr.io/buoyantio/linkerd-buoyant:{{ default (printf "v%s" .Chart.Version) .Values.agent.imageVersion }}
+        args:
+        - "registrator"
+        - "-log-level={{ .Values.agent.logLevel }}"
+        - "-api-addr={{ .Values.api.apiAddress }}"
+        {{- if .Values.agent.insecure }}
+        - "-insecure"
+        {{- end }}
+        env:
+        - name: CLIENT_ID
+          valueFrom:
+            secretKeyRef:
+              key: client_id
+              name: buoyant-cloud-org-credentials
+        - name: CLIENT_SECRET
+          valueFrom:
+            secretKeyRef:
+              key: client_secret
+              name: buoyant-cloud-org-credentials
+

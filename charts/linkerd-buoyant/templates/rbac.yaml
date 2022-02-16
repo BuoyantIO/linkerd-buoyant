@@ -56,21 +56,32 @@ subjects:
   name: buoyant-cloud-agent
   namespace: {{.Release.Namespace}}
 ---
-#
-# Secrets to identify and authenticate this agent ({{ .Values.agentClusterName }})
-#
-kind: Secret
-apiVersion: v1
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
 metadata:
-  name: buoyant-cloud-id
-  {{- if eq .Release.Service "Buoyant Cloud" }}
   namespace: {{.Release.Namespace}}
-  {{- end }}
+  name: buoyant-cloud-agent
   labels:
     app.kubernetes.io/part-of: buoyant-cloud
-type: Opaque
-data:
-  id: {{ b64enc (required "Please provide the ID for this agent in the agentID value" .Values.agentID | trim) }}
-  key: {{ b64enc (required "Please provide the key for this agent in the agentKey value" .Values.agentKey | trim) }}
-  downloadKey: {{ b64enc (required "Please provide the download key for this agent in the agentDownloadKey value" .Values.agentDownloadKey | trim) }}
-  name: {{ b64enc (required "Please provide the cluster name for this agent in the agentClusterName value" .Values.agentClusterName | trim) }}
+rules:
+- apiGroups: [""]
+  resources: ["configmaps"]
+  resourceNames: ["agent-metadata"]
+  verbs: ["get", "update"]
+---
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  namespace: {{.Release.Namespace}}
+  name: buoyant-cloud-agent
+  labels:
+    app.kubernetes.io/part-of: buoyant-cloud
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: buoyant-cloud-agent
+subjects:
+- kind: ServiceAccount
+  name: buoyant-cloud-agent
+  namespace: {{.Release.Namespace}}
+

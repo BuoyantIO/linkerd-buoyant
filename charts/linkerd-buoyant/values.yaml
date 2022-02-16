@@ -1,15 +1,3 @@
-# -- The ID for this agent. Required.
-agentID:
-
-# -- The key for this agent. Required.
-agentKey:
-
-# -- The download key for this agent. Required.
-agentDownloadKey:
-
-# -- The name of the cluster observed by this agent, as it should appear in Buoyant Cloud. Required.
-agentClusterName:
-
 agent:
   # -- API address for Buoyant Cloud
   apiAddress: api.buoyant.cloud:443
@@ -32,3 +20,20 @@ metrics:
 
   # -- Log level for the buoyant-cloud-metrics pod
   logLevel: info
+
+metadata:
+  # -- The ID for this agent
+  agentId:
+
+  # -- The name for this agent. Required.
+  agentName:
+
+api:
+  # -- The client id. Required.
+  clientID:
+
+  # -- The client secret. Required.
+  clientSecret:
+
+  # -- API address for Buoyant Cloud
+  apiAddress: api.buoyant.cloud:443

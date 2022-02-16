@@ -1,0 +1,31 @@
+kind: ConfigMap
+metadata:
+  name: agent-metadata
+  {{- if eq .Release.Service "Buoyant Cloud" }}
+  namespace: {{.Release.Namespace}}
+  {{- end }}
+  labels:
+    app.kubernetes.io/part-of: buoyant-cloud
+apiVersion: v1
+data:
+  agent_name: {{.Values.metadata.agentName}}
+  {{- if .Values.metadata.agentID }}
+  agent_id: {{.Values.metadata.agentID}}
+  {{- end }}
+---
+#
+# Secret containing the org credentials for the org
+#
+kind: Secret
+apiVersion: v1
+metadata:
+  name: buoyant-cloud-org-credentials
+  {{- if eq .Release.Service "Buoyant Cloud" }}
+  namespace: {{.Release.Namespace}}
+  {{- end }}
+  labels:
+    app.kubernetes.io/part-of: buoyant-cloud
+type: Opaque
+data:
+  client_id: {{ b64enc (required "Please provide the client ID for this org in the api.clientID value" .Values.api.clientID | trim) }}
+  client_secret: {{ b64enc (required "Please provide the client secret for this org in the api.clientSecret value" .Values.api.clientSecret | trim) }}
