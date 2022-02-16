@@ -5,6 +5,7 @@ import (
 	"crypto/tls"
 	"fmt"
 	"net"
+	"strings"
 	"time"
 
 	pb "github.com/buoyantio/linkerd-buoyant/gen/bcloud"
@@ -17,11 +18,12 @@ import (
 )
 
 const (
-	identityComponentName        = "identity"
-	linkerdNsEnvVarName          = "_l5d_ns"
-	linkerdTrustDomainEnvVarName = "_l5d_trustdomain"
-	trustRootsConfigMapName      = "linkerd-identity-trust-roots"
-	trustRootsConfigMapKeyName   = "ca-bundle.crt"
+	identityComponentName          = "identity"
+	linkerdNsEnvVarName            = "_l5d_ns"
+	linkerdTrustDomainEnvVarName   = "_l5d_trustdomain"
+	linkerdProxyIdentityEnvVarName = "LINKERD2_PROXY_IDENTITY_LOCAL_NAME"
+	trustRootsConfigMapName        = "linkerd-identity-trust-roots"
+	trustRootsConfigMapKeyName     = "ca-bundle.crt"
 )
 
 func (c *Client) GetControlPlaneCerts(ctx context.Context) (*pb.ControlPlaneCerts, error) {
@@ -80,6 +82,8 @@ func (c *Client) getControlPlaneComponentPod(component string) (*v1.Pod, error) 
 func getServerName(podsa string, podns string, container *v1.Container) (string, error) {
 	var l5dns string
 	var l5dtrustdomain string
+	var localName string
+
 	for _, env := range container.Env {
 		if env.Name == linkerdNsEnvVarName {
 			l5dns = env.Value
@@ -87,6 +91,31 @@ func getServerName(podsa string, podns string, container *v1.Container) (string,
 		if env.Name == linkerdTrustDomainEnvVarName {
 			l5dtrustdomain = env.Value
 		}
+
+		if env.Name == linkerdProxyIdentityEnvVarName {
+			localName = env.Value
+		}
+	}
+
+	if l5dns == "" && l5dtrustdomain == "" {
+		// on newer versions of Linkerd these are not set and the shape of the
+		// LINKERD2_PROXY_IDENTITY_LOCAL_NAME is different:
+		//
+		// edge-21.12.2
+		// _l5d_ns: linkerd
+		// _l5d_trustdomain: cluster.local
+		// LINKERD2_PROXY_IDENTITY_LOCAL_NAME: $(_pod_sa).$(_pod_ns).serviceaccount.identity.$(_l5d_ns).$(_l5d_trustdomain)
+		//
+		// edge-21.12.3
+		// LINKERD2_PROXY_IDENTITY_LOCAL_NAME: $(_pod_sa).$(_pod_ns).serviceaccount.identity.linkerd.cluster.local
+		if localName == "" {
+			return "", fmt.Errorf("could not find %s env var on proxy container [%s]", linkerdProxyIdentityEnvVarName, container.Name)
+		}
+
+		withSa := strings.Replace(localName, "$(_pod_sa)", podsa, 1)
+		withNs := strings.Replace(withSa, "$(_pod_ns)", podns, 1)
+
+		return withNs, nil
 	}
 
 	if l5dns == "" {
@@ -96,6 +125,7 @@ func getServerName(podsa string, podns string, container *v1.Container) (string,
 	if l5dtrustdomain == "" {
 		return "", fmt.Errorf("could not find %s env var on proxy container [%s]", linkerdTrustDomainEnvVarName, container.Name)
 	}
+
 	return fmt.Sprintf("%s.%s.serviceaccount.identity.%s.%s", podsa, podns, l5dns, l5dtrustdomain), nil
 }
 
@@ -114,7 +144,7 @@ func (c *Client) extractRootsCerts(ctx context.Context, container *v1.Container,
 			cmName := ev.ValueFrom.ConfigMapKeyRef.Name
 			cm, err := c.k8sClient.CoreV1().ConfigMaps(namespace).Get(ctx, cmName, metav1.GetOptions{})
 			if err != nil {
-				return nil, fmt.Errorf("cannot obtain config map %s/%s", namespace, cmName)
+				return nil, fmt.Errorf("cannot obtain config map %s/%s: %w", namespace, cmName, err)
 			}
 
 			var ok bool
