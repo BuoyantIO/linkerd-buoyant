@@ -25,6 +25,7 @@ Kubernetes: `>=1.20.0-0`
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
 | agent.apiAddress | string | `"api.buoyant.cloud:443"` | API address for Buoyant Cloud |
+| agent.image | string | `"ghcr.io/buoyantio/linkerd-buoyant"` | image of the buoyant-cloud-agent pod |
 | agent.imageVersion | string | `nil` | imageVersion of the buoyant-cloud-agent pod |
 | agent.insecure | bool | `false` | Disable TLS. Only use for testing. |
 | agent.logLevel | string | `"info"` | Log level for the buoyant-cloud-agent pod |

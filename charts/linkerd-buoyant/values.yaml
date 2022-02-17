@@ -2,6 +2,9 @@ agent:
   # -- API address for Buoyant Cloud
   apiAddress: api.buoyant.cloud:443
 
+  # -- image of the buoyant-cloud-agent pod
+  image: ghcr.io/buoyantio/linkerd-buoyant
+
   # -- imageVersion of the buoyant-cloud-agent pod
   imageVersion:
 

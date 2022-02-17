@@ -34,7 +34,7 @@ spec:
       serviceAccount: buoyant-cloud-agent
       containers:
       - name: buoyant-cloud-agent
-        image: ghcr.io/buoyantio/linkerd-buoyant:{{ default (printf "v%s" .Chart.Version) .Values.agent.imageVersion }}
+        image: {{ .Values.agent.image }}:{{ default (printf "v%s" .Chart.Version) .Values.agent.imageVersion }}
         args:
         - "agent"
         - "-grpc-addr={{ .Values.agent.apiAddress }}"
@@ -87,7 +87,7 @@ spec:
           runAsUser: 1000
       initContainers:
       - name: buoyant-cloud-agent-registrator
-        image: ghcr.io/buoyantio/linkerd-buoyant:{{ default (printf "v%s" .Chart.Version) .Values.agent.imageVersion }}
+        image: {{ .Values.agent.image }}:{{ default (printf "v%s" .Chart.Version) .Values.agent.imageVersion }}
         args:
         - "registrator"
         - "-log-level={{ .Values.agent.logLevel }}"
