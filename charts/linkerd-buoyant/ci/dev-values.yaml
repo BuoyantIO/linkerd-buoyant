@@ -8,7 +8,7 @@ api:
   insecure: true
 agent:
   apiAddress: dockerhost:8086
-  imageVersion: latest
+  imageVersion: ci-run
   insecure: true
   logLevel: debug
 metrics:

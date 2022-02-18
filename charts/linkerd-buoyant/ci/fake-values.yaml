@@ -5,4 +5,4 @@ api:
   clientID: fake-client-id
   clientSecret: fake-client-secret
 agent:
-  imageVersion: latest
+  imageVersion: ci-run
