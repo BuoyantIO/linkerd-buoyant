@@ -5,4 +5,5 @@ api:
   clientID: fake-client-id
   clientSecret: fake-client-secret
 agent:
-  imageVersion: latest
+  image: bcloud-agent
+  imageVersion: ci-run
