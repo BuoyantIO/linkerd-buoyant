@@ -176,6 +176,19 @@ jobs:
       run: |
         kubectl create ns buoyant-cloud
 
+    - name: Cache Docker layers
+      uses: actions/cache@v2
+      with:
+        path: /tmp/.buildx-cache
+        key: ${{ runner.os }}-buildx-${{ github.sha }}
+        restore-keys: |
+          ${{ runner.os }}-buildx-
+
+    - name: Build and load agent image
+      run: |
+        docker build  -f agent/Dockerfile . -t ghcr.io/buoyantio/linkerd-buoyant:ci-run
+        kind load docker-image ghcr.io/buoyantio/linkerd-buoyant:ci-run --name=chart-testing
+
     - name: Run chart-testing (install)
       run: ct install --config charts/ct.yaml
 
