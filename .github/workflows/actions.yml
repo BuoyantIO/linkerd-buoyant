@@ -176,11 +176,6 @@ jobs:
       run: |
         kubectl create ns buoyant-cloud
 
-    - name: Build and load agent image
-      run: |
-        docker build  -f agent/Dockerfile . -t bcloud-agent:ci-run
-        kind load docker-image bcloud-agent:ci-run --name=chart-testing
-
     - name: Run chart-testing (install)
       run: ct install --config charts/ct.yaml
 

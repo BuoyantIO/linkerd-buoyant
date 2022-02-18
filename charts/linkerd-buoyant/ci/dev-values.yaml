@@ -8,8 +8,7 @@ api:
   insecure: true
 agent:
   apiAddress: dockerhost:8086
-  image: bcloud-agent
-  imageVersion: ci-run
+  imageVersion: latest
   insecure: true
   logLevel: debug
 metrics:
