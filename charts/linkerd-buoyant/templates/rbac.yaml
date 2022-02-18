@@ -84,4 +84,3 @@ subjects:
 - kind: ServiceAccount
   name: buoyant-cloud-agent
   namespace: {{.Release.Namespace}}
-
