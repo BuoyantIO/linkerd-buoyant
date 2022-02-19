@@ -194,6 +194,7 @@ jobs:
         file: agent/Dockerfile
         platforms: linux/amd64
         push: false
+        load: true
         tags: ghcr.io/buoyantio/linkerd-buoyant:ci-run
         cache-from: type=local,src=/tmp/.buildx-cache
         cache-to: type=local,dest=/tmp/.buildx-cache-new
