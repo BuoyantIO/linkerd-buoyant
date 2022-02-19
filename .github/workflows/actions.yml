@@ -184,9 +184,27 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-buildx-
 
-    - name: Build and load agent image
+    - name: Build agent image
+      uses: docker/build-push-action@v2
+      with:
+        context: .
+        file: agent/Dockerfile
+        platforms: linux/amd64
+        push: false
+        tags: ghcr.io/buoyantio/linkerd-buoyant:ci-run
+        cache-from: type=local,src=/tmp/.buildx-cache
+        cache-to: type=local,dest=/tmp/.buildx-cache-new
+
+    - name: Move cache
+      # Temp fix
+      # https://github.com/docker/build-push-action/issues/252
+      # https://github.com/moby/buildkit/issues/1896
       run: |
-        docker build  -f agent/Dockerfile . -t ghcr.io/buoyantio/linkerd-buoyant:ci-run
+        rm -rf /tmp/.buildx-cache
+        mv /tmp/.buildx-cache-new /tmp/.buildx-cache
+
+    - name: Load agent image
+      run: |
         kind load docker-image ghcr.io/buoyantio/linkerd-buoyant:ci-run --name=chart-testing
 
     - name: Run chart-testing (install)
