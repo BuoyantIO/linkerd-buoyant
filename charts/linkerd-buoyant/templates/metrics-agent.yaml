@@ -352,7 +352,7 @@ spec:
         effect: NoSchedule
       containers:
       - name: buoyant-cloud-metrics
-        image: grafana/agent:v0.21.2
+        image: grafana/agent:v0.23.0
         args:
         - -config.file=/buoyant-cloud-metrics/agent.yml
         - -config.expand-env
