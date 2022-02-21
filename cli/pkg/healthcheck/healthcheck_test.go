@@ -114,6 +114,9 @@ Status check results are ×
 						MockConfigMap: &v1.ConfigMap{
 							ObjectMeta: objMeta,
 						},
+						MockSecret: &v1.Secret{
+							ObjectMeta: objMeta,
+						},
 						MockServiceAccount: &v1.ServiceAccount{
 							ObjectMeta: objMeta,
 						},
@@ -157,7 +160,8 @@ Status check results are ×
 √ buoyant-cloud-agent ClusterRole exists
 √ buoyant-cloud-agent ClusterRoleBinding exists
 √ buoyant-cloud-agent ServiceAccount exists
-√ buoyant-cloud-id Secret exists
+√ agent-metadata ConfigMap exists
+√ buoyant-cloud-org-credentials Secret exists
 √ buoyant-cloud-agent Deployment exists
 √ buoyant-cloud-agent Deployment is running
 √ buoyant-cloud-agent Deployment is injected

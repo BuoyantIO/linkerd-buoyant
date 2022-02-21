@@ -15,7 +15,8 @@ const (
 	// VersionLabel is the label key for the agent's version
 	VersionLabel = "app.kubernetes.io/version"
 
-	agentMetadataMap = "agent-metadata"
+	agentMetadataMap     = "agent-metadata"
+	orgCredentialsSecret = "buoyant-cloud-org-credentials"
 )
 
 // Agent represents the Buoyant Cloud agent. Any of these fields may not be
