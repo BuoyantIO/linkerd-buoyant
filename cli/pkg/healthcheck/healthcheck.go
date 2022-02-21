@@ -133,11 +133,11 @@ func (hc *HealthChecker) globalChecks() []healthcheck.Checker {
 		*healthcheck.NewChecker("buoyant-cloud-id Secret exists").
 			Fatal().
 			WithCheck(func(ctx context.Context) error {
-				secret, err := hc.k8s.Secret(ctx)
+				cm, err := hc.k8s.ConfigMap(ctx)
 				if err != nil {
 					return err
 				}
-				return checkLabel(secret.GetLabels(), k8s.PartOfKey, k8s.PartOfVal)
+				return checkLabel(cm.GetLabels(), k8s.PartOfKey, k8s.PartOfVal)
 			}),
 	}
 }

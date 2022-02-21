@@ -30,30 +30,28 @@ func TestAgent(t *testing.T) {
 		{
 			"secret found",
 			[]runtime.Object{
-				&v1.Secret{
-					ObjectMeta: metav1.ObjectMeta{Name: agentSecret, Namespace: k8s.AgentNamespace},
-					Data: map[string][]byte{
-						"name":        []byte("fake-name"),
-						"id":          []byte("fake-id"),
-						"downloadKey": []byte("fake-downloadKey"),
+				&v1.ConfigMap{
+					ObjectMeta: metav1.ObjectMeta{Name: agentMetadataMap, Namespace: k8s.AgentNamespace},
+					Data: map[string]string{
+						k8s.AgentNameKey: "fake-name",
+						k8s.AgentIDKey:   "fake-id",
 					},
 				},
 			},
 			nil,
 			&Agent{
 				Name: "fake-name",
-				URL:  "/agent/buoyant-cloud-k8s-fake-name-fake-id-fake-downloadKey.yml",
+				Id:   "fake-id",
 			},
 		},
 		{
 			"secret and deployment found",
 			[]runtime.Object{
-				&v1.Secret{
-					ObjectMeta: metav1.ObjectMeta{Name: agentSecret, Namespace: k8s.AgentNamespace},
-					Data: map[string][]byte{
-						"name":        []byte("fake-name"),
-						"id":          []byte("fake-id"),
-						"downloadKey": []byte("fake-downloadKey"),
+				&v1.ConfigMap{
+					ObjectMeta: metav1.ObjectMeta{Name: agentMetadataMap, Namespace: k8s.AgentNamespace},
+					Data: map[string]string{
+						k8s.AgentNameKey: "fake-name",
+						k8s.AgentIDKey:   "fake-id",
 					},
 				},
 				&appsv1.Deployment{
@@ -67,7 +65,7 @@ func TestAgent(t *testing.T) {
 			nil,
 			&Agent{
 				Name:    "fake-name",
-				URL:     "/agent/buoyant-cloud-k8s-fake-name-fake-id-fake-downloadKey.yml",
+				Id:      "fake-id",
 				Version: "fake-version",
 			},
 		},

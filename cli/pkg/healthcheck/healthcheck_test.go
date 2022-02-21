@@ -111,7 +111,7 @@ Status check results are ×
 						MockClusterRoleBinding: &rbacv1.ClusterRoleBinding{
 							ObjectMeta: objMeta,
 						},
-						MockSecret: &v1.Secret{
+						MockConfigMap: &v1.ConfigMap{
 							ObjectMeta: objMeta,
 						},
 						MockServiceAccount: &v1.ServiceAccount{

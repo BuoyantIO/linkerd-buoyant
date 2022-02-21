@@ -2,8 +2,8 @@ package k8s
 
 import (
 	"context"
-	"fmt"
 
+	agentk8s "github.com/buoyantio/linkerd-buoyant/agent/pkg/k8s"
 	kerrors "k8s.io/apimachinery/pkg/api/errors"
 )
 
@@ -15,31 +15,28 @@ const (
 	// VersionLabel is the label key for the agent's version
 	VersionLabel = "app.kubernetes.io/version"
 
-	agentSecret = "buoyant-cloud-id"
+	agentMetadataMap = "agent-metadata"
 )
 
 // Agent represents the Buoyant Cloud agent. Any of these fields may not be
 // present, depending on which resources are already on the cluster.
 type Agent struct {
 	Name    string
+	Id      string
 	Version string
-	URL     string
 }
 
 func (c *client) Agent(ctx context.Context) (*Agent, error) {
-	var name, version, url string
+	var name, id, version string
 
-	secret, err := c.Secret(ctx)
+	cm, err := c.ConfigMap(ctx)
 	if err == nil {
-		name = string(secret.Data["name"])
-		url = fmt.Sprintf(
-			"%s/agent/buoyant-cloud-k8s-%s-%s-%s.yml",
-			c.bcloudServer, secret.Data["name"], secret.Data["id"], secret.Data["downloadKey"],
-		)
+		name = cm.Data[agentk8s.AgentNameKey]
+		id = cm.Data[agentk8s.AgentIDKey]
 	} else if !kerrors.IsNotFound(err) {
 		return nil, err
 	} else {
-		// secret not found, we can't identify the agent
+		// config map not found, we can't identify the agent
 		return nil, nil
 	}
 
@@ -51,8 +48,8 @@ func (c *client) Agent(ctx context.Context) (*Agent, error) {
 	}
 
 	return &Agent{
-		name,
-		version,
-		url,
+		Name:    name,
+		Id:      id,
+		Version: version,
 	}, nil
 }

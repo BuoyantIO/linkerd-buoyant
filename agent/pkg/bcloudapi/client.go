@@ -18,7 +18,27 @@ const (
 	agentTokenEndpoint    = "/agent-token"
 	tokenEndpoint         = "/token"
 	registerAgentEndpoint = "/register-agent"
+	agentManifestEndpoint = "/agent.yaml"
 )
+
+// AgentIdentifier identifies an agent when calling the manifest rendering API
+type AgentIdentifier interface {
+	Value() string
+}
+
+// AgentID identifies and agent with its ID
+type AgentID string
+
+func (id AgentID) Value() string {
+	return string(id)
+}
+
+// AgentName identifies and agent with its name
+type AgentName string
+
+func (name AgentName) Value() string {
+	return string(name)
+}
 
 // AgentInfo contains all data to describe an agent that has been
 // registered in Bcloud.
@@ -31,6 +51,7 @@ type AgentInfo struct {
 type Client interface {
 	RegisterAgent(ctx context.Context, agentName string) (*AgentInfo, error)
 	Credentials(ctx context.Context, agentID string) credentials.PerRPCCredentials
+	GetAgentManifest(ctx context.Context, identifier AgentIdentifier) (string, error)
 }
 
 type client struct {
@@ -102,6 +123,47 @@ func (c *client) RegisterAgent(ctx context.Context, agentName string) (*AgentInf
 	}
 
 	return info, nil
+}
+
+// GetAgentManifest renders a manifest for an agent
+func (c *client) GetAgentManifest(ctx context.Context, identifier AgentIdentifier) (string, error) {
+	client := c.tokenAuthConfig.Client(ctx)
+
+	manifestURL := c.base
+	manifestURL.Path = agentManifestEndpoint
+
+	var queryKey string
+	switch identifier.(type) {
+	case AgentID:
+		queryKey = k8s.AgentIDKey
+	case AgentName:
+		queryKey = k8s.AgentNameKey
+	default:
+		return "", fmt.Errorf("invalid agent identifier %+v", identifier)
+	}
+
+	manifestURL.RawQuery = url.Values{queryKey: []string{identifier.Value()}}.Encode()
+
+	req, err := http.NewRequest(http.MethodGet, manifestURL.String(), nil)
+	if err != nil {
+		return "", err
+	}
+	rsp, err := client.Do(req)
+	if err != nil {
+		return "", err
+	}
+	defer rsp.Body.Close()
+
+	if rsp.StatusCode != http.StatusOK {
+		return "", fmt.Errorf("agent manifest rendering api returned: %d", rsp.StatusCode)
+	}
+
+	data, err := io.ReadAll(rsp.Body)
+	if err != nil {
+		return "", err
+	}
+
+	return string(data), nil
 }
 
 // Credentials returns a token source for a particular agent

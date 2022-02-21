@@ -21,8 +21,8 @@ type (
 		ClusterRole(ctx context.Context) (*rbacv1.ClusterRole, error)
 		// ClusterRoleBinding retrieves the buoyant-cloud-agent CRB.
 		ClusterRoleBinding(ctx context.Context) (*rbacv1.ClusterRoleBinding, error)
-		// Secret retrieves the buoyant-cloud-id Secret.
-		Secret(ctx context.Context) (*v1.Secret, error)
+		// ConfigMap retrieves the agent-metadata ConfigMap.
+		ConfigMap(ctx context.Context) (*v1.ConfigMap, error)
 		// ServiceAccount retrieves the buoyant-cloud-agent ServiceAccount.
 		ServiceAccount(ctx context.Context) (*v1.ServiceAccount, error)
 		// DaemonSet retrieves a DaemonSet by name in the buoyant-cloud namespace.
@@ -96,11 +96,11 @@ func (c *client) ClusterRoleBinding(ctx context.Context) (*rbacv1.ClusterRoleBin
 		Get(ctx, AgentName, metav1.GetOptions{})
 }
 
-func (c *client) Secret(ctx context.Context) (*v1.Secret, error) {
+func (c *client) ConfigMap(ctx context.Context) (*v1.ConfigMap, error) {
 	return c.
 		CoreV1().
-		Secrets(k8s.AgentNamespace).
-		Get(ctx, agentSecret, metav1.GetOptions{})
+		ConfigMaps(k8s.AgentNamespace).
+		Get(ctx, agentMetadataMap, metav1.GetOptions{})
 }
 
 func (c *client) ServiceAccount(ctx context.Context) (*v1.ServiceAccount, error) {

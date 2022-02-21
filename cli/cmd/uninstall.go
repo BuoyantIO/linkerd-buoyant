@@ -62,7 +62,7 @@ func uninstall(ctx context.Context, cfg *config, client k8s.Client) error {
 
 	// if agent is present, output its name and URL for posterity
 	if agent != nil {
-		fmt.Fprintf(cfg.stderr, "Agent manifest will remain available at:\n%s\n\n", agent.URL)
+		fmt.Fprintf(cfg.stderr, "Agent manifest will remain available via :\nlinkerd buoyant install --agent-name=%s\n\n", agent.Name)
 	}
 
 	return nil

@@ -10,6 +10,7 @@ type config struct {
 	kubeconfig   string
 	verbose      bool
 	bcloudServer string
+	bcloudAPI    string
 	stdout       io.Writer
 	stderr       io.Writer
 }
