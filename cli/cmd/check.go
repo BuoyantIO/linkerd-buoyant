@@ -35,7 +35,7 @@ failure and exit with a non-zero exit code.`,
   linkerd-buoyant check
 `,
 		RunE: func(cmd *cobra.Command, args []string) error {
-			client, err := k8s.New(checkCfg.kubeconfig, checkCfg.kubecontext, checkCfg.bcloudServer)
+			client, err := k8s.New(checkCfg.kubeconfig, checkCfg.kubecontext)
 			if err != nil {
 				return err
 			}

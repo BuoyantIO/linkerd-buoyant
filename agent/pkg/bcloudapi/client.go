@@ -26,14 +26,14 @@ type AgentIdentifier interface {
 	Value() string
 }
 
-// AgentID identifies and agent with its ID
+// AgentID identifies an agent with its ID.
 type AgentID string
 
 func (id AgentID) Value() string {
 	return string(id)
 }
 
-// AgentName identifies and agent with its name
+// AgentName identifies an agent with its name.
 type AgentName string
 
 func (name AgentName) Value() string {

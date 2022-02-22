@@ -51,12 +51,11 @@ type (
 	// client is the internal struct satisfying the Client interface
 	client struct {
 		kubernetes.Interface
-		bcloudServer string
 	}
 )
 
 // New takes a kubeconfig and kubecontext and returns an initialized Client.
-func New(kubeconfig, kubecontext, bcloudServer string) (Client, error) {
+func New(kubeconfig, kubecontext string) (Client, error) {
 	rules := clientcmd.NewDefaultClientConfigLoadingRules()
 	rules.ExplicitPath = kubeconfig
 
@@ -74,7 +73,7 @@ func New(kubeconfig, kubecontext, bcloudServer string) (Client, error) {
 		return nil, err
 	}
 
-	return &client{clientset, bcloudServer}, nil
+	return &client{clientset}, nil
 }
 
 func (c *client) Namespace(ctx context.Context) (*v1.Namespace, error) {

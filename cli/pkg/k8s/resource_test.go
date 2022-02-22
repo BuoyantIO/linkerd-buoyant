@@ -111,7 +111,7 @@ metadata:
 		t.Run(tc.testName, func(t *testing.T) {
 			ctx := context.TODO()
 			fakeCS := fake.NewSimpleClientset(tc.objs...)
-			client := client{fakeCS, ""}
+			client := client{fakeCS}
 
 			resources, err := client.Resources(ctx)
 			if !errors.Is(err, tc.expErr) {

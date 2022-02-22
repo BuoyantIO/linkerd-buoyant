@@ -40,7 +40,7 @@ func TestNamespace(t *testing.T) {
 		t.Run(tc.testName, func(t *testing.T) {
 			ctx := context.TODO()
 			fakeCS := fake.NewSimpleClientset(tc.objs...)
-			client := client{fakeCS, ""}
+			client := client{fakeCS}
 
 			ns, err := client.Namespace(ctx)
 			if !reflect.DeepEqual(err, tc.expErr) {

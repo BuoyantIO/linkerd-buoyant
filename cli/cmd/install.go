@@ -36,7 +36,8 @@ the agent with the name you have specified.
 If an agent is already present, this command retrieves an updated manifest from
 Buoyant Cloud and outputs it.
 
-Note that this command required CLIENT_ID and CLIENT_SECRET env vars to be set.`,
+Note that this command required CLIENT_ID and CLIENT_SECRET env vars to be set.
+To get a CLIENT_ID and CLIENT_SECRET, log in to https://buoyant.cloud.`,
 		Example: `  # Default install (no agent on cluster).
   linkerd buoyant install --agent-name=my-new-agent | kubectl apply -f -
 
@@ -46,16 +47,31 @@ Note that this command required CLIENT_ID and CLIENT_SECRET env vars to be set.`
   # Install onto a specific cluster
   linkerd buoyant --context test-cluster install | kubectl --context test-cluster apply -f -`,
 		RunE: func(cmd *cobra.Command, args []string) error {
-			client, err := k8s.New(installCfg.kubeconfig, cfg.kubecontext, cfg.bcloudServer)
+			client, err := k8s.New(installCfg.kubeconfig, cfg.kubecontext)
 			if err != nil {
 				return err
 			}
 
-			clientID := os.Getenv("CLIENT_ID")
+			// get clientID and clientSecret from either k8s or env vars
+			var clientID, clientSecret string
+
+			secret, err := client.Secret(cmd.Context())
+			if err == nil && secret != nil {
+				clientID = string(secret.Data["client_id"])
+				clientSecret = string(secret.Data["client_secret"])
+			}
+
+			// prefer env vars
+			if os.Getenv("CLIENT_ID") != "" {
+				clientID = os.Getenv("CLIENT_ID")
+			}
+			if os.Getenv("CLIENT_SECRET") != "" {
+				clientSecret = os.Getenv("CLIENT_SECRET")
+			}
+
 			if clientID == "" {
 				return errors.New("install command requires setting CLIENT_ID")
 			}
-			clientSecret := os.Getenv("CLIENT_SECRET")
 			if clientSecret == "" {
 				return errors.New("install command requires setting CLIENT_SECRET")
 			}
