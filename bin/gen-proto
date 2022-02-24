@@ -3,11 +3,11 @@
 set -e
 
 # keep in sync with bin/proto
-protocversion=3.17.3
+protocversion=3.19.4
 
 # keep in sync with go.mod
 protoc_gen_go_version=v1.27.1
-protoc_gen_go_grpc_version=v1.1.0
+protoc_gen_go_grpc_version=v1.2.0
 
 # fetch tools and dependencies
 

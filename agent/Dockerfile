@@ -1,4 +1,4 @@
-FROM golang:1.17.0-buster as golang
+FROM golang:1.17.7-buster as golang
 
 WORKDIR /bcloud-build
 
@@ -13,7 +13,7 @@ COPY gen           gen
 RUN CGO_ENABLED=0 GOOS=linux go build -o /bcloud-agent -mod=readonly agent/main.go
 
 
-FROM debian:buster-20210816-slim
+FROM debian:buster-20220125-slim
 
 RUN apt-get update \
     && apt-get install -y --no-install-recommends ca-certificates \
