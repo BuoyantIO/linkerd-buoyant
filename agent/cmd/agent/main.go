@@ -21,6 +21,7 @@ import (
 	log "github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
+	"google.golang.org/grpc/credentials/insecure"
 	"k8s.io/apimachinery/pkg/util/wait"
 	"k8s.io/client-go/informers"
 	"k8s.io/client-go/tools/clientcmd"
@@ -41,7 +42,7 @@ func Main(args []string) {
 	grpcAddr := cmd.String("grpc-addr", "api.buoyant.cloud:443", "address of the Buoyant Cloud gRPC API")
 	kubeConfigPath := cmd.String("kubeconfig", "", "path to kube config")
 	localMode := cmd.Bool("local-mode", false, "enable port forwarding for local development")
-	insecure := cmd.Bool("insecure", false, "disable TLS in development mode")
+	noTls := cmd.Bool("insecure", false, "disable TLS in development mode")
 	agentID := cmd.String("agent-id", "", "the ID of the agent")
 
 	clientID, clientSecret := flags.ConfigureAndParseAgentParams(cmd, args)
@@ -92,18 +93,20 @@ func Main(args []string) {
 
 	// create bcloud grpc api client and streams
 
-	secure := !*insecure
+	secure := !*noTls
 	bcloudApiClient := bcloudapi.New(clientID, clientSecret, *apiAddr, secure)
 	perRPCCreds := bcloudApiClient.Credentials(context.Background(), *agentID)
-	opts := []grpc.DialOption{grpc.WithPerRPCCredentials(perRPCCreds)}
-	if *insecure {
-		opts = append(opts, grpc.WithInsecure())
-	} else {
-		creds := credentials.NewTLS(&tls.Config{})
-		opts = append(opts, grpc.WithTransportCredentials(creds))
+
+	tlsCreds := insecure.NewCredentials()
+	if secure {
+		tlsCreds = credentials.NewTLS(&tls.Config{})
 	}
 
-	conn, err := grpc.Dial(*grpcAddr, opts...)
+	conn, err := grpc.Dial(
+		*grpcAddr,
+		grpc.WithPerRPCCredentials(perRPCCreds),
+		grpc.WithTransportCredentials(tlsCreds),
+	)
 	dieIf(err)
 
 	bcloudClient := pb.NewApiClient(conn)
