@@ -13,6 +13,7 @@ type MockClient struct {
 	MockNamespace          *v1.Namespace
 	MockClusterRole        *rbacv1.ClusterRole
 	MockClusterRoleBinding *rbacv1.ClusterRoleBinding
+	MockConfigMap          *v1.ConfigMap
 	MockSecret             *v1.Secret
 	MockServiceAccount     *v1.ServiceAccount
 	MockDaemonSet          *appsv1.DaemonSet
@@ -36,6 +37,11 @@ func (m *MockClient) ClusterRole(ctx context.Context) (*rbacv1.ClusterRole, erro
 // ClusterRoleBinding returns a mock ClusterRoleBinding object.
 func (m *MockClient) ClusterRoleBinding(ctx context.Context) (*rbacv1.ClusterRoleBinding, error) {
 	return m.MockClusterRoleBinding, nil
+}
+
+// ConfigMap returns a mock ConfigMap object.
+func (m *MockClient) ConfigMap(ctx context.Context) (*v1.ConfigMap, error) {
+	return m.MockConfigMap, nil
 }
 
 // Secret returns a mock Secret object.

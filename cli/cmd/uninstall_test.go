@@ -20,7 +20,7 @@ func TestUninstall(t *testing.T) {
 	}
 
 	client := &k8s.MockClient{
-		MockAgent:     &k8s.Agent{URL: "/fake-url"},
+		MockAgent:     &k8s.Agent{Name: "/fake-url"},
 		MockResources: []string{"resource-1", "resource-2", "resource-3"},
 	}
 	err := uninstall(context.TODO(), cfg, client)

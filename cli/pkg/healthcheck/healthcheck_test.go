@@ -111,6 +111,9 @@ Status check results are ×
 						MockClusterRoleBinding: &rbacv1.ClusterRoleBinding{
 							ObjectMeta: objMeta,
 						},
+						MockConfigMap: &v1.ConfigMap{
+							ObjectMeta: objMeta,
+						},
 						MockSecret: &v1.Secret{
 							ObjectMeta: objMeta,
 						},
@@ -154,10 +157,11 @@ Status check results are ×
 √ linkerd-buoyant cli is up-to-date
 √ buoyant-cloud Namespace exists
 √ buoyant-cloud Namespace has correct labels
+√ agent-metadata ConfigMap exists
+√ buoyant-cloud-org-credentials Secret exists
 √ buoyant-cloud-agent ClusterRole exists
 √ buoyant-cloud-agent ClusterRoleBinding exists
 √ buoyant-cloud-agent ServiceAccount exists
-√ buoyant-cloud-id Secret exists
 √ buoyant-cloud-agent Deployment exists
 √ buoyant-cloud-agent Deployment is running
 √ buoyant-cloud-agent Deployment is injected

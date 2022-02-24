@@ -27,7 +27,7 @@ func newCmdVersion(cfg *config) *cobra.Command {
 				return versionCmd(cmd.Context(), versionCfg, nil)
 			}
 
-			client, err := k8s.New(cfg.kubeconfig, cfg.kubecontext, cfg.bcloudServer)
+			client, err := k8s.New(cfg.kubeconfig, cfg.kubecontext)
 			if err != nil {
 				return err
 			}

@@ -21,7 +21,9 @@ type (
 		ClusterRole(ctx context.Context) (*rbacv1.ClusterRole, error)
 		// ClusterRoleBinding retrieves the buoyant-cloud-agent CRB.
 		ClusterRoleBinding(ctx context.Context) (*rbacv1.ClusterRoleBinding, error)
-		// Secret retrieves the buoyant-cloud-id Secret.
+		// ConfigMap retrieves the agent-metadata ConfigMap.
+		ConfigMap(ctx context.Context) (*v1.ConfigMap, error)
+		// Secret retrieves the buoyant-cloud-org-credentials Secret.
 		Secret(ctx context.Context) (*v1.Secret, error)
 		// ServiceAccount retrieves the buoyant-cloud-agent ServiceAccount.
 		ServiceAccount(ctx context.Context) (*v1.ServiceAccount, error)
@@ -49,12 +51,11 @@ type (
 	// client is the internal struct satisfying the Client interface
 	client struct {
 		kubernetes.Interface
-		bcloudServer string
 	}
 )
 
 // New takes a kubeconfig and kubecontext and returns an initialized Client.
-func New(kubeconfig, kubecontext, bcloudServer string) (Client, error) {
+func New(kubeconfig, kubecontext string) (Client, error) {
 	rules := clientcmd.NewDefaultClientConfigLoadingRules()
 	rules.ExplicitPath = kubeconfig
 
@@ -72,7 +73,7 @@ func New(kubeconfig, kubecontext, bcloudServer string) (Client, error) {
 		return nil, err
 	}
 
-	return &client{clientset, bcloudServer}, nil
+	return &client{clientset}, nil
 }
 
 func (c *client) Namespace(ctx context.Context) (*v1.Namespace, error) {
@@ -96,11 +97,18 @@ func (c *client) ClusterRoleBinding(ctx context.Context) (*rbacv1.ClusterRoleBin
 		Get(ctx, AgentName, metav1.GetOptions{})
 }
 
+func (c *client) ConfigMap(ctx context.Context) (*v1.ConfigMap, error) {
+	return c.
+		CoreV1().
+		ConfigMaps(k8s.AgentNamespace).
+		Get(ctx, agentMetadataMap, metav1.GetOptions{})
+}
+
 func (c *client) Secret(ctx context.Context) (*v1.Secret, error) {
 	return c.
 		CoreV1().
 		Secrets(k8s.AgentNamespace).
-		Get(ctx, agentSecret, metav1.GetOptions{})
+		Get(ctx, orgCredentialsSecret, metav1.GetOptions{})
 }
 
 func (c *client) ServiceAccount(ctx context.Context) (*v1.ServiceAccount, error) {

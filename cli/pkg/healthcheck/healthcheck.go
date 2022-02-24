@@ -103,6 +103,26 @@ func (hc *HealthChecker) globalChecks() []healthcheck.Checker {
 				}
 				return checkLabel(hc.ns.GetLabels(), k8s.PartOfKey, k8s.PartOfVal)
 			}),
+		*healthcheck.NewChecker("agent-metadata ConfigMap exists").
+			Fatal().
+			WithCheck(func(ctx context.Context) error {
+				cm, err := hc.k8s.ConfigMap(ctx)
+				if err != nil {
+					return err
+				}
+
+				return checkLabel(cm.GetLabels(), k8s.PartOfKey, k8s.PartOfVal)
+			}),
+		*healthcheck.NewChecker("buoyant-cloud-org-credentials Secret exists").
+			Fatal().
+			WithCheck(func(ctx context.Context) error {
+				secret, err := hc.k8s.Secret(ctx)
+				if err != nil {
+					return err
+				}
+
+				return checkLabel(secret.GetLabels(), k8s.PartOfKey, k8s.PartOfVal)
+			}),
 		*healthcheck.NewChecker("buoyant-cloud-agent ClusterRole exists").
 			Fatal().
 			WithCheck(func(ctx context.Context) error {
@@ -129,15 +149,6 @@ func (hc *HealthChecker) globalChecks() []healthcheck.Checker {
 					return err
 				}
 				return checkLabel(sa.GetLabels(), k8s.PartOfKey, k8s.PartOfVal)
-			}),
-		*healthcheck.NewChecker("buoyant-cloud-id Secret exists").
-			Fatal().
-			WithCheck(func(ctx context.Context) error {
-				secret, err := hc.k8s.Secret(ctx)
-				if err != nil {
-					return err
-				}
-				return checkLabel(secret.GetLabels(), k8s.PartOfKey, k8s.PartOfVal)
 			}),
 	}
 }

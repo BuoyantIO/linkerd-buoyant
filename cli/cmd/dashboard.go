@@ -6,6 +6,10 @@ import (
 	"github.com/spf13/cobra"
 )
 
+// openURL allows mocking the browser.OpenURL function, so our tests do not open
+// a browser window.
+type openURL func(url string) error
+
 func newCmdDashboard(cfg *config, openURL openURL) *cobra.Command {
 	return &cobra.Command{
 		Use:   "dashboard [flags]",
