@@ -186,8 +186,8 @@ func TestInstallError(t *testing.T) {
 		agentName: "fake-agent-name",
 	}
 
-	expectedError := errors.New("failed to retrieve agent manifest from bcloud server for agent identifier bcloudapi.AgentName fake-agent-name")
 	apiError := errors.New("problem with API")
+	expectedError := fmt.Errorf("failed to retrieve agent manifest from bcloud server for agent identifier bcloudapi.AgentName fake-agent-name: %w", apiError)
 	client := &k8s.MockClient{}
 	apiClient := &MockClient{Err: apiError}
 	err := install(context.TODO(), cfg, client, apiClient)

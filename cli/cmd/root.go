@@ -49,7 +49,7 @@ upgrade, and delete functionality.`,
 
 	// hidden flags
 	root.PersistentFlags().StringVar(&cfg.bcloudServer, "bcloud-server", "https://buoyant.cloud", "Buoyant Cloud server to retrieve manifests from (for testing)")
-	root.PersistentFlags().StringVar(&cfg.bcloudAPI, "bcloud-api", "https://api.buoyant.cloud", "Buoyant Cloud API to retrieve manifests from (for testing)")
+	root.PersistentFlags().StringVar(&cfg.bcloudAPI, "bcloud-api", "api.buoyant.cloud:443", "Buoyant Cloud API to retrieve manifests from (for testing)")
 
 	root.PersistentFlags().MarkHidden("bcloud-server")
 	root.PersistentFlags().MarkHidden("bcloud-api")

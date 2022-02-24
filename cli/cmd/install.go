@@ -116,7 +116,7 @@ func install(ctx context.Context, cfg *installCfg, client k8s.Client, apiClient 
 
 	manifest, err := apiClient.GetAgentManifest(ctx, identifier)
 	if err != nil {
-		return fmt.Errorf("failed to retrieve agent manifest from bcloud server for agent identifier %T %s", identifier, identifier.Value())
+		return fmt.Errorf("failed to retrieve agent manifest from bcloud server for agent identifier %T %s: %w", identifier, identifier.Value(), err)
 	}
 
 	// output the YAML manifest, this is the only thing that outputs to stdout
