@@ -9,7 +9,7 @@ agent:
   imageVersion:
 
   # -- Disable TLS. Only use for testing.
-  insecure: false
+  noTLS: false
 
   # -- Log level for the buoyant-cloud-agent pod
   logLevel: info
@@ -19,7 +19,7 @@ metrics:
   apiAddress: api.buoyant.cloud:443
 
   # -- Disable TLS. Only use for testing.
-  insecure: false
+  noTLS: false
 
   # -- Log level for the buoyant-cloud-metrics pod
   logLevel: info
@@ -40,3 +40,6 @@ api:
 
   # -- API address for Buoyant Cloud
   apiAddress: api.buoyant.cloud:443
+
+  # -- Disable TLS. Only use for testing.
+  noTLS: false

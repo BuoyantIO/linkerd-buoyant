@@ -27,11 +27,11 @@ data:
         name: buoyant-cloud-metrics
         wal_truncate_frequency: "1m"
         remote_write:
-        - url: http{{- if not .Values.metrics.insecure}}s{{- end}}://{{.Values.metrics.apiAddress}}/remote-write
+        - url: http{{- if not .Values.metrics.noTLS}}s{{- end}}://{{.Values.metrics.apiAddress}}/remote-write
           oauth2:
             client_id: ${CLIENT_ID}
             client_secret: ${CLIENT_SECRET}
-            token_url: http{{- if not .Values.api.insecure}}s{{- end}}://{{.Values.api.apiAddress}}/agent-token?agent_id=${AGENT_ID}
+            token_url: http{{- if not .Values.api.noTLS}}s{{- end}}://{{.Values.api.apiAddress}}/agent-token?agent_id=${AGENT_ID}
           queue_config:
             capacity: 1500
             max_shards: 20

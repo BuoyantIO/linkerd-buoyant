@@ -42,7 +42,7 @@ func Main(args []string) {
 	grpcAddr := cmd.String("grpc-addr", "api.buoyant.cloud:443", "address of the Buoyant Cloud gRPC API")
 	kubeConfigPath := cmd.String("kubeconfig", "", "path to kube config")
 	localMode := cmd.Bool("local-mode", false, "enable port forwarding for local development")
-	noTls := cmd.Bool("insecure", false, "disable TLS in development mode")
+	noTLS := cmd.Bool("no-tls", false, "disable TLS in development mode")
 	agentID := cmd.String("agent-id", "", "the ID of the agent")
 
 	clientID, clientSecret := flags.ConfigureAndParseAgentParams(cmd, args)
@@ -93,13 +93,12 @@ func Main(args []string) {
 
 	// create bcloud grpc api client and streams
 
-	secure := !*noTls
-	bcloudApiClient := bcloudapi.New(clientID, clientSecret, *apiAddr, secure)
+	bcloudApiClient := bcloudapi.New(clientID, clientSecret, *apiAddr, *noTLS)
 	perRPCCreds := bcloudApiClient.Credentials(context.Background(), *agentID)
 
-	tlsCreds := insecure.NewCredentials()
-	if secure {
-		tlsCreds = credentials.NewTLS(&tls.Config{})
+	tlsCreds := credentials.NewTLS(&tls.Config{})
+	if *noTLS {
+		tlsCreds = insecure.NewCredentials()
 	}
 
 	conn, err := grpc.Dial(

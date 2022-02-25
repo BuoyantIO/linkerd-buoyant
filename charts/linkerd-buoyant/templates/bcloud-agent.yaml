@@ -41,8 +41,8 @@ spec:
         - "-log-level={{ .Values.agent.logLevel }}"
         - "-api-addr={{ .Values.api.apiAddress }}"
         - "-agent-id=$(AGENT_ID)"
-        {{- if .Values.agent.insecure }}
-        - "-insecure"
+        {{- if .Values.agent.noTLS }}
+        - "-no-tls"
         {{- end }}
         env:
         - name: CLIENT_ID
@@ -92,8 +92,8 @@ spec:
         - "registrator"
         - "-log-level={{ .Values.agent.logLevel }}"
         - "-api-addr={{ .Values.api.apiAddress }}"
-        {{- if .Values.agent.insecure }}
-        - "-insecure"
+        {{- if .Values.agent.noTLS }}
+        - "-no-tls"
         {{- end }}
         env:
         - name: CLIENT_ID

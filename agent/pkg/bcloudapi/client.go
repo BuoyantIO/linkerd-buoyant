@@ -59,14 +59,14 @@ type client struct {
 	clientSecret    string
 	tokenAuthConfig *clientcredentials.Config
 	base            url.URL
-	secure          bool
+	noTLS           bool
 }
 
 // New creates a new ApiClient
-func New(clientID, clientSecret, apiAddr string, secure bool) Client {
-	addrScheme := "http"
-	if secure {
-		addrScheme = "https"
+func New(clientID, clientSecret, apiAddr string, noTLS bool) Client {
+	addrScheme := "https"
+	if noTLS {
+		addrScheme = "http"
 	}
 
 	base := url.URL{Scheme: addrScheme, Host: apiAddr}
@@ -86,7 +86,7 @@ func New(clientID, clientSecret, apiAddr string, secure bool) Client {
 		clientSecret:    clientSecret,
 		tokenAuthConfig: tokenAuthConfig,
 		base:            base,
-		secure:          secure,
+		noTLS:           noTLS,
 	}
 }
 
@@ -181,5 +181,5 @@ func (c *client) Credentials(ctx context.Context, agentID string) credentials.Pe
 
 	ts := authConfig.TokenSource(ctx)
 
-	return newTokenPerRPCCreds(ts, c.secure)
+	return newTokenPerRPCCreds(ts, c.noTLS)
 }

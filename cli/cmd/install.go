@@ -14,7 +14,7 @@ import (
 type installCfg struct {
 	*config
 	agentName string
-	insecure  bool
+	noTLS     bool
 }
 
 func newCmdInstall(cfg *config) *cobra.Command {
@@ -76,14 +76,14 @@ To get a CLIENT_ID and CLIENT_SECRET, log in to https://buoyant.cloud.`,
 				return errors.New("install command requires setting CLIENT_SECRET")
 			}
 
-			apiClient := bcloudapi.New(clientID, clientSecret, installCfg.bcloudAPI, !installCfg.insecure)
+			apiClient := bcloudapi.New(clientID, clientSecret, installCfg.bcloudAPI, !installCfg.noTLS)
 
 			return install(cmd.Context(), installCfg, client, apiClient)
 		},
 	}
 
 	cmd.Flags().StringVar(&installCfg.agentName, "agent-name", "", "The name of the agent.")
-	cmd.Flags().BoolVar(&installCfg.insecure, "insecure", false, "Disable TLS in development mode.")
+	cmd.Flags().BoolVar(&installCfg.noTLS, "no-tls", false, "Disable TLS in development mode.")
 
 	cmd.Flags().MarkHidden("insecure")
 	return cmd

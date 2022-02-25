@@ -124,7 +124,7 @@ func TestRegistrator(t *testing.T) {
 			apiAddr := mockApiSrv.Start()
 			defer mockApiSrv.Stop()
 
-			apiClient := bcloudapi.New(clientID, clientSecret, apiAddr, false)
+			apiClient := bcloudapi.New(clientID, clientSecret, apiAddr, true)
 			registrator := New(apiClient, k8sApi, configMapName)
 			info, err := registrator.EnsureRegistered(context.Background())
 			if err != nil {
