@@ -6,7 +6,6 @@ api:
   noTLS: true
   clientID: fake-client-id
   clientSecret: fake-client-secret
-  noTLS: true
 agent:
   apiAddress: dockerhost:8086
   noTLS: true
