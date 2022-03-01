@@ -3,6 +3,8 @@ package cmd
 import (
 	"bytes"
 	"context"
+	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 	"net/http/httptest"
@@ -14,6 +16,8 @@ import (
 	"github.com/buoyantio/linkerd-buoyant/cli/pkg/version"
 )
 
+const connectAgentPath = "/connect-agent"
+
 func TestInstallNewAgent(t *testing.T) {
 	totalRequests := 0
 	connectRequests := 0
@@ -23,7 +27,7 @@ func TestInstallNewAgent(t *testing.T) {
 		func(w http.ResponseWriter, r *http.Request) {
 			totalRequests++
 			switch r.URL.Path {
-			case "/connect-agent":
+			case connectAgentPath:
 				connectRequests++
 				agentUID = r.URL.Query().Get(version.LinkerdBuoyant)
 				if connectRequests == 1 {
@@ -86,7 +90,7 @@ func TestInstalWithPollingFailures(t *testing.T) {
 		func(w http.ResponseWriter, r *http.Request) {
 			totalRequests++
 			switch r.URL.Path {
-			case "/connect-agent":
+			case connectAgentPath:
 				agentUID = r.URL.Query().Get(version.LinkerdBuoyant)
 				connectRequests++
 				w.WriteHeader(http.StatusBadGateway)
@@ -106,6 +110,47 @@ func TestInstalWithPollingFailures(t *testing.T) {
 	client := &k8s.MockClient{}
 	err := install(context.TODO(), cfg, client, mockOpenURL)
 	expErr := fmt.Errorf("setup failed, unexpected HTTP status code 502 for URL %s/connect-agent?linkerd-buoyant=%s", ts.URL, agentUID)
+	if !reflect.DeepEqual(err, expErr) {
+		t.Errorf("Expected error: %s, Got: %s", expErr, err)
+	}
+
+	if totalRequests != maxPollingRetries {
+		t.Errorf("Expected %d total requests, called %d times", maxPollingRetries, totalRequests)
+	}
+	if connectRequests != maxPollingRetries {
+		t.Errorf("Expected %d /connect-agent requests, called %d times", maxPollingRetries, connectRequests)
+	}
+}
+
+func TestInstallWithPollingApiErrors(t *testing.T) {
+	totalRequests := 0
+	connectRequests := 0
+	ts := httptest.NewServer(http.HandlerFunc(
+		func(w http.ResponseWriter, r *http.Request) {
+			totalRequests++
+			switch r.URL.Path {
+			case connectAgentPath:
+				connectRequests++
+				w.Header().Set("Content-Type", "application/json")
+				w.WriteHeader(http.StatusInternalServerError)
+				rsp, _ := json.Marshal(jsonError{Error: "fatal API error"})
+				w.Write(rsp)
+			}
+		},
+	))
+	defer ts.Close()
+
+	stdout := &bytes.Buffer{}
+	stderr := &bytes.Buffer{}
+	cfg := &config{
+		stdout:       stdout,
+		stderr:       stderr,
+		bcloudServer: ts.URL,
+	}
+
+	client := &k8s.MockClient{}
+	err := install(context.TODO(), cfg, client, mockOpenURL)
+	expErr := errors.New("setup failed, fatal API error")
 	if !reflect.DeepEqual(err, expErr) {
 		t.Errorf("Expected error: %s, Got: %s", expErr, err)
 	}
