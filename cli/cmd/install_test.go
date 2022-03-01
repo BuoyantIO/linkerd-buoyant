@@ -122,7 +122,7 @@ func TestInstalWithPollingFailures(t *testing.T) {
 	}
 }
 
-func TestInstalWithPollingApiErrors(t *testing.T) {
+func TestInstallWithPollingApiErrors(t *testing.T) {
 	totalRequests := 0
 	connectRequests := 0
 	ts := httptest.NewServer(http.HandlerFunc(
