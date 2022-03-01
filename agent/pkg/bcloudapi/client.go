@@ -3,6 +3,7 @@ package bcloudapi
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"net/http"
@@ -20,6 +21,10 @@ const (
 	registerAgentEndpoint = "/register-agent"
 	agentManifestEndpoint = "/agent.yaml"
 )
+
+type jsonError struct {
+	Error string `json:"error"`
+}
 
 // AgentIdentifier identifies an agent when calling the manifest rendering API
 type AgentIdentifier interface {
@@ -109,7 +114,18 @@ func (c *client) RegisterAgent(ctx context.Context, agentName string) (*AgentInf
 	defer rsp.Body.Close()
 
 	if rsp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("agent registration api returned: %d", rsp.StatusCode)
+		genericErr := fmt.Errorf("agent registration api returned: %d", rsp.StatusCode)
+		// we will try and parse the json error object here
+		data, err := io.ReadAll(rsp.Body)
+		if err != nil {
+			return nil, genericErr
+		}
+		jsonErr := &jsonError{}
+		if err := json.Unmarshal(data, jsonErr); err != nil {
+			return nil, genericErr
+		}
+
+		return nil, errors.New(jsonErr.Error)
 	}
 
 	data, err := io.ReadAll(rsp.Body)
