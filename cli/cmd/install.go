@@ -5,7 +5,10 @@ import (
 	"crypto/sha1"
 	"encoding/base64"
 	"encoding/binary"
+	"encoding/json"
+	"errors"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"math/rand"
 	"net/http"
@@ -15,6 +18,10 @@ import (
 	"github.com/pkg/browser"
 	"github.com/spf13/cobra"
 )
+
+type jsonError struct {
+	Error string `json:"error"`
+}
 
 // openURL allows mocking the browser.OpenURL function, so our tests do not open
 // a browser window.
@@ -141,7 +148,7 @@ func newAgentURL(cfg *config, openURL openURL) (string, error) {
 		if err != nil {
 			return "", err
 		}
-		resp.Body.Close()
+		defer resp.Body.Close()
 
 		if resp.StatusCode == http.StatusAccepted {
 			// still polling
@@ -155,8 +162,13 @@ func newAgentURL(cfg *config, openURL openURL) (string, error) {
 			if retries < maxPollingRetries {
 				continue
 			}
+			err := fmt.Errorf("setup failed, unexpected HTTP status code %d for URL %s", resp.StatusCode, connectAgentURL)
+			bcloudErr := extractErrorFromResponse(resp)
+			if bcloudErr != nil {
+				err = fmt.Errorf("setup failed, %s", bcloudErr)
+			}
 
-			return "", fmt.Errorf("setup failed, unexpected HTTP status code %d for URL %s", resp.StatusCode, connectAgentURL)
+			return "", err
 		}
 
 		// successful 308, get the agent YAML URL
@@ -185,4 +197,18 @@ func genUniqueID() string {
 	hasher.Write(randBytes)
 
 	return base64.URLEncoding.EncodeToString(hasher.Sum(nil))[0:16]
+}
+
+func extractErrorFromResponse(resp *http.Response) error {
+	// we will try and parse the json error object here
+	data, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil
+	}
+	jsonErr := &jsonError{}
+	if err := json.Unmarshal(data, jsonErr); err != nil {
+		return nil
+	}
+
+	return errors.New(jsonErr.Error)
 }
