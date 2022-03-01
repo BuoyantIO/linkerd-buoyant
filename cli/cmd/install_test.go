@@ -16,6 +16,8 @@ import (
 	"github.com/buoyantio/linkerd-buoyant/cli/pkg/version"
 )
 
+const connectAgentPath = "/connect-agent"
+
 func TestInstallNewAgent(t *testing.T) {
 	totalRequests := 0
 	connectRequests := 0
@@ -25,7 +27,7 @@ func TestInstallNewAgent(t *testing.T) {
 		func(w http.ResponseWriter, r *http.Request) {
 			totalRequests++
 			switch r.URL.Path {
-			case "/connect-agent":
+			case connectAgentPath:
 				connectRequests++
 				agentUID = r.URL.Query().Get(version.LinkerdBuoyant)
 				if connectRequests == 1 {
@@ -88,7 +90,7 @@ func TestInstalWithPollingFailures(t *testing.T) {
 		func(w http.ResponseWriter, r *http.Request) {
 			totalRequests++
 			switch r.URL.Path {
-			case "/connect-agent":
+			case connectAgentPath:
 				agentUID = r.URL.Query().Get(version.LinkerdBuoyant)
 				connectRequests++
 				w.WriteHeader(http.StatusBadGateway)
@@ -127,7 +129,7 @@ func TestInstalWithPollingApiErrors(t *testing.T) {
 		func(w http.ResponseWriter, r *http.Request) {
 			totalRequests++
 			switch r.URL.Path {
-			case "/connect-agent":
+			case connectAgentPath:
 				connectRequests++
 				w.Header().Set("Content-Type", "application/json")
 				w.WriteHeader(http.StatusInternalServerError)
