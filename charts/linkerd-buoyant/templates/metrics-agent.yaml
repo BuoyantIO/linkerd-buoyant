@@ -60,6 +60,11 @@ data:
           - action: labelmap
             regex: __meta_kubernetes_pod_label_(.+)
 
+          metric_relabel_configs:
+          - source_labels: [__name__]
+            regex: ^go_memstats_alloc_bytes|go_memstats_alloc_bytes_total|go_memstats_heap_inuse_bytes|go_memstats_stack_inuse_bytes|process_resident_memory_bytes|process_virtual_memory_bytes|up$
+            action: keep
+
         # scrape_configs copied from `linkerd install`
 
         - job_name: 'kubernetes-nodes-cadvisor'
@@ -198,6 +203,12 @@ data:
             regex: 'response_latency_ms_bucket;outbound'
             action: drop
 
+          # drop some latency buckets
+          - source_labels:
+            - le
+            regex: ^2.*|3.*|4.*$
+            action: drop
+
           # drop high-cardinality outbound tcp open connections
           - source_labels:
             - __name__
@@ -315,6 +326,12 @@ data:
           - source_labels: [__name__]
             regex: ^gateway_alive|gateway_probe_latency_ms_bucket$
             action: keep
+
+          # drop some latency buckets
+          - source_labels:
+            - le
+            regex: ^2.*|3.*|4.*$
+            action: drop
 ---
 #
 # Metrics Agent
