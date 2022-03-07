@@ -114,18 +114,11 @@ func (c *client) RegisterAgent(ctx context.Context, agentName string) (*AgentInf
 	defer rsp.Body.Close()
 
 	if rsp.StatusCode != http.StatusOK {
-		genericErr := fmt.Errorf("agent registration api returned: %d", rsp.StatusCode)
-		// we will try and parse the json error object here
-		data, err := io.ReadAll(rsp.Body)
-		if err != nil {
-			return nil, genericErr
-		}
-		jsonErr := &jsonError{}
-		if err := json.Unmarshal(data, jsonErr); err != nil {
-			return nil, genericErr
+		if apiErr := extractErrorFromResponse(rsp.Request.Response); apiErr != nil {
+			return nil, apiErr
 		}
 
-		return nil, errors.New(jsonErr.Error)
+		return nil, fmt.Errorf("agent registration api returned: %d", rsp.StatusCode)
 	}
 
 	data, err := io.ReadAll(rsp.Body)
@@ -198,4 +191,18 @@ func (c *client) Credentials(ctx context.Context, agentID string) credentials.Pe
 	ts := authConfig.TokenSource(ctx)
 
 	return newTokenPerRPCCreds(ts, c.noTLS)
+}
+
+func extractErrorFromResponse(resp *http.Response) error {
+	// we will try and parse the json error object here
+	data, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil
+	}
+	jsonErr := &jsonError{}
+	if err := json.Unmarshal(data, jsonErr); err != nil {
+		return nil
+	}
+
+	return errors.New(jsonErr.Error)
 }
