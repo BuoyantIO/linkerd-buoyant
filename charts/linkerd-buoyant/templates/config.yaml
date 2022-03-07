@@ -8,7 +8,7 @@ metadata:
     app.kubernetes.io/part-of: buoyant-cloud
 apiVersion: v1
 data:
-  agent_name: {{.Values.metadata.agentName}}
+  agent_name: {{required "Please provide the agent name in the metadata.agentName value" .Values.metadata.agentName}}
   {{- if .Values.metadata.agentID }}
   agent_id: {{.Values.metadata.agentID}}
   {{- end }}
