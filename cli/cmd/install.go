@@ -39,7 +39,7 @@ Note that this command requires that the BUOYANT_CLOUD_CLIENT_ID and
 BUOYANT_CLOUD_CLIENT_SECRET environment variables are set. To retrieve the correct
 values for these variables, visit: https://buoyant.cloud/settings?cli=1.`,
 		Example: `  # Default install (no agent on cluster).
-  linkerd buoyant install --agent-name=my-new-agent | kubectl apply -f -
+  linkerd buoyant install --cluster-name=my-new-cluster | kubectl apply -f -
 
   # Obtain a manifest for an agent that already exists on your cluster
   linkerd buoyant install | kubectl apply -f -
@@ -85,7 +85,7 @@ values for these variables, visit: https://buoyant.cloud/settings?cli=1.`,
 		},
 	}
 
-	cmd.Flags().StringVar(&installCfg.agentName, "agent-name", "", "The name of the agent.")
+	cmd.Flags().StringVar(&installCfg.agentName, "cluster-name", "", "The name of the agent.")
 	cmd.Flags().BoolVar(&installCfg.noTLS, "no-tls", false, "Disable TLS in development mode.")
 
 	cmd.Flags().MarkHidden("insecure")
@@ -111,7 +111,7 @@ func install(ctx context.Context, cfg *installCfg, client k8s.Client, apiClient 
 		} else {
 			fmt.Fprintf(cfg.stderr,
 				"Could not find valid agent installation on cluster. To install agent run:\n%s\n",
-				"linkerd buoyant install --agent-name=my-new-agent | kubectl apply -f -",
+				"linkerd buoyant install --cluster-name=my-new-agent | kubectl apply -f -",
 			)
 			return fmt.Errorf("could not find valid agent installation")
 		}

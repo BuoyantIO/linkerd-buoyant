@@ -167,7 +167,7 @@ func TestInstallExistingAgent(t *testing.T) {
 		}
 
 		expectedStdErr := `Could not find valid agent installation on cluster. To install agent run:
-linkerd buoyant install --agent-name=my-new-agent | kubectl apply -f -
+linkerd buoyant install --cluster-name=my-new-agent | kubectl apply -f -
 `
 		if expectedStdErr != stderr.String() {
 			t.Errorf("Expected:\n%s\nGot:\n%s", expectedStdErr, stderr.String())
