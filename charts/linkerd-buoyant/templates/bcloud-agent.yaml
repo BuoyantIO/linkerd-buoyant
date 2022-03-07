@@ -106,4 +106,3 @@ spec:
             secretKeyRef:
               key: client_secret
               name: buoyant-cloud-org-credentials
-
