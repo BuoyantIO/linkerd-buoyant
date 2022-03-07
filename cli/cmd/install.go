@@ -79,7 +79,7 @@ values for these variables, visit: https://buoyant.cloud/settings?cli=1.`,
 				return fmt.Errorf("no credentials set")
 			}
 
-			apiClient := bcloudapi.New(clientID, clientSecret, installCfg.bcloudAPI, !installCfg.noTLS)
+			apiClient := bcloudapi.New(clientID, clientSecret, installCfg.bcloudAPI, installCfg.noTLS)
 
 			return install(cmd.Context(), installCfg, client, apiClient)
 		},
