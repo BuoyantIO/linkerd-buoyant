@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"os"
 
@@ -27,17 +26,18 @@ func newCmdInstall(cfg *config) *cobra.Command {
 		Long: `Output Buoyant Cloud agent manifest for installation.
 
 This command provides the Kubernetes configs necessary to install the Buoyant
-Cloud Agent.
+Cloud agent on your cluster.
 
-If an agent is not already present on the current cluster, this command
-will provide you with a manifest that should perform auto registration of
-the agent with the name you have specified.
+If an agent is not already present, this command provides a manifest to apply to
+your cluster, which auto-registers the cluster with Buoyant Cloud using the name
+that you've specified.
 
 If an agent is already present, this command retrieves an updated manifest from
 Buoyant Cloud and outputs it.
 
-Note that this command required CLIENT_ID and CLIENT_SECRET env vars to be set.
-To get a CLIENT_ID and CLIENT_SECRET, log in to https://buoyant.cloud.`,
+Note that this command requires that the BUOYANT_CLOUD_CLIENT_ID and
+BUOYANT_CLOUD_CLIENT_SECRET environment variables are set. To retrieve the correct
+values for these variables, visit: https://buoyant.cloud/settings?cli=1.`,
 		Example: `  # Default install (no agent on cluster).
   linkerd buoyant install --agent-name=my-new-agent | kubectl apply -f -
 
@@ -62,18 +62,21 @@ To get a CLIENT_ID and CLIENT_SECRET, log in to https://buoyant.cloud.`,
 			}
 
 			// prefer env vars
-			if os.Getenv("CLIENT_ID") != "" {
-				clientID = os.Getenv("CLIENT_ID")
+			if os.Getenv("BUOYANT_CLOUD_CLIENT_ID") != "" {
+				clientID = os.Getenv("BUOYANT_CLOUD_CLIENT_ID")
 			}
-			if os.Getenv("CLIENT_SECRET") != "" {
-				clientSecret = os.Getenv("CLIENT_SECRET")
+			if os.Getenv("BUOYANT_CLOUD_CLIENT_SECRET") != "" {
+				clientSecret = os.Getenv("BUOYANT_CLOUD_CLIENT_SECRET")
 			}
 
-			if clientID == "" {
-				return errors.New("install command requires setting CLIENT_ID")
-			}
-			if clientSecret == "" {
-				return errors.New("install command requires setting CLIENT_SECRET")
+			if clientID == "" || clientSecret == "" {
+				fmt.Fprint(
+					cfg.stderr,
+					"This command requires that the BUOYANT_CLOUD_CLIENT_ID and BUOYANT_CLOUD_CLIENT_SECRET\n",
+					"environment variables be set. To retrieve the correct values for these\n",
+					"variables, visit: https://buoyant.cloud/settings?cli=1.\n",
+				)
+				return fmt.Errorf("no credentials set")
 			}
 
 			apiClient := bcloudapi.New(clientID, clientSecret, installCfg.bcloudAPI, !installCfg.noTLS)
