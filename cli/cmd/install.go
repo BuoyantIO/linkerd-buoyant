@@ -104,9 +104,9 @@ func install(ctx context.Context, cfg *installCfg, client k8s.Client, apiClient 
 			return err
 		}
 
-		if agent.Id != "" {
+		if agent != nil && agent.Id != "" {
 			identifier = bcloudapi.AgentID(agent.Id)
-		} else if agent.Name != "" {
+		} else if agent != nil && agent.Name != "" {
 			identifier = bcloudapi.AgentName(agent.Name)
 		} else {
 			fmt.Fprintf(cfg.stderr,

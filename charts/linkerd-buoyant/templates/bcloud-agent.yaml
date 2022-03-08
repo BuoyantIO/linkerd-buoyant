@@ -45,12 +45,12 @@ spec:
         - "-no-tls"
         {{- end }}
         env:
-        - name: CLIENT_ID
+        - name: BUOYANT_CLOUD_CLIENT_ID
           valueFrom:
             secretKeyRef:
               key: client_id
               name: buoyant-cloud-org-credentials
-        - name: CLIENT_SECRET
+        - name: BUOYANT_CLOUD_CLIENT_SECRET
           valueFrom:
             secretKeyRef:
               key: client_secret
@@ -96,12 +96,12 @@ spec:
         - "-no-tls"
         {{- end }}
         env:
-        - name: CLIENT_ID
+        - name: BUOYANT_CLOUD_CLIENT_ID
           valueFrom:
             secretKeyRef:
               key: client_id
               name: buoyant-cloud-org-credentials
-        - name: CLIENT_SECRET
+        - name: BUOYANT_CLOUD_CLIENT_SECRET
           valueFrom:
             secretKeyRef:
               key: client_secret

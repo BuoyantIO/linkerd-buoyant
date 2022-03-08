@@ -21,8 +21,8 @@ func ConfigureAndParseAgentParams(cmd *flag.FlagSet, args []string) (string, str
 
 	logLevel := cmd.String("log-level", log.InfoLevel.String(),
 		"log level, must be one of: panic, fatal, error, warn, info, debug")
-	clientID := cmd.String("client-id", "", "bcloud client id, takes precedence over CLIENT_ID env var")
-	clientSecret := cmd.String("client-secret", "", "bcloud client secret, takes precedence over CLIENT_SECRET env var")
+	clientID := cmd.String("client-id", "", "bcloud client id, takes precedence over BUOYANT_CLOUD_CLIENT_ID env var")
+	clientSecret := cmd.String("client-secret", "", "bcloud client secret, takes precedence over BUOYANT_CLOUD_CLIENT_SECRET env var")
 
 	cmd.Parse(args)
 	setLogLevel(*logLevel)
@@ -33,21 +33,21 @@ func ConfigureAndParseAgentParams(cmd *flag.FlagSet, args []string) (string, str
 // provided in either via command line parameters or env varibles, giving
 // preference to the former.
 func credentials(clientID, clientSecret *string) (string, string) {
-	id := os.Getenv("CLIENT_ID")
+	id := os.Getenv("BUOYANT_CLOUD_CLIENT_ID")
 	if *clientID != "" {
 		id = *clientID
 	}
 	if id == "" {
-		log.Fatal("missing client id! set -client-id flag or CLIENT_ID env var")
+		log.Fatal("missing client id! set -client-id flag or BUOYANT_CLOUD_CLIENT_ID env var")
 	}
 	log.Debugf("using bcloud client id %s", id)
 
-	secret := os.Getenv("CLIENT_SECRET")
+	secret := os.Getenv("BUOYANT_CLOUD_CLIENT_SECRET")
 	if *clientSecret != "" {
 		secret = *clientSecret
 	}
 	if secret == "" {
-		log.Fatal("missing bcloud client secret! set -client-secret flag or CLIENT_SECRET env var")
+		log.Fatal("missing bcloud client secret! set -client-secret flag or BUOYANT_CLOUD_CLIENT_SECRET env var")
 	}
 	return id, secret
 }
