@@ -12,7 +12,6 @@ import (
 // manageAgentStream wraps the Buoyant Cloud API ManageAgent gRPC endpoint, and
 // manages the stream.
 type manageAgentStream struct {
-	auth   *pb.Auth
 	client pb.ApiClient
 	stream pb.Api_ManageAgentClient
 	log    *log.Entry
@@ -23,9 +22,8 @@ type manageAgentStream struct {
 	sync.Mutex
 }
 
-func newManageAgentStream(auth *pb.Auth, client pb.ApiClient) *manageAgentStream {
+func newManageAgentStream(client pb.ApiClient) *manageAgentStream {
 	return &manageAgentStream{
-		auth:     auth,
 		client:   client,
 		log:      log.WithField("stream", "ManageAgentStream"),
 		commands: make(chan *pb.AgentCommand),
@@ -62,7 +60,7 @@ func (s *manageAgentStream) newStream() pb.Api_ManageAgentClient {
 	// loop until the request to initiate a stream succeeds
 	for {
 		var err error
-		stream, err = s.client.ManageAgent(context.Background(), s.auth)
+		stream, err = s.client.ManageAgent(context.Background(), &pb.Auth{})
 		if err != nil {
 			s.log.Errorf("failed to initiate stream: %s", err)
 			time.Sleep(100 * time.Millisecond)

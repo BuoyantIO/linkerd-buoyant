@@ -6,6 +6,7 @@ import (
 	"reflect"
 	"testing"
 
+	"github.com/buoyantio/linkerd-buoyant/agent/pkg/k8s"
 	appsv1 "k8s.io/api/apps/v1"
 	v1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -29,36 +30,34 @@ func TestAgent(t *testing.T) {
 		{
 			"secret found",
 			[]runtime.Object{
-				&v1.Secret{
-					ObjectMeta: metav1.ObjectMeta{Name: agentSecret, Namespace: Namespace},
-					Data: map[string][]byte{
-						"name":        []byte("fake-name"),
-						"id":          []byte("fake-id"),
-						"downloadKey": []byte("fake-downloadKey"),
+				&v1.ConfigMap{
+					ObjectMeta: metav1.ObjectMeta{Name: agentMetadataMap, Namespace: k8s.AgentNamespace},
+					Data: map[string]string{
+						k8s.AgentNameKey: "fake-name",
+						k8s.AgentIDKey:   "fake-id",
 					},
 				},
 			},
 			nil,
 			&Agent{
 				Name: "fake-name",
-				URL:  "/agent/buoyant-cloud-k8s-fake-name-fake-id-fake-downloadKey.yml",
+				Id:   "fake-id",
 			},
 		},
 		{
 			"secret and deployment found",
 			[]runtime.Object{
-				&v1.Secret{
-					ObjectMeta: metav1.ObjectMeta{Name: agentSecret, Namespace: Namespace},
-					Data: map[string][]byte{
-						"name":        []byte("fake-name"),
-						"id":          []byte("fake-id"),
-						"downloadKey": []byte("fake-downloadKey"),
+				&v1.ConfigMap{
+					ObjectMeta: metav1.ObjectMeta{Name: agentMetadataMap, Namespace: k8s.AgentNamespace},
+					Data: map[string]string{
+						k8s.AgentNameKey: "fake-name",
+						k8s.AgentIDKey:   "fake-id",
 					},
 				},
 				&appsv1.Deployment{
 					ObjectMeta: metav1.ObjectMeta{
 						Name:      AgentName,
-						Namespace: Namespace,
+						Namespace: k8s.AgentNamespace,
 						Labels:    map[string]string{VersionLabel: "fake-version"},
 					},
 				},
@@ -66,7 +65,7 @@ func TestAgent(t *testing.T) {
 			nil,
 			&Agent{
 				Name:    "fake-name",
-				URL:     "/agent/buoyant-cloud-k8s-fake-name-fake-id-fake-downloadKey.yml",
+				Id:      "fake-id",
 				Version: "fake-version",
 			},
 		},
@@ -77,7 +76,7 @@ func TestAgent(t *testing.T) {
 		t.Run(tc.testName, func(t *testing.T) {
 			ctx := context.TODO()
 			fakeCS := fake.NewSimpleClientset(tc.objs...)
-			client := client{fakeCS, ""}
+			client := client{fakeCS}
 
 			agent, err := client.Agent(ctx)
 			if !errors.Is(err, tc.expErr) {

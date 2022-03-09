@@ -17,7 +17,6 @@ func (c *Client) ProxyDiagnostics(
 	nodes []*pb.Node,
 	k8sServiceManifest *pb.Service) error {
 	diagnostic := &pb.ProxyDiagnostic{
-		Auth:               c.auth,
 		DiagnosticId:       diagnosticID,
 		Logs:               logs,
 		Metrics:            metrics,

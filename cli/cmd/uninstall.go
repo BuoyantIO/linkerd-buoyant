@@ -24,7 +24,7 @@ Agent.`,
   # Unnstall from a specific cluster
   linkerd buoyant --context test-cluster uninstall | kubectl delete --context test-cluster -f -`,
 		RunE: func(cmd *cobra.Command, args []string) error {
-			client, err := k8s.New(cfg.kubeconfig, cfg.kubecontext, cfg.bcloudServer)
+			client, err := k8s.New(cfg.kubeconfig, cfg.kubecontext)
 			if err != nil {
 				return err
 			}
@@ -60,9 +60,9 @@ func uninstall(ctx context.Context, cfg *config, client k8s.Client) error {
 		fmt.Fprintf(cfg.stderr, "\n")
 	}
 
-	// if agent is present, output its name and URL for posterity
+	// if agent is present, output its name and command for posterity
 	if agent != nil {
-		fmt.Fprintf(cfg.stderr, "Agent manifest will remain available at:\n%s\n\n", agent.URL)
+		fmt.Fprintf(cfg.stderr, "Agent manifest will remain available via:\nlinkerd buoyant install --cluster-name=%s\n\n", agent.Name)
 	}
 
 	return nil

@@ -1,6 +1,8 @@
-agentID: fake-agent-id
-agentKey: fake-agent-key
-agentDownloadKey: fake-agent-download-key
-agentClusterName: fake-agent-cluster-name
+metadata:
+  agentID: fake-agent-id
+  agentName: fake-agent-name
+api:
+  clientID: fake-client-id
+  clientSecret: fake-client-secret
 agent:
   imageVersion: ci-run

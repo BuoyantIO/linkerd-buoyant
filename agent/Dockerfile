@@ -8,6 +8,7 @@ RUN go mod download
 
 COPY agent/main.go agent/main.go
 COPY agent/pkg     agent/pkg
+COPY agent/cmd     agent/cmd
 COPY gen           gen
 RUN CGO_ENABLED=0 GOOS=linux go build -o /bcloud-agent -mod=readonly agent/main.go
 

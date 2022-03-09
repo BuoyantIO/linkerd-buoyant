@@ -73,6 +73,13 @@ const (
 	Pod         = "Pod"
 	ReplicaSet  = "ReplicaSet"
 	StatefulSet = "StatefulSet"
+
+	// AgentNamespace is the namespace where the Buoyant Cloud agent is installed.
+	AgentNamespace = "buoyant-cloud"
+	// AgentIDKey is the key for the agent id in the agent metadata config map
+	AgentIDKey = "agent_id"
+	// AgentNameKey is the key for the agent name in the agent metadata config map
+	AgentNameKey = "agent_name"
 )
 
 var errSyncCache = errors.New("failed to sync caches")

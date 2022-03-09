@@ -3,6 +3,7 @@ package k8s
 import (
 	"context"
 
+	"github.com/buoyantio/linkerd-buoyant/agent/pkg/k8s"
 	appsv1 "k8s.io/api/apps/v1"
 	v1 "k8s.io/api/core/v1"
 	rbacv1 "k8s.io/api/rbac/v1"
@@ -20,7 +21,9 @@ type (
 		ClusterRole(ctx context.Context) (*rbacv1.ClusterRole, error)
 		// ClusterRoleBinding retrieves the buoyant-cloud-agent CRB.
 		ClusterRoleBinding(ctx context.Context) (*rbacv1.ClusterRoleBinding, error)
-		// Secret retrieves the buoyant-cloud-id Secret.
+		// ConfigMap retrieves the agent-metadata ConfigMap.
+		ConfigMap(ctx context.Context) (*v1.ConfigMap, error)
+		// Secret retrieves the buoyant-cloud-org-credentials Secret.
 		Secret(ctx context.Context) (*v1.Secret, error)
 		// ServiceAccount retrieves the buoyant-cloud-agent ServiceAccount.
 		ServiceAccount(ctx context.Context) (*v1.ServiceAccount, error)
@@ -48,12 +51,11 @@ type (
 	// client is the internal struct satisfying the Client interface
 	client struct {
 		kubernetes.Interface
-		bcloudServer string
 	}
 )
 
 // New takes a kubeconfig and kubecontext and returns an initialized Client.
-func New(kubeconfig, kubecontext, bcloudServer string) (Client, error) {
+func New(kubeconfig, kubecontext string) (Client, error) {
 	rules := clientcmd.NewDefaultClientConfigLoadingRules()
 	rules.ExplicitPath = kubeconfig
 
@@ -71,14 +73,14 @@ func New(kubeconfig, kubecontext, bcloudServer string) (Client, error) {
 		return nil, err
 	}
 
-	return &client{clientset, bcloudServer}, nil
+	return &client{clientset}, nil
 }
 
 func (c *client) Namespace(ctx context.Context) (*v1.Namespace, error) {
 	return c.
 		CoreV1().
 		Namespaces().
-		Get(ctx, Namespace, metav1.GetOptions{})
+		Get(ctx, k8s.AgentNamespace, metav1.GetOptions{})
 }
 
 func (c *client) ClusterRole(ctx context.Context) (*rbacv1.ClusterRole, error) {
@@ -95,38 +97,45 @@ func (c *client) ClusterRoleBinding(ctx context.Context) (*rbacv1.ClusterRoleBin
 		Get(ctx, AgentName, metav1.GetOptions{})
 }
 
+func (c *client) ConfigMap(ctx context.Context) (*v1.ConfigMap, error) {
+	return c.
+		CoreV1().
+		ConfigMaps(k8s.AgentNamespace).
+		Get(ctx, agentMetadataMap, metav1.GetOptions{})
+}
+
 func (c *client) Secret(ctx context.Context) (*v1.Secret, error) {
 	return c.
 		CoreV1().
-		Secrets(Namespace).
-		Get(ctx, agentSecret, metav1.GetOptions{})
+		Secrets(k8s.AgentNamespace).
+		Get(ctx, orgCredentialsSecret, metav1.GetOptions{})
 }
 
 func (c *client) ServiceAccount(ctx context.Context) (*v1.ServiceAccount, error) {
 	return c.
 		CoreV1().
-		ServiceAccounts(Namespace).
+		ServiceAccounts(k8s.AgentNamespace).
 		Get(ctx, AgentName, metav1.GetOptions{})
 }
 
 func (c *client) DaemonSet(ctx context.Context, name string) (*appsv1.DaemonSet, error) {
 	return c.
 		AppsV1().
-		DaemonSets(Namespace).
+		DaemonSets(k8s.AgentNamespace).
 		Get(ctx, name, metav1.GetOptions{})
 }
 
 func (c *client) Deployment(ctx context.Context, name string) (*appsv1.Deployment, error) {
 	return c.
 		AppsV1().
-		Deployments(Namespace).
+		Deployments(k8s.AgentNamespace).
 		Get(ctx, name, metav1.GetOptions{})
 }
 
 func (c *client) Pods(ctx context.Context, labelSelector string) (*v1.PodList, error) {
 	return c.
 		CoreV1().
-		Pods(Namespace).
+		Pods(k8s.AgentNamespace).
 		List(ctx, metav1.ListOptions{LabelSelector: labelSelector})
 }
 

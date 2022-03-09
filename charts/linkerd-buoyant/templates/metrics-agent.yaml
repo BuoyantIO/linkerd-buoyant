@@ -20,17 +20,18 @@ data:
       global:
         scrape_interval: 10s
         external_labels:
-          cluster_id: ${BUOYANT_CLOUD_ID}
-          cluster_name: ${BUOYANT_CLOUD_NAME}
+          cluster_id: ${AGENT_ID}
+          cluster_name: ${AGENT_NAME}
       configs:
       - host_filter: true
         name: buoyant-cloud-metrics
         wal_truncate_frequency: "1m"
         remote_write:
-        - url: http{{- if not .Values.metrics.insecure}}s{{- end}}://{{.Values.metrics.apiAddress}}/remote-write
-          basic_auth:
-            username: ${BUOYANT_CLOUD_ID}
-            password: ${BUOYANT_CLOUD_KEY}
+        - url: http{{- if not .Values.metrics.noTLS}}s{{- end}}://{{.Values.metrics.apiAddress}}/remote-write
+          oauth2:
+            client_id: ${BUOYANT_CLOUD_CLIENT_ID}
+            client_secret: ${BUOYANT_CLOUD_CLIENT_SECRET}
+            token_url: http{{- if not .Values.api.noTLS}}s{{- end}}://{{.Values.api.apiAddress}}/agent-token?agent_id=${AGENT_ID}
           queue_config:
             capacity: 1500
             max_shards: 20
@@ -403,29 +404,52 @@ spec:
           valueFrom:
             fieldRef:
               fieldPath: spec.nodeName
-        - name: BUOYANT_CLOUD_ID
+        - name: BUOYANT_CLOUD_CLIENT_ID
           valueFrom:
             secretKeyRef:
-              key: id
-              name: buoyant-cloud-id
-        - name: BUOYANT_CLOUD_KEY
+              key: client_id
+              name: buoyant-cloud-org-credentials
+        - name: BUOYANT_CLOUD_CLIENT_SECRET
           valueFrom:
             secretKeyRef:
-              key: key
-              name: buoyant-cloud-id
-        - name: BUOYANT_CLOUD_NAME
+              key: client_secret
+              name: buoyant-cloud-org-credentials
+        - name: AGENT_ID
           valueFrom:
-            secretKeyRef:
-              key: name
-              name: buoyant-cloud-id
+            configMapKeyRef:
+              key: agent_id
+              name: agent-metadata
+        - name: AGENT_NAME
+          valueFrom:
+            configMapKeyRef:
+              key: agent_name
+              name: agent-metadata
         volumeMounts:
         - mountPath: /buoyant-cloud-metrics
           name: buoyant-cloud-metrics
         - mountPath: /tmp
           name: tmp
+      initContainers:
+      - name: metrics-agent-init
+        image: bash:4.0.44
+        command:
+        - /bin/sh
+        - -c
+        - |
+          while ! test -f "/agent-metadata/agent_id"; do
+            sleep 1
+            echo "Waiting for agent registration"
+          done
+          echo "Found registered agent with ID: $(cat /agent-metadata/agent_id)"
+        volumeMounts:
+        - mountPath: /agent-metadata
+          name: agent-metadata
       volumes:
       - configMap:
           name: buoyant-cloud-metrics
         name: buoyant-cloud-metrics
+      - configMap:
+          name: agent-metadata
+        name: agent-metadata
       - name: tmp
         emptyDir: {}

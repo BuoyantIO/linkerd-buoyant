@@ -100,7 +100,7 @@ func TestWorkloadStream(t *testing.T) {
 			nil,
 			nil,
 			nil,
-			4,
+			3,
 		},
 		{
 			"three create workloads",
@@ -112,7 +112,7 @@ func TestWorkloadStream(t *testing.T) {
 			},
 			nil,
 			nil,
-			4,
+			3,
 		},
 		{
 			"three existing and three create workloads",
@@ -128,7 +128,7 @@ func TestWorkloadStream(t *testing.T) {
 			},
 			nil,
 			nil,
-			7,
+			6,
 		},
 		{
 			"three existing and three update workloads",
@@ -144,7 +144,7 @@ func TestWorkloadStream(t *testing.T) {
 				k8s.StatefulSet: {sts1},
 			},
 			nil,
-			7,
+			6,
 		},
 		{
 			"three existing and three delete workloads",
@@ -160,7 +160,7 @@ func TestWorkloadStream(t *testing.T) {
 				k8s.Deployment:  {deploy1},
 				k8s.StatefulSet: {sts1},
 			},
-			7,
+			6,
 		},
 	}
 
@@ -179,7 +179,7 @@ func TestWorkloadStream(t *testing.T) {
 			k8sClient := k8s.NewClient(sharedInformers, k8sApi, nil, false)
 
 			m := &api.MockBcloudClient{}
-			apiClient := api.NewClient("", "", m)
+			apiClient := api.NewClient(m)
 
 			wh := NewWorkload(k8sClient, apiClient)
 			if len(m.Messages()) != 0 {

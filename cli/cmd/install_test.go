@@ -3,258 +3,163 @@ package cmd
 import (
 	"bytes"
 	"context"
-	"encoding/json"
 	"errors"
 	"fmt"
-	"net/http"
-	"net/http/httptest"
 	"reflect"
-	"strings"
 	"testing"
 
+	"github.com/buoyantio/linkerd-buoyant/agent/pkg/bcloudapi"
 	"github.com/buoyantio/linkerd-buoyant/cli/pkg/k8s"
-	"github.com/buoyantio/linkerd-buoyant/cli/pkg/version"
+	"google.golang.org/grpc/credentials"
 )
 
-const connectAgentPath = "/connect-agent"
+type MockClient struct {
+	Identifier       bcloudapi.AgentIdentifier
+	ManifestToReturn string
+	Err              error
+}
+
+func (mc *MockClient) GetAgentManifest(ctx context.Context, identifier bcloudapi.AgentIdentifier) (string, error) {
+	mc.Identifier = identifier
+	if mc.Err != nil {
+		return "", mc.Err
+	}
+	return mc.ManifestToReturn, nil
+}
+
+func (mc *MockClient) RegisterAgent(ctx context.Context, agentName string) (*bcloudapi.AgentInfo, error) {
+	return nil, nil
+}
+
+func (mc *MockClient) Credentials(ctx context.Context, agentID string) credentials.PerRPCCredentials {
+	return nil
+}
+
+const fakeAgentName = "fake-agent-name"
+const fakeAgentID = "fake-agent-id"
+const fakeYaml = "fake-yaml"
 
 func TestInstallNewAgent(t *testing.T) {
-	totalRequests := 0
-	connectRequests := 0
-	redirectRequests := 0
-	agentUID := "'"
-	ts := httptest.NewServer(http.HandlerFunc(
-		func(w http.ResponseWriter, r *http.Request) {
-			totalRequests++
-			switch r.URL.Path {
-			case connectAgentPath:
-				connectRequests++
-				agentUID = r.URL.Query().Get(version.LinkerdBuoyant)
-				if connectRequests == 1 {
-					w.WriteHeader(http.StatusAccepted)
-					return
-				}
-
-				if connectRequests == 2 {
-					w.WriteHeader(http.StatusBadGateway)
-					return
-				}
-
-				http.Redirect(w, r, "/agent-yaml-redirect", http.StatusPermanentRedirect)
-			case "/agent-yaml-redirect":
-				redirectRequests++
-				w.Header().Set("Content-Type", "text/yaml")
-				w.Write([]byte("fake-yaml"))
-			}
-		},
-	))
-	defer ts.Close()
-
 	stdout := &bytes.Buffer{}
 	stderr := &bytes.Buffer{}
-	cfg := &config{
-		stdout:       stdout,
-		stderr:       stderr,
-		bcloudServer: ts.URL,
+	cfg := &installCfg{
+		config: &config{
+			stdout: stdout,
+			stderr: stderr,
+		},
+		agentName: fakeAgentName,
 	}
 
 	client := &k8s.MockClient{}
-	err := install(context.TODO(), cfg, client, mockOpenURL)
+	apiClient := &MockClient{ManifestToReturn: fakeYaml}
+
+	err := install(context.TODO(), cfg, client, apiClient)
 	if err != nil {
 		t.Error(err)
 	}
 
-	if stdout.String() != "fake-yaml\n" {
-		t.Errorf("Expected: [fake-yaml], Got: [%s]", stdout.String())
-	}
-	expBrowserURL := fmt.Sprintf("%s/connect-cluster?linkerd-buoyant=%s", ts.URL, agentUID)
-	if !strings.Contains(stderr.String(), expBrowserURL) {
-		t.Errorf("Expected stderr to contain [%s], Got: [%s]", expBrowserURL, stderr.String())
-	}
-	if totalRequests != 4 {
-		t.Errorf("Expected 4 total requests, called %d times", totalRequests)
-	}
-	if connectRequests != 3 {
-		t.Errorf("Expected 3 /connect-agent requests, called %d times", connectRequests)
-	}
-	if redirectRequests != 1 {
-		t.Errorf("Expected 1 /agent-yaml-redirect request, called %d times", redirectRequests)
-	}
-}
-
-func TestInstalWithPollingFailures(t *testing.T) {
-	totalRequests := 0
-	connectRequests := 0
-	agentUID := "'"
-	ts := httptest.NewServer(http.HandlerFunc(
-		func(w http.ResponseWriter, r *http.Request) {
-			totalRequests++
-			switch r.URL.Path {
-			case connectAgentPath:
-				agentUID = r.URL.Query().Get(version.LinkerdBuoyant)
-				connectRequests++
-				w.WriteHeader(http.StatusBadGateway)
-			}
-		},
-	))
-	defer ts.Close()
-
-	stdout := &bytes.Buffer{}
-	stderr := &bytes.Buffer{}
-	cfg := &config{
-		stdout:       stdout,
-		stderr:       stderr,
-		bcloudServer: ts.URL,
+	if stdout.String() != fmt.Sprintf("%s\n", fakeYaml) {
+		t.Errorf("Expected: [%s], Got: [%s]", fakeYaml, stdout.String())
 	}
 
-	client := &k8s.MockClient{}
-	err := install(context.TODO(), cfg, client, mockOpenURL)
-	expErr := fmt.Errorf("setup failed, unexpected HTTP status code 502 for URL %s/connect-agent?linkerd-buoyant=%s", ts.URL, agentUID)
-	if !reflect.DeepEqual(err, expErr) {
-		t.Errorf("Expected error: %s, Got: %s", expErr, err)
+	name, ok := apiClient.Identifier.(bcloudapi.AgentName)
+	if !ok {
+		t.Fatalf("Expected to call api with AgentName, called with: %+v", apiClient.Identifier)
 	}
-
-	if totalRequests != maxPollingRetries {
-		t.Errorf("Expected %d total requests, called %d times", maxPollingRetries, totalRequests)
-	}
-	if connectRequests != maxPollingRetries {
-		t.Errorf("Expected %d /connect-agent requests, called %d times", maxPollingRetries, connectRequests)
-	}
-}
-
-func TestInstallWithPollingApiErrors(t *testing.T) {
-	totalRequests := 0
-	connectRequests := 0
-	ts := httptest.NewServer(http.HandlerFunc(
-		func(w http.ResponseWriter, r *http.Request) {
-			totalRequests++
-			switch r.URL.Path {
-			case connectAgentPath:
-				connectRequests++
-				w.Header().Set("Content-Type", "application/json")
-				w.WriteHeader(http.StatusInternalServerError)
-				rsp, _ := json.Marshal(jsonError{Error: "fatal API error"})
-				w.Write(rsp)
-			}
-		},
-	))
-	defer ts.Close()
-
-	stdout := &bytes.Buffer{}
-	stderr := &bytes.Buffer{}
-	cfg := &config{
-		stdout:       stdout,
-		stderr:       stderr,
-		bcloudServer: ts.URL,
-	}
-
-	client := &k8s.MockClient{}
-	err := install(context.TODO(), cfg, client, mockOpenURL)
-	expErr := errors.New("setup failed, fatal API error")
-	if !reflect.DeepEqual(err, expErr) {
-		t.Errorf("Expected error: %s, Got: %s", expErr, err)
-	}
-
-	if totalRequests != maxPollingRetries {
-		t.Errorf("Expected %d total requests, called %d times", maxPollingRetries, totalRequests)
-	}
-	if connectRequests != maxPollingRetries {
-		t.Errorf("Expected %d /connect-agent requests, called %d times", maxPollingRetries, connectRequests)
+	if name.Value() != fakeAgentName {
+		t.Fatalf("Expected name identifier to be %s, got: %s", fakeAgentName, name.Value())
 	}
 }
 
 func TestInstallExistingAgent(t *testing.T) {
-	totalRequests := 0
-	connectRequests := 0
-	ts := httptest.NewServer(http.HandlerFunc(
-		func(w http.ResponseWriter, r *http.Request) {
-			totalRequests++
-			if r.URL.Path == "/connect-agent-url" {
-				connectRequests++
-				w.Header().Set("Content-Type", "text/yaml")
-				w.Write([]byte("fake-yaml"))
-			}
-		},
-	))
-	defer ts.Close()
+	t.Run("gets manifest with name", func(t *testing.T) {
+		stdout := &bytes.Buffer{}
+		stderr := &bytes.Buffer{}
+		cfg := &installCfg{
+			config: &config{
+				stdout: stdout,
+				stderr: stderr,
+			},
+		}
 
-	stdout := &bytes.Buffer{}
-	stderr := &bytes.Buffer{}
-	cfg := &config{
-		stdout:       stdout,
-		stderr:       stderr,
-		bcloudServer: ts.URL,
-	}
+		client := &k8s.MockClient{
+			MockAgent: &k8s.Agent{
+				Name:    fakeAgentName,
+				Version: "version",
+			},
+		}
+		apiClient := &MockClient{ManifestToReturn: fakeYaml}
 
-	client := &k8s.MockClient{
-		MockAgent: &k8s.Agent{
-			Name:    "name",
-			URL:     ts.URL + "/connect-agent-url",
-			Version: "version",
-		},
-	}
-	err := install(context.TODO(), cfg, client, mockOpenURL)
-	if err != nil {
-		t.Error(err)
-	}
+		err := install(context.TODO(), cfg, client, apiClient)
+		if err != nil {
+			t.Error(err)
+		}
+		if stdout.String() != fmt.Sprintf("%s\n", fakeYaml) {
+			t.Errorf("Expected: [%s], Got: [%s]", fakeYaml, stdout.String())
+		}
 
-	if stdout.String() != "fake-yaml\n" {
-		t.Errorf("Expected: [fake-yaml], Got: [%s]", stdout.String())
-	}
-	if totalRequests != 1 {
-		t.Errorf("Expected 1 total request, called %d times", totalRequests)
-	}
-	if connectRequests != 1 {
-		t.Errorf("Expected 1 /connect-agent-url request, called %d times", connectRequests)
-	}
+		name, ok := apiClient.Identifier.(bcloudapi.AgentName)
+		if !ok {
+			t.Fatalf("Expected to call api with AgentName, called with: %+v", apiClient.Identifier)
+		}
+		if name.Value() != fakeAgentName {
+			t.Fatalf("Expected name identifier to be %s, got: %s", fakeAgentName, name.Value())
+		}
+	})
+
+	t.Run("gets manifest with Id", func(t *testing.T) {
+		stdout := &bytes.Buffer{}
+		stderr := &bytes.Buffer{}
+		cfg := &installCfg{
+			config: &config{
+				stdout: stdout,
+				stderr: stderr,
+			},
+		}
+
+		client := &k8s.MockClient{
+			MockAgent: &k8s.Agent{
+				Id:      fakeAgentID,
+				Version: "version",
+			},
+		}
+		apiClient := &MockClient{ManifestToReturn: fakeYaml}
+
+		err := install(context.TODO(), cfg, client, apiClient)
+		if err != nil {
+			t.Error(err)
+		}
+		if stdout.String() != fmt.Sprintf("%s\n", fakeYaml) {
+			t.Errorf("Expected: [%s], Got: [%s]", fakeYaml, stdout.String())
+		}
+
+		id, ok := apiClient.Identifier.(bcloudapi.AgentID)
+		if !ok {
+			t.Fatalf("Expected to call api with AgentID, called with: %+v", apiClient.Identifier)
+		}
+		if id.Value() != fakeAgentID {
+			t.Fatalf("Expected name identifier to be %s, got: %s", fakeAgentID, id.Value())
+		}
+	})
 }
 
-func TestInstallBadStatus(t *testing.T) {
-	totalRequests := 0
-	connectRequests := 0
-	ts := httptest.NewServer(http.HandlerFunc(
-		func(w http.ResponseWriter, r *http.Request) {
-			totalRequests++
-			if r.URL.Path == "/connect-agent-url" {
-				connectRequests++
-				w.WriteHeader(http.StatusInternalServerError)
-			}
-		},
-	))
-	defer ts.Close()
-
+func TestInstallError(t *testing.T) {
 	stdout := &bytes.Buffer{}
 	stderr := &bytes.Buffer{}
-	cfg := &config{
-		stdout:       stdout,
-		stderr:       stderr,
-		bcloudServer: ts.URL,
-	}
-
-	client := &k8s.MockClient{
-		MockAgent: &k8s.Agent{
-			Name:    "name",
-			URL:     ts.URL + "/connect-agent-url",
-			Version: "version",
+	cfg := &installCfg{
+		config: &config{
+			stdout: stdout,
+			stderr: stderr,
 		},
-	}
-	expErr := fmt.Errorf("failed to retrieve agent manifest from %s", client.MockAgent.URL)
-	err := install(context.TODO(), cfg, client, mockOpenURL)
-	if !reflect.DeepEqual(err, expErr) {
-		t.Errorf("Expected error: %s, Got: %s", expErr, err)
+		agentName: "fake-agent-name",
 	}
 
-	if stdout.String() != "" {
-		t.Errorf("Expected: no stdout, Got: [%s]", stdout.String())
+	apiError := errors.New("problem with API")
+	expectedError := fmt.Errorf("failed to retrieve agent manifest from bcloud server for agent identifier bcloudapi.AgentName fake-agent-name: %w", apiError)
+	client := &k8s.MockClient{}
+	apiClient := &MockClient{Err: apiError}
+	err := install(context.TODO(), cfg, client, apiClient)
+	if !reflect.DeepEqual(err, expectedError) {
+		t.Errorf("Expected error: %s, Got: %s", expectedError, err)
 	}
-	if totalRequests != 1 {
-		t.Errorf("Expected 1 total request, called %d times", totalRequests)
-	}
-	if connectRequests != 1 {
-		t.Errorf("Expected 1 /connect-agent-url request, called %d times", connectRequests)
-	}
-}
-
-func mockOpenURL(string) error {
-	return nil
 }

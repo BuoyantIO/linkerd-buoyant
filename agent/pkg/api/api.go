@@ -9,8 +9,6 @@ import (
 
 // Client provides a simple Buoyant Cloud API client.
 type Client struct {
-	auth *pb.Auth
-
 	client            pb.ApiClient
 	workloadStream    *workloadStream
 	manageAgentStream *manageAgentStream
@@ -22,17 +20,12 @@ type Client struct {
 }
 
 // NewClient instantiates a new Buoyant Cloud API client.
-func NewClient(id string, key string, client pb.ApiClient) *Client {
-	auth := &pb.Auth{
-		AgentId:  id,
-		AgentKey: key,
-	}
+func NewClient(client pb.ApiClient) *Client {
 	return &Client{
-		auth:              auth,
-		workloadStream:    newWorkloadStream(auth, client),
-		manageAgentStream: newManageAgentStream(auth, client),
+		workloadStream:    newWorkloadStream(client),
+		manageAgentStream: newManageAgentStream(client),
 		client:            client,
-		log:               log.WithField("api", id),
+		log:               log.WithField("client", "gRPC"),
 	}
 }
 

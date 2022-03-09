@@ -7,6 +7,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	agentk8s "github.com/buoyantio/linkerd-buoyant/agent/pkg/k8s"
 	"github.com/buoyantio/linkerd-buoyant/cli/pkg/k8s"
 	"github.com/buoyantio/linkerd-buoyant/cli/pkg/version"
 	"github.com/linkerd/linkerd2/pkg/healthcheck"
@@ -84,14 +85,14 @@ Status check results are ×
 			"Success",
 			func() *HealthChecker {
 				objMeta := metav1.ObjectMeta{
-					Name: k8s.Namespace,
+					Name: agentk8s.AgentNamespace,
 					Labels: map[string]string{
 						l5dk8s.LinkerdExtensionLabel: "buoyant",
 						k8s.PartOfKey:                k8s.PartOfVal,
 					},
 				}
 				objMetaDeploy := metav1.ObjectMeta{
-					Name: k8s.Namespace,
+					Name: agentk8s.AgentNamespace,
 					Labels: map[string]string{
 						l5dk8s.LinkerdExtensionLabel: "buoyant",
 						k8s.PartOfKey:                k8s.PartOfVal,
@@ -108,6 +109,9 @@ Status check results are ×
 							ObjectMeta: objMeta,
 						},
 						MockClusterRoleBinding: &rbacv1.ClusterRoleBinding{
+							ObjectMeta: objMeta,
+						},
+						MockConfigMap: &v1.ConfigMap{
 							ObjectMeta: objMeta,
 						},
 						MockSecret: &v1.Secret{
@@ -153,10 +157,11 @@ Status check results are ×
 √ linkerd-buoyant cli is up-to-date
 √ buoyant-cloud Namespace exists
 √ buoyant-cloud Namespace has correct labels
+√ agent-metadata ConfigMap exists
+√ buoyant-cloud-org-credentials Secret exists
 √ buoyant-cloud-agent ClusterRole exists
 √ buoyant-cloud-agent ClusterRoleBinding exists
 √ buoyant-cloud-agent ServiceAccount exists
-√ buoyant-cloud-id Secret exists
 √ buoyant-cloud-agent Deployment exists
 √ buoyant-cloud-agent Deployment is running
 √ buoyant-cloud-agent Deployment is injected

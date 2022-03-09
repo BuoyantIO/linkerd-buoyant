@@ -38,6 +38,8 @@ Usage:
 
 Available Commands:
   check       Check the Buoyant Cloud agent installation for potential problems
+  completion  Generate the autocompletion script for the specified shell
+  dashboard   Open the Buoyant Cloud dashboard
   help        Help about any command
   install     Output Buoyant Cloud agent manifest for installation
   uninstall   Output Kubernetes manifest to uninstall the Buoyant Cloud agent
@@ -56,12 +58,53 @@ Use "linkerd-buoyant [command] --help" for more information about a command.
 
 ### Agent
 
-Build and run:
-```bash
-bin/go-run agent
+#### Setup credentials and env vars
+
+```
+export BUOYANT_CLOUD_CLIENT_ID="org-client-id"
+export BUOYANT_CLOUD_CLIENT_SECRET="org-client-secret"
+export AGENT_NAME="agent-name"
 ```
 
-Docker build:
+#### Build and run agent registrator
+```bash
+# Create agent-metadata config map with the desired agent name
+cat <<EOF | kubectl apply -f -
+kind: Namespace
+apiVersion: v1
+metadata:
+  name: buoyant-cloud
+  annotations:
+    linkerd.io/inject: enabled
+  labels:
+    app.kubernetes.io/part-of: buoyant-cloud
+    linkerd.io/extension: buoyant
+---
+kind: ConfigMap
+metadata:
+  name: agent-metadata
+  namespace: buoyant-cloud
+  labels:
+    app.kubernetes.io/part-of: buoyant-cloud
+apiVersion: v1
+data:
+  agent_name: $AGENT_NAME
+EOF
+
+# Run the registrator
+bin/go-run agent registrator
+```
+
+#### Build and run agent
+```bash
+# Read the agent id field (populated by the registrator) in the agent-metadata config map
+export AGENT_ID=$(kubectl get cm/agent-metadata -n buoyant-cloud -o jsonpath='{.data.agent_id}')
+
+# Run the agent with the agent id
+bin/go-run agent agent --agent-id=$AGENT_ID
+```
+
+#### Docker build:
 ```bash
 docker buildx build -f agent/Dockerfile -t ghcr.io/buoyantio/linkerd-buoyant:latest .
 ```
@@ -111,11 +154,14 @@ Install:
 helm install --create-namespace --namespace buoyant-cloud --values charts/linkerd-buoyant/ci/fake-values.yaml linkerd-buoyant charts/linkerd-buoyant
 ```
 
-To install a live agent from buoyant.cloud, register a new agent, get its
-`values.yml`:
+To install a live agent from buoyant.cloud you need to obtain its
+`values.yml`. To obtain a values file, head over to
+https://buoyant.cloud/settings?helm=1. In case you have only one pair
+of org credentials, you will be prompted with a dialog that contains
+the helm values. Otherwise, you can pick the exact credentials pair and
+click on Helm usage. Save the values into `agent-values.yaml`.
 ```bash
-VALUES_URL=https://buoyant.cloud/agent-helm-values/buoyant-cloud-k8s-XXX.yml
-helm install --create-namespace --namespace buoyant-cloud --values $VALUES_URL linkerd-buoyant charts/linkerd-buoyant
+helm install --create-namespace --namespace buoyant-cloud --values agent-values.yaml --set metadata.agentName=$AGENT_NAME linkerd-buoyant charts/linkerd-buoyant
 ```
 
 Update chart README.md:

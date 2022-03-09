@@ -5,6 +5,7 @@ import (
 	"reflect"
 	"testing"
 
+	"github.com/buoyantio/linkerd-buoyant/agent/pkg/k8s"
 	v1 "k8s.io/api/core/v1"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -23,14 +24,14 @@ func TestNamespace(t *testing.T) {
 		{
 			"not found",
 			nil,
-			apierrors.NewNotFound(schema.GroupResource{Group: "", Resource: "namespaces"}, Namespace),
+			apierrors.NewNotFound(schema.GroupResource{Group: "", Resource: "namespaces"}, k8s.AgentNamespace),
 			"",
 		},
 		{
 			"found",
-			[]runtime.Object{&v1.Namespace{ObjectMeta: metav1.ObjectMeta{Name: Namespace}}},
+			[]runtime.Object{&v1.Namespace{ObjectMeta: metav1.ObjectMeta{Name: k8s.AgentNamespace}}},
 			nil,
-			Namespace,
+			k8s.AgentNamespace,
 		},
 	}
 
@@ -39,7 +40,7 @@ func TestNamespace(t *testing.T) {
 		t.Run(tc.testName, func(t *testing.T) {
 			ctx := context.TODO()
 			fakeCS := fake.NewSimpleClientset(tc.objs...)
-			client := client{fakeCS, ""}
+			client := client{fakeCS}
 
 			ns, err := client.Namespace(ctx)
 			if !reflect.DeepEqual(err, tc.expErr) {

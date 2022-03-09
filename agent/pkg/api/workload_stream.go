@@ -13,7 +13,6 @@ import (
 // WorkloadStream wraps the Buoyant Cloud API WorkloadStream gRPC endpoint, and
 // manages the client-side stream.
 type workloadStream struct {
-	auth   *pb.Auth
 	client pb.ApiClient
 	stream pb.Api_WorkloadStreamClient
 	log    *log.Entry
@@ -22,9 +21,8 @@ type workloadStream struct {
 	sync.Mutex
 }
 
-func newWorkloadStream(auth *pb.Auth, client pb.ApiClient) *workloadStream {
+func newWorkloadStream(client pb.ApiClient) *workloadStream {
 	return &workloadStream{
-		auth:   auth,
 		client: client,
 		log:    log.WithField("stream", "WorkloadStream"),
 	}
@@ -70,17 +68,6 @@ func (s *workloadStream) newStream() pb.Api_WorkloadStreamClient {
 		}
 
 		s.log.Info("WorkloadStream opened")
-
-		err = stream.Send(&pb.WorkloadMessage{
-			Message: &pb.WorkloadMessage_Auth{
-				Auth: s.auth,
-			},
-		})
-		if err != nil {
-			s.log.Errorf("failed to send auth message: %s", err)
-			time.Sleep(100 * time.Millisecond)
-			continue
-		}
 
 		break
 	}
