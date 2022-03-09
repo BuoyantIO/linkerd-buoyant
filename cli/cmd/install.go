@@ -74,9 +74,9 @@ values for these variables, visit: https://buoyant.cloud/settings?cli=1.`,
 					cfg.stderr,
 					"This command requires that the BUOYANT_CLOUD_CLIENT_ID and BUOYANT_CLOUD_CLIENT_SECRET\n",
 					"environment variables be set. To retrieve the correct values for these\n",
-					"variables, visit: https://buoyant.cloud/settings?cli=1.\n",
+					"variables, visit: https://buoyant.cloud/settings?cli=1.\n\n",
 				)
-				return fmt.Errorf("no credentials set")
+				os.Exit(1)
 			}
 
 			apiClient := bcloudapi.New(clientID, clientSecret, installCfg.bcloudAPI, installCfg.noTLS)
@@ -85,8 +85,8 @@ values for these variables, visit: https://buoyant.cloud/settings?cli=1.`,
 		},
 	}
 
-	cmd.Flags().StringVar(&installCfg.agentName, "cluster-name", "", "The name of the agent.")
-	cmd.Flags().BoolVar(&installCfg.noTLS, "no-tls", false, "Disable TLS in development mode.")
+	cmd.Flags().StringVar(&installCfg.agentName, "cluster-name", "", "The name of the cluster in Buoyant Cloud")
+	cmd.Flags().BoolVar(&installCfg.noTLS, "no-tls", false, "Disable TLS in development mode")
 
 	cmd.Flags().MarkHidden("insecure")
 	return cmd
@@ -113,7 +113,7 @@ func install(ctx context.Context, cfg *installCfg, client k8s.Client, apiClient 
 				"Could not find valid agent installation on cluster. To install agent run:\n%s\n",
 				"linkerd buoyant install --cluster-name=my-new-agent | kubectl apply -f -",
 			)
-			return fmt.Errorf("could not find valid agent installation")
+			os.Exit(1)
 		}
 	}
 

@@ -141,38 +141,6 @@ func TestInstallExistingAgent(t *testing.T) {
 			t.Fatalf("Expected name identifier to be %s, got: %s", fakeAgentID, id.Value())
 		}
 	})
-
-	t.Run("invalid agent data", func(t *testing.T) {
-		stdout := &bytes.Buffer{}
-		stderr := &bytes.Buffer{}
-		cfg := &installCfg{
-			config: &config{
-				stdout: stdout,
-				stderr: stderr,
-			},
-		}
-
-		client := &k8s.MockClient{
-			MockAgent: &k8s.Agent{
-				Version: "version",
-			},
-		}
-		apiClient := &MockClient{ManifestToReturn: fakeYaml}
-
-		expectedError := errors.New("could not find valid agent installation")
-		err := install(context.TODO(), cfg, client, apiClient)
-
-		if !reflect.DeepEqual(err, expectedError) {
-			t.Errorf("Expected error: %s, Got: %s", expectedError, err)
-		}
-
-		expectedStdErr := `Could not find valid agent installation on cluster. To install agent run:
-linkerd buoyant install --cluster-name=my-new-agent | kubectl apply -f -
-`
-		if expectedStdErr != stderr.String() {
-			t.Errorf("Expected:\n%s\nGot:\n%s", expectedStdErr, stderr.String())
-		}
-	})
 }
 
 func TestInstallError(t *testing.T) {

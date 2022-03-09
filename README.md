@@ -70,6 +70,16 @@ export AGENT_NAME="agent-name"
 ```bash
 # Create agent-metadata config map with the desired agent name
 cat <<EOF | kubectl apply -f -
+kind: Namespace
+apiVersion: v1
+metadata:
+  name: buoyant-cloud
+  annotations:
+    linkerd.io/inject: enabled
+  labels:
+    app.kubernetes.io/part-of: buoyant-cloud
+    linkerd.io/extension: buoyant
+---
 kind: ConfigMap
 metadata:
   name: agent-metadata
