@@ -3,8 +3,7 @@ Helm repo for the Linkerd Buoyant extension
 # Buoyant Cloud setup
 
 Prior to installing the Linkerd Buoyant extension, head over to
-<https://buoyant.cloud>, register and create an agent. You can then download a
-`values.yml` file for use with `helm install`.
+<https://buoyant.cloud>, to register.
 
 # Agent Install
 
@@ -13,15 +12,20 @@ First time repo setup:
 helm repo add linkerd-buoyant https://helm.buoyant.cloud
 ```
 
-Install:
+## Obtain values from the Bcloud UI
+
+To obtain a values file, head over to <https://buoyant.cloud/settings?helm=1>.
+In case you have only one pair of org credentials, you will be prompted with
+a dialog that contains the helm values. Otherwise, you can pick the exact
+credentials pair and click on `Helm usage`. Save the values into `agent-values.yaml`
+
+## Install
 ```bash
-# Helm values.yaml URL is nearly identical to your agent manifest URL, simply
-# replace `agent` with `agent-helm-values`:
-VALUES_URL=https://buoyant.cloud/agent-helm-values/buoyant-cloud-k8s-XXX.yml
-helm install --create-namespace --namespace buoyant-cloud --values $VALUES_URL linkerd-buoyant linkerd-buoyant/linkerd-buoyant
+export AGENT_NAME=<your agent name>
+helm install --create-namespace --namespace buoyant-cloud --values agent-values.yaml --set metadata.agentName=$AGENT_NAME linkerd-buoyant linkerd-buoyant/linkerd-buoyant
 ```
 
-Uninstall:
+# Uninstall
 ```bash
 helm uninstall --namespace buoyant-cloud linkerd-buoyant
 ```
