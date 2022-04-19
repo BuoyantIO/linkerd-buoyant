@@ -128,9 +128,30 @@ func (h *LinkerdInfo) handleAuthPolicyInfo(ctx context.Context) {
 		return
 	}
 
+	authPolicies, err := h.k8s.GetAuthorizationPolicies(ctx)
+	if err != nil {
+		h.log.Errorf("error getting authorization policies: %s", err)
+		return
+	}
+
+	meshTlsAuthentications, err := h.k8s.GetMeshTLSAuthentications(ctx)
+	if err != nil {
+		h.log.Errorf("error getting mesh tls authentications: %s", err)
+		return
+	}
+
+	networkAuthentications, err := h.k8s.GetNetworkAuthentications(ctx)
+	if err != nil {
+		h.log.Errorf("error getting network authentications: %s", err)
+		return
+	}
+
 	m := &pb.AuthPolicyInfo{
-		Servers:              servers,
-		ServerAuthorizations: serverAuths,
+		Servers:                servers,
+		ServerAuthorizations:   serverAuths,
+		AuthorizationPolicies:  authPolicies,
+		MeshTlsAuthenticatios:  meshTlsAuthentications,
+		NetworkAuthentications: networkAuthentications,
 	}
 	h.log.Tracef("handleAuthPolicyInfo: %s", prototext.Format(m))
 

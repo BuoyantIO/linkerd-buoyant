@@ -18,6 +18,7 @@ import (
 	l5dApi "github.com/linkerd/linkerd2/controller/gen/client/clientset/versioned"
 	"github.com/linkerd/linkerd2/pkg/admin"
 	l5dk8s "github.com/linkerd/linkerd2/pkg/k8s"
+	tsclient "github.com/servicemeshinterface/smi-sdk-go/pkg/gen/client/split/clientset/versioned"
 	log "github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
@@ -72,9 +73,12 @@ func Main(args []string) {
 	l5dClient, err := l5dApi.NewForConfig(k8sConfig)
 	dieIf(err)
 
+	tsClient, err := tsclient.NewForConfig(k8sConfig)
+	dieIf(err)
+
 	sharedInformers := informers.NewSharedInformerFactory(k8sAPI.Interface, 10*time.Minute)
 
-	k8sClient := k8s.NewClient(sharedInformers, k8sAPI, l5dClient, *localMode)
+	k8sClient := k8s.NewClient(sharedInformers, k8sAPI, l5dClient, tsClient, *localMode)
 
 	// wait for discovery API to load
 
@@ -132,7 +136,7 @@ func Main(args []string) {
 	go manageAgentHandler.Start()
 
 	// run admin server
-	adminServer := admin.NewServer(*adminAddr)
+	adminServer := admin.NewServer(*adminAddr, false)
 	go adminServer.ListenAndServe()
 
 	// wait for shutdown

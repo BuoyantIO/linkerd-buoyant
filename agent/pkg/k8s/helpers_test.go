@@ -24,10 +24,9 @@ func fakeClient(objects ...runtime.Object) *Client {
 
 	k8sApi := &l5dk8s.KubernetesAPI{
 		Interface: cs,
-		TsClient:  ts,
 	}
 
-	client := NewClient(sharedInformers, k8sApi, l5dApiClient, false)
+	client := NewClient(sharedInformers, k8sApi, l5dApiClient, ts, false)
 	client.ignoreCRDSupportCheck = true
 	return client
 }
@@ -47,6 +46,12 @@ func fakeClientSets(objects ...runtime.Object) (kubernetes.Interface, l5dClient.
 		case "ServerAuthorization":
 			l5dObjects = append(l5dObjects, obj)
 		case "Server":
+			l5dObjects = append(l5dObjects, obj)
+		case "AuthorizationPolicy":
+			l5dObjects = append(l5dObjects, obj)
+		case "MeshTLSAuthentication":
+			l5dObjects = append(l5dObjects, obj)
+		case "NetworkAuthentication":
 			l5dObjects = append(l5dObjects, obj)
 		case "Link":
 			l5dObjects = append(l5dObjects, obj)

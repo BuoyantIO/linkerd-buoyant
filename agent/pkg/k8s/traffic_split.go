@@ -18,7 +18,7 @@ func (c *Client) GetTrafficSplits(ctx context.Context) ([]*pb.TrafficSplit, erro
 		return nil, nil
 	}
 
-	splits, err := c.k8sClient.TsClient.SplitV1alpha1().TrafficSplits(metav1.NamespaceAll).List(ctx, metav1.ListOptions{})
+	splits, err := c.tsClient.SplitV1alpha1().TrafficSplits(metav1.NamespaceAll).List(ctx, metav1.ListOptions{})
 	if err != nil {
 		return nil, err
 	}

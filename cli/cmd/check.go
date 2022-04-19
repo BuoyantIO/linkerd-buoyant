@@ -79,7 +79,8 @@ func check(cfg *checkConfig, k8s k8s.Client) error {
 	)
 
 	hc.AppendCategories(hc.L5dBuoyantCategory())
-	success := healthcheck.RunChecks(cfg.stdout, cfg.stderr, hc, cfg.output)
+	success, warning := healthcheck.RunChecks(cfg.stdout, cfg.stderr, hc, cfg.output)
+	healthcheck.PrintChecksResult(cfg.stdout, cfg.output, success, warning)
 
 	if !success {
 		os.Exit(1)

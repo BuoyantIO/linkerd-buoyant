@@ -139,9 +139,24 @@ message ServerAuthorization {
   bytes server_authorization = 1;
 }
 
+message AuthorizationPolicy {
+  bytes authorization_policy = 1;
+}
+
+message MeshTLSAuthentication {
+  bytes mesh_tls_authentication = 1;
+}
+
+message NetworkAuthentication {
+  bytes network_authentication = 1;
+}
+
 message AuthPolicyInfo {
   repeated Server servers = 1;
   repeated ServerAuthorization server_authorizations = 2;
+  repeated AuthorizationPolicy authorization_policies = 3;
+  repeated MeshTLSAuthentication mesh_tls_authenticatios = 4;
+  repeated NetworkAuthentication network_authentications = 5;
 }
 
 message TrafficSplit {

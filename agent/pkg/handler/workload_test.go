@@ -176,7 +176,7 @@ func TestWorkloadStream(t *testing.T) {
 			k8sApi := &l5dk8s.KubernetesAPI{
 				Interface: cs,
 			}
-			k8sClient := k8s.NewClient(sharedInformers, k8sApi, nil, false)
+			k8sClient := k8s.NewClient(sharedInformers, k8sApi, nil, nil, false)
 
 			m := &api.MockBcloudClient{}
 			apiClient := api.NewClient(m)

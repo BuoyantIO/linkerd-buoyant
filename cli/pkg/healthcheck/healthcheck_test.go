@@ -52,7 +52,7 @@ func TestHealthChecker(t *testing.T) {
 				)
 			},
 			true,
-			"\nStatus check results are √\n",
+			"\n",
 		},
 		{
 			"Bad namespace",
@@ -78,7 +78,6 @@ func TestHealthChecker(t *testing.T) {
     missing linkerd.io/extension label
     see https://linkerd.io/checks#l5d-buoyant for hints
 
-Status check results are ×
 `,
 		},
 		{
@@ -132,7 +131,10 @@ Status check results are ×
 									Status: v1.PodStatus{
 										Phase: "Running",
 										ContainerStatuses: []v1.ContainerStatus{
-											{Ready: true},
+											{
+												Name:  l5dk8s.ProxyContainerName,
+												Ready: true,
+											},
 										},
 									},
 									Spec: v1.PodSpec{
@@ -172,7 +174,6 @@ Status check results are ×
 √ buoyant-cloud-metrics DaemonSet is injected
 √ buoyant-cloud-metrics DaemonSet is up-to-date
 
-Status check results are √
 `,
 		},
 	}
@@ -185,7 +186,7 @@ Status check results are √
 			stdout := &bytes.Buffer{}
 			stderr := &bytes.Buffer{}
 
-			success := healthcheck.RunChecks(stdout, stderr, hc, healthcheck.TableOutput)
+			success, _ := healthcheck.RunChecks(stdout, stderr, hc, healthcheck.TableOutput)
 			if tc.success != success {
 				t.Errorf("Expected success status: [%v], Got: [%v]", tc.success, success)
 			}
