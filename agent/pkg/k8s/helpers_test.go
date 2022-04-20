@@ -41,24 +41,14 @@ func fakeClientSets(objects ...runtime.Object) (kubernetes.Interface, l5dClient.
 
 	for _, obj := range objects {
 		switch obj.GetObjectKind().GroupVersionKind().Kind {
-		case "ServiceProfile":
-			l5dObjects = append(l5dObjects, obj)
-		case "ServerAuthorization":
-			l5dObjects = append(l5dObjects, obj)
-		case "Server":
-			l5dObjects = append(l5dObjects, obj)
-		case "AuthorizationPolicy":
-			l5dObjects = append(l5dObjects, obj)
-		case "MeshTLSAuthentication":
-			l5dObjects = append(l5dObjects, obj)
-		case "NetworkAuthentication":
-			l5dObjects = append(l5dObjects, obj)
-		case "Link":
+		case "ServiceProfile", "ServerAuthorization", "Server", "AuthorizationPolicy",
+			"MeshTLSAuthentication", "NetworkAuthentication", "Link":
 			l5dObjects = append(l5dObjects, obj)
 		case "TrafficSplit":
 			tsObjs = append(tsObjs, obj)
 		default:
 			objs = append(objs, obj)
+
 		}
 	}
 

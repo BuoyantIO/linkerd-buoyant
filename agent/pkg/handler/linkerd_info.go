@@ -150,7 +150,7 @@ func (h *LinkerdInfo) handleAuthPolicyInfo(ctx context.Context) {
 		Servers:                servers,
 		ServerAuthorizations:   serverAuths,
 		AuthorizationPolicies:  authPolicies,
-		MeshTlsAuthenticatios:  meshTlsAuthentications,
+		MeshTlsAuthentications: meshTlsAuthentications,
 		NetworkAuthentications: networkAuthentications,
 	}
 	h.log.Tracef("handleAuthPolicyInfo: %s", prototext.Format(m))

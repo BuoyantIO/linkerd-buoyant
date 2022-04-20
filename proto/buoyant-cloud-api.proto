@@ -155,7 +155,7 @@ message AuthPolicyInfo {
   repeated Server servers = 1;
   repeated ServerAuthorization server_authorizations = 2;
   repeated AuthorizationPolicy authorization_policies = 3;
-  repeated MeshTLSAuthentication mesh_tls_authenticatios = 4;
+  repeated MeshTLSAuthentication mesh_tls_authentications = 4;
   repeated NetworkAuthentication network_authentications = 5;
 }
 
