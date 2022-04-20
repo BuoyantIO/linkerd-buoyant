@@ -48,7 +48,6 @@ func fakeClientSets(objects ...runtime.Object) (kubernetes.Interface, l5dClient.
 			tsObjs = append(tsObjs, obj)
 		default:
 			objs = append(objs, obj)
-
 		}
 	}
 
