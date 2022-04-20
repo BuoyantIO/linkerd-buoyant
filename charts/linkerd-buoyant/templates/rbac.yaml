@@ -19,7 +19,7 @@ rules:
   resources: ["services", "pods", "events", "nodes", "nodes/proxy", "pods/log"]
   verbs: ["get", "list", "watch"]
 - apiGroups: ["policy.linkerd.io"]
-  resources: ["servers", "serverauthorizations"]
+  resources: ["servers", "serverauthorizations", "authorizationpolicies", "meshtlsauthentications", "networkauthentications"]
   verbs: ["get", "list", "watch"]
 - apiGroups: ["linkerd.io"]
   resources: ["serviceprofiles"]

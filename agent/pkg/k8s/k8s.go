@@ -8,6 +8,7 @@ import (
 	"time"
 
 	link "github.com/linkerd/linkerd2/controller/gen/apis/link/v1alpha1"
+	policy "github.com/linkerd/linkerd2/controller/gen/apis/policy/v1alpha1"
 	server "github.com/linkerd/linkerd2/controller/gen/apis/server/v1beta1"
 	serverAuthorization "github.com/linkerd/linkerd2/controller/gen/apis/serverauthorization/v1beta1"
 	sp "github.com/linkerd/linkerd2/controller/gen/apis/serviceprofile/v1alpha2"
@@ -15,6 +16,7 @@ import (
 	l5dscheme "github.com/linkerd/linkerd2/controller/gen/client/clientset/versioned/scheme"
 	l5dk8s "github.com/linkerd/linkerd2/pkg/k8s"
 	ts "github.com/servicemeshinterface/smi-sdk-go/pkg/apis/split/v1alpha1"
+	tsclient "github.com/servicemeshinterface/smi-sdk-go/pkg/gen/client/split/clientset/versioned"
 	tsscheme "github.com/servicemeshinterface/smi-sdk-go/pkg/gen/client/split/clientset/versioned/scheme"
 	log "github.com/sirupsen/logrus"
 	appsv1 "k8s.io/api/apps/v1"
@@ -34,6 +36,7 @@ import (
 type Client struct {
 	k8sClient *l5dk8s.KubernetesAPI
 	l5dClient l5dApi.Interface
+	tsClient  tsclient.Interface
 
 	encoders map[runtime.GroupVersioner]runtime.Encoder
 
@@ -84,7 +87,7 @@ const (
 
 var errSyncCache = errors.New("failed to sync caches")
 
-func NewClient(sharedInformers informers.SharedInformerFactory, k8sClient *l5dk8s.KubernetesAPI, l5dClient l5dApi.Interface, local bool) *Client {
+func NewClient(sharedInformers informers.SharedInformerFactory, k8sClient *l5dk8s.KubernetesAPI, l5dClient l5dApi.Interface, tsClient tsclient.Interface, local bool) *Client {
 	log := log.WithField("client", "k8s")
 	log.Debug("initializing")
 
@@ -116,6 +119,7 @@ func NewClient(sharedInformers informers.SharedInformerFactory, k8sClient *l5dk8
 		link.SchemeGroupVersion:                scheme.Codecs.EncoderForVersion(jsonSerializer, link.SchemeGroupVersion),
 		serverAuthorization.SchemeGroupVersion: scheme.Codecs.EncoderForVersion(jsonSerializer, serverAuthorization.SchemeGroupVersion),
 		server.SchemeGroupVersion:              scheme.Codecs.EncoderForVersion(jsonSerializer, server.SchemeGroupVersion),
+		policy.SchemeGroupVersion:              scheme.Codecs.EncoderForVersion(jsonSerializer, policy.SchemeGroupVersion),
 	}
 
 	podInformer := sharedInformers.Core().V1().Pods()
@@ -140,6 +144,8 @@ func NewClient(sharedInformers informers.SharedInformerFactory, k8sClient *l5dk8
 		encoders: encoders,
 
 		sharedInformers: sharedInformers,
+
+		tsClient: tsClient,
 
 		podLister:    podInformer.Lister(),
 		rsLister:     rsInformer.Lister(),
