@@ -1,0 +1,152 @@
+name: Actions
+
+on:
+  push:
+    branches:
+    - main
+    tags:
+    - 'operator-v*'
+  pull_request:
+    branches:
+    - main
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+
+  helm_tests:
+    name: Helm Tests
+    runs-on: ubuntu-20.04
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+
+    - name: Set up Helm
+      uses: azure/setup-helm@v1
+      with:
+        version: v3.8.0
+
+    - uses: actions/setup-python@v2
+      with:
+        python-version: 3.7
+
+    - name: Set up chart-testing
+      uses: helm/chart-testing-action@v2.2.0
+
+    - name: Validate chart README.md is up to date
+      run: |
+        bin/helm-docs --chart-search-root=charts
+        git diff --exit-code charts/operator/README.md
+
+    - name: Update Chart version
+      run: |
+        sed -i "s/0.0.0-undefined/0.0.0/g" charts/operator/Chart.yaml
+
+    - name: Run chart-testing (list-changed)
+      id: list-changed
+      run: |
+        changed=$(ct list-changed --config charts/ct.yaml)
+        if [[ -n "$changed" ]]; then
+          echo "::set-output name=changed::true"
+        fi
+
+    - name: Run chart-testing (lint)
+      run: ct lint --config charts/ct.yaml
+
+    - name: Create kind cluster
+      uses: helm/kind-action@v1.2.0
+      if: steps.list-changed.outputs.changed == 'true'
+
+    - name: Create buoyant-cloud namespace
+      run: |
+        kubectl create ns buoyant-cloud
+
+    - name: Run chart-testing (install)
+      run: ct install --config charts/ct.yaml
+
+  # everything below here for releases (tags)
+  create_release:
+    if: startsWith(github.ref, 'refs/tags/operator-v')
+    name: Create Release
+    needs:
+    - helm_tests
+    runs-on: ubuntu-20.04
+    outputs:
+      upload_url: ${{ steps.create_release.outputs.upload_url }}
+    steps:
+    - name: Create Release
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ github.ref }}
+        release_name: ${{ github.ref }}
+        draft: false
+        prerelease: false
+
+  create_helm_release:
+    if: startsWith(github.ref, 'refs/tags/operator-v')
+    name: Create Helm Release
+    needs:
+    - create_release
+    - upload_release_assets
+    runs-on: ubuntu-20.04
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+
+    - name: Set Helm tag version
+      # TODO: parse operator-v tag
+      run: |
+        echo "helm_tag=${GITHUB_REF##*/operator-v}" >> $GITHUB_ENV
+
+    - name: Set Helm package name
+      run: echo "helm_package=operator-${{ env.helm_tag }}.tgz" >> $GITHUB_ENV
+
+    # this step modifies the Helm chart in-place, in preparation for release
+    - name: Update Chart version
+      env:
+        helm_tag: ${{ env.helm_tag }}
+      run: |
+        sed -i "s/0.0.0-undefined/$helm_tag/g" charts/operator/Chart.yaml
+
+    - name: Set up Helm
+      uses: azure/setup-helm@v1
+      with:
+        version: v3.8.0
+
+    - name: Package Helm chart
+      run: |
+        bin/cr package charts/operator --config charts/cr.yaml
+
+    - name: Upload Helm chart package to GitHub Release
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ needs.create_release.outputs.upload_url }}
+        asset_path: ./.cr-release-packages/${{ env.helm_package }}
+        asset_name: ${{ env.helm_package }}
+        asset_content_type: application/octet-stream
+
+    - name: Configure Git
+      run: |
+        git config user.name "Helm Releaser"
+        git config user.email info@buoyant.io
+
+    # TODO: `cr index` downloads the helm package from the GitHub Release. It
+    # attempts to unpack the first asset it sees. This only works for us because
+    # our Helm package is listed first alphabetically in the GitHub Release.
+    - name: Update Helm chart index.yaml
+      env:
+        CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+      run: |
+        mkdir .cr-index
+        bin/cr index --config charts/cr.yaml

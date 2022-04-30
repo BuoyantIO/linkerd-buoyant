@@ -1,0 +1,18 @@
+# -- License file contents. Required.
+license:
+
+# -- Config for the dataplane-upgrade deployment
+dataPlaneUpgrade:
+  image:
+    registry: ghcr.io/buoyantio
+    name: operator
+    tag:
+  logLevel: info
+
+# -- Config for the controlplane-upgrade deployment
+controlPlaneUpgrade:
+  image:
+    registry: ghcr.io/buoyantio
+    name: operator
+    tag:
+  logLevel: info

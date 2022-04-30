@@ -1,0 +1,7 @@
+kind: ServiceAccount
+apiVersion: v1
+metadata:
+  name: controlplane-upgrade
+  labels:
+    app.kubernetes.io/component: controlplane-upgrade
+    helm.sh/chart: {{.Chart.Name}}-{{printf "v%s" .Chart.Version}}

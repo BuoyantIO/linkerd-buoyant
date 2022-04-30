@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: controlplane-upgrade
+  labels:
+    app.kubernetes.io/part-of: buoyant-operator
+    app.kubernetes.io/component: controlplane-upgrade
+    helm.sh/chart: {{.Chart.Name}}-{{printf "v%s" .Chart.Version}}
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/part-of: buoyant-operator
+      app.kubernetes.io/component: controlplane-upgrade
+  template:
+    metadata:
+      annotations:
+        linkerd.io/inject: enabled
+      labels:
+        app.kubernetes.io/part-of: buoyant-operator
+        app.kubernetes.io/component: controlplane-upgrade
+    spec:
+      containers:
+      - args:
+        - controlplane
+        - -log-level={{.Values.controlPlaneUpgrade.logLevel}}
+        env:
+        - name: LICENSE
+          value: {{required "a license setting is required!" .Values.license}}
+        image: {{.Values.controlPlaneUpgrade.image.registry}}/{{.Values.controlPlaneUpgrade.image.name}}:{{default (printf "v%s" .Chart.Version) .Values.controlPlaneUpgrade.image.tag}}
+        name: controlplane-upgrade
+      serviceAccountName: controlplane-upgrade

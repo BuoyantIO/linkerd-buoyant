@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dataplane-upgrade
+  labels:
+    app.kubernetes.io/part-of: buoyant-operator
+    app.kubernetes.io/component: dataplane-upgrade
+    helm.sh/chart: {{.Chart.Name}}-{{printf "v%s" .Chart.Version}}
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/part-of: buoyant-operator
+      app.kubernetes.io/component: dataplane-upgrade
+  template:
+    metadata:
+      annotations:
+        linkerd.io/inject: enabled
+      labels:
+        app.kubernetes.io/part-of: buoyant-operator
+        app.kubernetes.io/component: dataplane-upgrade
+    spec:
+      containers:
+      - args:
+        - dataplane
+        - -log-level={{.Values.dataPlaneUpgrade.logLevel}}
+        env:
+        - name: LICENSE
+          value: {{required "a license setting is required!" .Values.license}}
+        image: {{.Values.dataPlaneUpgrade.image.registry}}/{{.Values.dataPlaneUpgrade.image.name}}:{{default (printf "v%s" .Chart.Version) .Values.dataPlaneUpgrade.image.tag}}
+        name: dataplane-upgrade
+      serviceAccountName: dataplane-upgrade

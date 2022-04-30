@@ -1,0 +1,20 @@
+apiVersion: "v2"
+appVersion: 0.0.0-undefined
+description: |
+  Linkerd gives you observability, reliability, and security
+  for your microservices — with no code change required.
+type: application
+home: https://buoyant.io
+keywords:
+- linkerd
+- Buoyant
+- Service Mesh
+- service-mesh
+kubeVersion: ">=1.20.0-0"
+name: "buoyant-operator"
+version: 0.0.0-undefined
+icon: https://linkerd.io/images/logo-only-200h.png
+maintainers:
+- name: BuoyantIO
+  email: info@buoyant.io
+  url: https://buoyant.io

@@ -1,0 +1,140 @@
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  name: controlplaneupgrades.operator.buoyant.io
+  labels:
+    app.kubernetes.io/part-of: buoyant-operator
+    helm.sh/chart: {{.Chart.Name}}-{{printf "v%s" .Chart.Version}}
+spec:
+  group: operator.buoyant.io
+  versions:
+  - name: v1alpha1
+    served: true
+    storage: true
+    schema:
+      openAPIV3Schema:
+        type: object
+        properties:
+          spec:
+            type: object
+            properties:
+              components:
+                type: object
+                properties:
+                  linkerd2:
+                    type: object
+                    properties:
+                      namespace:
+                        type: string
+                        default: linkerd
+                      helmReleaseName:
+                        type: string
+                        default: linkerd2
+                      version:
+                        type: string
+                  linkerdCrds:
+                    type: object
+                    properties:
+                      namespace:
+                        type: string
+                        default: linkerd
+                      helmReleaseName:
+                        type: string
+                        default: linkerd-crds
+                      version:
+                        type: string
+                  linkerdControlPlane:
+                    type: object
+                    properties:
+                      namespace:
+                        type: string
+                        default: linkerd
+                      helmReleaseName:
+                        type: string
+                        default: linkerd
+                      version:
+                        type: string
+                  linkerdViz:
+                    type: object
+                    properties:
+                      namespace:
+                        type: string
+                        default: linkerd-viz
+                      helmReleaseName:
+                        type: string
+                        default: linkerd-viz
+                      version:
+                        type: string
+                  linkerdMulticluster:
+                    type: object
+                    properties:
+                      namespace:
+                        type: string
+                        default: linkerd-multicluster
+                      helmReleaseName:
+                        type: string
+                        default: linkerd-multicluster
+                      version:
+                        type: string
+                  linkerdJaeger:
+                    type: object
+                    properties:
+                      namespace:
+                        type: string
+                        default: linkerd-jaeger
+                      helmReleaseName:
+                        type: string
+                        default: linkerd-jaeger
+                      version:
+                        type: string
+                  linkerdSmi:
+                    type: object
+                    properties:
+                      namespace:
+                        type: string
+                        default: linkerd-smi
+                      helmReleaseName:
+                        type: string
+                        default: linkerd-smi
+                      version:
+                        type: string
+          status:
+            type: object
+            properties:
+              status:
+                type: string
+              desired:
+                type: string
+              current:
+                type: string
+              lastUpgradeAttempt:
+                type: string
+              lastUpgradeAttemptResult:
+                type: string
+              lastUpgradeAttemptMessage:
+                type: string
+    additionalPrinterColumns:
+    - name: Status
+      type: string
+      description: The status of the controlplane upgrade.
+      jsonPath: .status.status
+    - name: Desired
+      type: string
+      description: The desired version of the core control plane.
+      jsonPath: .status.desired
+    - name: Current
+      type: string
+      description: The current version of the core control plane.
+      jsonPath: .status.current
+    - name: Age
+      type: date
+      jsonPath: .metadata.creationTimestamp
+    subresources:
+      status: {}
+  scope: Cluster
+  names:
+    plural: controlplaneupgrades
+    singular: controlplaneupgrade
+    kind: ControlPlaneUpgrade
+    shortNames:
+    - cpup

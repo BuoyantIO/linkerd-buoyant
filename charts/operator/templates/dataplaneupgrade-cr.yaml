@@ -1,0 +1,24 @@
+kind: ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: dataplane-upgrade
+  labels:
+    app.kubernetes.io/part-of: buoyant-operator
+    app.kubernetes.io/component: dataplane-upgrade
+    helm.sh/chart: {{.Chart.Name}}-{{printf "v%s" .Chart.Version}}
+rules:
+- apiGroups: [""]
+  resources: ["events"]
+  verbs: ["create"]
+- apiGroups: ["operator.buoyant.io"]
+  resources: ["controlplaneupgrades", "dataplaneupgrades"]
+  verbs: ["get", "list", "watch"]
+- apiGroups: ["operator.buoyant.io"]
+  resources: ["dataplaneupgrades/status"]
+  verbs: ["update"]
+- apiGroups: ["apps"]
+  resources: ["deployments", "replicasets", "daemonsets", "statefulsets"]
+  verbs: ["get", "list", "watch", "patch"]
+- apiGroups: [""]
+  resources: ["namespaces", "pods", "configmaps"]
+  verbs: ["list", "watch"]
