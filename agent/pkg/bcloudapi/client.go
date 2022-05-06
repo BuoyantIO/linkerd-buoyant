@@ -114,7 +114,7 @@ func (c *client) RegisterAgent(ctx context.Context, agentName string) (*AgentInf
 	defer rsp.Body.Close()
 
 	if rsp.StatusCode != http.StatusOK {
-		if apiErr := extractErrorFromResponse(rsp.Request.Response); apiErr != nil {
+		if apiErr := extractErrorFromResponse(rsp); apiErr != nil {
 			return nil, apiErr
 		}
 
