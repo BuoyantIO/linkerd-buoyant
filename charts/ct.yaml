@@ -1,5 +1,0 @@
-chart-yaml-schema: charts/chart_schema.yaml
-lint-conf: charts/lintconf.yaml
-namespace: buoyant-cloud
-release-label: test-release-label
-target-branch: main

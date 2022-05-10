@@ -1,8 +1,0 @@
-metadata:
-  agentID: fake-agent-id
-  agentName: fake-agent-name
-api:
-  clientID: fake-client-id
-  clientSecret: fake-client-secret
-agent:
-  imageVersion: ci-run
