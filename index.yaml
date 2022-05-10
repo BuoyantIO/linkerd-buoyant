@@ -2,6 +2,27 @@ apiVersion: v1
 entries:
   buoyant-operator:
   - apiVersion: v2
+    appVersion: 0.1.1
+    created: "2022-05-10T09:55:42.246060761Z"
+    description: Fully managed Linkerd.
+    digest: 6dd5a2a40ca6efb50c2e5a9184240e83e16268e2b87acfbffcdb44c6517985a1
+    home: https://buoyant.io/cloud
+    icon: https://buoyant.io/images/buoyant-icon.svg
+    keywords:
+    - linkerd
+    - Buoyant
+    - Service Mesh
+    kubeVersion: '>=1.20.0-0'
+    maintainers:
+    - email: info@buoyant.io
+      name: BuoyantIO
+      url: https://buoyant.io
+    name: buoyant-operator
+    type: application
+    urls:
+    - https://github.com/BuoyantIO/linkerd-buoyant/releases/download/operator-v0.1.1/buoyant-operator-0.1.1.tgz
+    version: 0.1.1
+  - apiVersion: v2
     appVersion: 0.1.0
     created: "2022-05-10T06:48:40.638049049Z"
     description: Fully managed Linkerd.
@@ -257,4 +278,4 @@ entries:
     urls:
     - https://github.com/BuoyantIO/linkerd-buoyant/releases/download/v0.6.0/linkerd-buoyant-0.6.0.tgz
     version: 0.6.0
-generated: "2022-05-10T06:48:40.63807475Z"
+generated: "2022-05-10T09:55:42.246110962Z"
