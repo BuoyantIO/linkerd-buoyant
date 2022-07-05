@@ -2,8 +2,8 @@ Helm repo for the Linkerd Buoyant extension
 
 # Buoyant Cloud setup
 
-Prior to installing the Linkerd Buoyant extension, head over to
-<https://buoyant.cloud>, to register.
+Head over to <https://buoyant.io/cloud> for more information about Buoyant Cloud
+and the Linkerd Buoyant extension.
 
 # Agent Install
 
@@ -32,11 +32,8 @@ helm uninstall --namespace buoyant-cloud linkerd-buoyant
 
 # Chart info
 
-Helm chart `README.md` and source (unversioned):
-<https://github.com/BuoyantIO/linkerd-buoyant/tree/main/charts/linkerd-buoyant>
-
-GitHub repo:
-<https://github.com/BuoyantIO/linkerd-buoyant>
+Helm chart releases:
+<https://github.com/BuoyantIO/linkerd-buoyant/releases>
 
 Helm repo index:
 <https://github.com/BuoyantIO/linkerd-buoyant/blob/gh-pages/index.yaml>
