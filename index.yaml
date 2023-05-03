@@ -87,6 +87,30 @@ entries:
     version: 0.0.8
   linkerd-buoyant:
   - apiVersion: v2
+    appVersion: 0.17.5
+    created: "2023-05-03T22:26:52.045738261Z"
+    description: The Linkerd Buoyant extension connects your Linkerd-enabled Kubernetes
+      cluster to Buoyant Cloud, the global platform health dashboard for Linkerd.
+    digest: 016a12f565fec2362596d492c4a92e6c59042d807a97bc02cf27e28a38a2915e
+    home: https://buoyant.io/cloud
+    icon: https://buoyant.io/images/buoyant-icon.svg
+    keywords:
+    - linkerd
+    - Buoyant
+    - Service Mesh
+    kubeVersion: '>=1.21.0-0'
+    maintainers:
+    - email: info@buoyant.io
+      name: BuoyantIO
+      url: https://buoyant.io/cloud
+    name: linkerd-buoyant
+    sources:
+    - https://github.com/BuoyantIO/linkerd-buoyant
+    type: application
+    urls:
+    - https://github.com/BuoyantIO/linkerd-buoyant/releases/download/v0.17.5/linkerd-buoyant-0.17.5.tgz
+    version: 0.17.5
+  - apiVersion: v2
     appVersion: 0.17.4
     created: "2023-04-11T10:40:31.090951977Z"
     description: The Linkerd Buoyant extension connects your Linkerd-enabled Kubernetes
@@ -998,4 +1022,4 @@ entries:
     urls:
     - https://github.com/BuoyantIO/linkerd-buoyant/releases/download/v0.6.0/linkerd-buoyant-0.6.0.tgz
     version: 0.6.0
-generated: "2023-04-11T10:40:31.091317584Z"
+generated: "2023-05-03T22:26:52.046269466Z"
