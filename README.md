@@ -22,12 +22,12 @@ credentials pair and click on `Helm usage`. Save the values into `agent-values.y
 ## Install
 ```bash
 export CLUSTER_NAME=<your cluster name>
-helm install --create-namespace --namespace buoyant-cloud --values agent-values.yaml --set metadata.agentName=$CLUSTER_NAME linkerd-buoyant linkerd-buoyant/linkerd-buoyant
+helm install --create-namespace --namespace linkerd-buoyant --values agent-values.yaml --set metadata.agentName=$CLUSTER_NAME linkerd-buoyant linkerd-buoyant/linkerd-buoyant
 ```
 
 # Uninstall
 ```bash
-helm uninstall --namespace buoyant-cloud linkerd-buoyant
+helm uninstall --namespace linkerd-buoyant linkerd-buoyant
 ```
 
 # Chart info
