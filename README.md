@@ -1,9 +1,10 @@
 Helm repo for the Linkerd Buoyant extension
 
-# Buoyant Cloud setup
+# Linkerd Buoyant extension setup
 
-Head over to <https://buoyant.io/cloud> for more information about Buoyant Cloud
-and the Linkerd Buoyant extension.
+Head over to <https://docs.buoyant.io/buoyant-cloud/getting-started/> for more
+information about Buoyant Cloud and <https://docs.buoyant.io/release-notes/buoyant-cloud-agent/>
+for more information about the Linkerd Buoyant extension.
 
 # Agent Install
 
