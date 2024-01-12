@@ -1,21 +1,10 @@
 # linkerd-buoyant
 
-This repository is no longer maintained.
+This repository hosts Docker, Helm, CLI, and SBOMs for:
+- Buoyant Enterprise for Linkerd
+- Linkerd Buoyant Extension
 
-Head over to https://buoyant.io/cloud for more information about Buoyant Cloud
-and the Linkerd Buoyant extension.
+Release artifacts are hosted on the
+[Releases](https://github.com/BuoyantIO/linkerd-buoyant/releases) page.
 
-## License
-
-Copyright 2022 Buoyant, Inc. All rights reserved.
-
-Licensed under the Apache License, Version 2.0 (the "License"); you may not use
-these files except in compliance with the License. You may obtain a copy of the
-License at
-
-    http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software distributed
-under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
-CONDITIONS OF ANY KIND, either express or implied. See the License for the
-specific language governing permissions and limitations under the License.
+Head over to https://buoyant.io for more information about Buoyant and Linkerd.
