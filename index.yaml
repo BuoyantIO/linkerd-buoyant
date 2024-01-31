@@ -1336,6 +1336,31 @@ entries:
     version: 0.6.0
   linkerd-preview-control-plane:
   - apiVersion: v2
+    appVersion: preview-24.1.5
+    created: "2024-01-31T18:14:20.151143847Z"
+    dependencies:
+    - name: linkerd-control-plane
+      repository: file://../../target/linkerd2/charts/linkerd-control-plane
+      version: 1.18.6-edge
+    description: Buoyant Enterprise Linkerd
+    digest: c7b4466ea92d50b05fe0a3a0e59953438974e98289c45a41e7cacab63aefe870
+    home: https://buoyant.io
+    icon: https://buoyant.io/images/buoyant-icon.svg
+    keywords:
+    - linkerd
+    - Buoyant
+    - Service Mesh
+    kubeVersion: '>=1.21.0-0'
+    maintainers:
+    - email: info@buoyant.io
+      name: BuoyantIO
+      url: https://buoyant.io
+    name: linkerd-preview-control-plane
+    type: application
+    urls:
+    - https://github.com/BuoyantIO/linkerd-buoyant/releases/download/preview-24.1.5/linkerd-preview-control-plane-24.1.5.tgz
+    version: 24.1.5
+  - apiVersion: v2
     appVersion: preview-24.1.4
     created: "2024-01-24T21:07:28.737619798Z"
     dependencies:
@@ -1436,6 +1461,31 @@ entries:
     - https://github.com/BuoyantIO/linkerd-buoyant/releases/download/preview-24.1.1/linkerd-preview-control-plane-24.1.1.tgz
     version: 24.1.1
   linkerd-preview-crds:
+  - apiVersion: v2
+    appVersion: preview-24.1.5
+    created: "2024-01-31T18:14:39.800078221Z"
+    dependencies:
+    - name: linkerd-crds
+      repository: file://../../target/linkerd2/charts/linkerd-crds
+      version: 1.9.2-edge
+    description: Buoyant Enterprise Linkerd
+    digest: a7b59e83cc8914277075ea7083aa23326269b3dc28580f2aa41636f401f1d3a7
+    home: https://buoyant.io
+    icon: https://buoyant.io/images/buoyant-icon.svg
+    keywords:
+    - linkerd
+    - Buoyant
+    - Service Mesh
+    kubeVersion: '>=1.21.0-0'
+    maintainers:
+    - email: info@buoyant.io
+      name: BuoyantIO
+      url: https://buoyant.io
+    name: linkerd-preview-crds
+    type: application
+    urls:
+    - https://github.com/BuoyantIO/linkerd-buoyant/releases/download/preview-24.1.5/linkerd-preview-crds-24.1.5.tgz
+    version: 24.1.5
   - apiVersion: v2
     appVersion: preview-24.1.4
     created: "2024-01-24T21:07:49.573576533Z"
@@ -1538,6 +1588,31 @@ entries:
     version: 24.1.1
   linkerd-preview-multicluster:
   - apiVersion: v2
+    appVersion: preview-24.1.5
+    created: "2024-01-31T18:14:55.937251732Z"
+    dependencies:
+    - name: linkerd-multicluster
+      repository: file://../../target/linkerd2/multicluster/charts/linkerd-multicluster
+      version: 30.12.15-edge
+    description: Buoyant Enterprise Linkerd
+    digest: a7a1e0fc400fa976c6281a414aba6ed0a1036c5a6cbb7092f6ebb36fab10d9f0
+    home: https://buoyant.io
+    icon: https://buoyant.io/images/buoyant-icon.svg
+    keywords:
+    - linkerd
+    - Buoyant
+    - Service Mesh
+    kubeVersion: '>=1.21.0-0'
+    maintainers:
+    - email: info@buoyant.io
+      name: BuoyantIO
+      url: https://buoyant.io
+    name: linkerd-preview-multicluster
+    type: application
+    urls:
+    - https://github.com/BuoyantIO/linkerd-buoyant/releases/download/preview-24.1.5/linkerd-preview-multicluster-24.1.5.tgz
+    version: 24.1.5
+  - apiVersion: v2
     appVersion: preview-24.1.4
     created: "2024-01-24T21:08:13.856897282Z"
     dependencies:
@@ -1637,4 +1712,4 @@ entries:
     urls:
     - https://github.com/BuoyantIO/linkerd-buoyant/releases/download/preview-24.1.1/linkerd-preview-multicluster-24.1.1.tgz
     version: 24.1.1
-generated: "2024-01-25T03:19:53.714953804Z"
+generated: "2024-01-31T18:14:55.937506535Z"
