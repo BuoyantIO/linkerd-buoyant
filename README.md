@@ -2,7 +2,7 @@
 
 This repository hosts Docker, Helm, CLI, and SBOMs for:
 - Buoyant Enterprise for Linkerd
-- Linkerd Buoyant Extension
+- Buoyant Extension
 
 Release artifacts are hosted on the
 [Releases](https://github.com/BuoyantIO/linkerd-buoyant/releases) page.
