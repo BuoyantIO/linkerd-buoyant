@@ -9,7 +9,7 @@ entries:
       `linkerd` CLI features.
     digest: dd688a1fb84a7142d333542bbe19faf52b9b8d4b11f74fc94d9bb1d1089a282d
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -34,7 +34,7 @@ entries:
       `linkerd` CLI features.
     digest: eff310f17740dedff3ad5b77090bd0969a55a4479213ea5df712c1c8c1f8059b
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -59,7 +59,7 @@ entries:
       `linkerd` CLI features.
     digest: bdfa68a5accc2c0180fa1c0e58eed9508163adeba83d915c1b813f6386a3c9ec
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -84,7 +84,7 @@ entries:
       `linkerd` CLI features.
     digest: b85d087a23c1f003aff26efe11cc16a156e064157b9914acadc4347344526fb6
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -109,7 +109,7 @@ entries:
       `linkerd` CLI features.
     digest: 034e5677b7f0a190d0b566313e2a304b4b060e171df0c02324c7dab839d4a61f
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -134,7 +134,7 @@ entries:
       `linkerd` CLI features.
     digest: 17484fcfbd0f457537e2e506505fadf67956152e9a054c88f4a3d95c6ba212b6
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -159,7 +159,7 @@ entries:
       `linkerd` CLI features.
     digest: 80db23b984eed721734ffa87c8da6a9227b6b62a2bdef281ae068b0d6b2716fd
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -184,7 +184,7 @@ entries:
       `linkerd` CLI features.
     digest: 2098452c8d3ef5dcc249ed16168d523f057fceb26c94910d0de1c67fafaf7646
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -209,7 +209,7 @@ entries:
       `linkerd` CLI features.
     digest: 83816cda5f07fb9b7eca9110cef7a03710f4896fd5c639a6fa593fc99b849c83
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -233,7 +233,7 @@ entries:
       your Linkerd-enabled Kubernetes cluster.
     digest: 32465dc5e0576ca944d062135ae25fe1913f7ce43669a09bbf575056d073ffd4
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -257,7 +257,7 @@ entries:
       your Linkerd-enabled Kubernetes cluster.
     digest: 8d5ed535aac47d72652a29fd083b950fa202bf1a9d4c91c8a79e2efb6b521fbc
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -281,7 +281,7 @@ entries:
       your Linkerd-enabled Kubernetes cluster.
     digest: 95d673dd94709838e08b90731a54cf3f514c7f6fb7591741369df9e2a09844d5
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -305,7 +305,7 @@ entries:
       your Linkerd-enabled Kubernetes cluster.
     digest: e3cdea830a087b3e9c0062bc1f596f262de58409613f7a8946f069073057251e
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -329,7 +329,7 @@ entries:
       your Linkerd-enabled Kubernetes cluster.
     digest: fdb62a35c0f6feb5db62827e71e110bf1d14bf02aac20c4247d0ff13ce8e246b
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -353,7 +353,7 @@ entries:
       your Linkerd-enabled Kubernetes cluster.
     digest: 997be24ef7e8e94f4ef3afdf361f5beaf7e002cb3ce772d4438acfdd92d2be72
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -377,7 +377,7 @@ entries:
       your Linkerd-enabled Kubernetes cluster.
     digest: 947b0e07e937991d12ea8bd219698422d9a9bab8059530ee2dece2bfe8073dab
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -401,7 +401,7 @@ entries:
       your Linkerd-enabled Kubernetes cluster.
     digest: ea979a486c84e47d003e434bda1278677ff2a60f29f10be04a273fe8f4ad9055
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -425,7 +425,7 @@ entries:
       your Linkerd-enabled Kubernetes cluster.
     digest: b7a186503783e3410c06bde80d2ad390d137952a0b8ebcee80968f137a5f21af
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -449,7 +449,7 @@ entries:
       your Linkerd-enabled Kubernetes cluster.
     digest: 07215a74c241146aa01fd0792e57b7bc77c96918e86720150307553397fc247a
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -473,7 +473,7 @@ entries:
       your Linkerd-enabled Kubernetes cluster.
     digest: 3fb2c52594807d12412562d1477d448249173419d6046b6cf3374f4b0321dfdd
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -497,7 +497,7 @@ entries:
       cluster to Buoyant Cloud.
     digest: 9cd3a1b8eafbc9ffb05124eeddbf15b2fe6c96f29418adfa383b7e994e749b7f
     home: https://buoyant.io/cloud
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -521,7 +521,7 @@ entries:
       cluster to Buoyant Cloud.
     digest: 663dc26f1facb483d86cacfd804ba4384b9e2814334747077348eeb856686479
     home: https://buoyant.io/cloud
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -545,7 +545,7 @@ entries:
       cluster to Buoyant Cloud.
     digest: df4446a8869d73feb734b7e04dd1231847db80b8f3cee929dbb4a03dc4e0dc96
     home: https://buoyant.io/cloud
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -569,7 +569,7 @@ entries:
       cluster to Buoyant Cloud, the global platform health dashboard for Linkerd.
     digest: 02a15a4efcbd3f9008e6a7b1aee8b1de2b4fc6d02f895f24547f495c2a3d7906
     home: https://buoyant.io/cloud
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -593,7 +593,7 @@ entries:
       cluster to Buoyant Cloud, the global platform health dashboard for Linkerd.
     digest: 354c13dd3b30b7961b7bc2b74cb6bd09122a20970aaa5ca9b59849c733ab8bd6
     home: https://buoyant.io/cloud
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -617,7 +617,7 @@ entries:
       cluster to Buoyant Cloud, the global platform health dashboard for Linkerd.
     digest: 016a12f565fec2362596d492c4a92e6c59042d807a97bc02cf27e28a38a2915e
     home: https://buoyant.io/cloud
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -641,7 +641,7 @@ entries:
       cluster to Buoyant Cloud, the global platform health dashboard for Linkerd.
     digest: 320f7febfb96ea07f157b27197f44867e8e3377f65648956611e5f356b714b68
     home: https://buoyant.io/cloud
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -665,7 +665,7 @@ entries:
       cluster to Buoyant Cloud, the global platform health dashboard for Linkerd.
     digest: 732cd3762fb4f1de4c0fd92a8894f49a5168d667a1948ac62b37ef159f15b0d1
     home: https://buoyant.io/cloud
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -689,7 +689,7 @@ entries:
       cluster to Buoyant Cloud, the global platform health dashboard for Linkerd.
     digest: 603383c8f8ff68e6936c179a6b8419ab81d67463ca9aaba7e8739de0fd4332bd
     home: https://buoyant.io/cloud
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -713,7 +713,7 @@ entries:
       cluster to Buoyant Cloud, the global platform health dashboard for Linkerd.
     digest: 7e8296bc4c016190353df1452d6419cbdf4e5927ac42ef1f4d75a738e476334b
     home: https://buoyant.io/cloud
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -737,7 +737,7 @@ entries:
       cluster to Buoyant Cloud, the global platform health dashboard for Linkerd.
     digest: 243b4f2f4824a686f234875de6d37b8e3404080650b011f52ddbe1e2c153dc1b
     home: https://buoyant.io/cloud
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -761,7 +761,7 @@ entries:
       cluster to Buoyant Cloud, the global platform health dashboard for Linkerd.
     digest: b5784459722b6382707ce45ede03849e2ec5c751269cbdc2c346c10b272ef4df
     home: https://buoyant.io/cloud
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -785,7 +785,7 @@ entries:
       cluster to Buoyant Cloud, the global platform health dashboard for Linkerd.
     digest: 68ead3458513c0457437fbd11f21330acf2854194178ce319e47c935c2f7b022
     home: https://buoyant.io/cloud
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -809,7 +809,7 @@ entries:
       cluster to Buoyant Cloud, the global platform health dashboard for Linkerd.
     digest: 7a215f0e1fed1439c44344e42247580467bb4a6d7de0d07248fdfd649a2cfba6
     home: https://buoyant.io/cloud
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -833,7 +833,7 @@ entries:
       cluster to Buoyant Cloud, the global platform health dashboard for Linkerd.
     digest: 3b7e9716d12c181e35301145ca1a8c23b1c91b3e6108418161fc6df2810738fd
     home: https://buoyant.io/cloud
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -857,7 +857,7 @@ entries:
       cluster to Buoyant Cloud, the global platform health dashboard for Linkerd.
     digest: bdd6f8f2b7df7bd6471404d19cc270a4db61f4222d02ff1884416cc1398de282
     home: https://buoyant.io/cloud
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -881,7 +881,7 @@ entries:
       cluster to Buoyant Cloud, the global platform health dashboard for Linkerd.
     digest: a973fcc4ea4eadf6871cb91bf1b0ad2c04006c24d15b4e09e7b5845a48392e06
     home: https://buoyant.io/cloud
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -905,7 +905,7 @@ entries:
       cluster to Buoyant Cloud, the global platform health dashboard for Linkerd.
     digest: c81ec499a93c59548596781d1bf18feacfa9b875eedf480f5640cbbca75b04d5
     home: https://buoyant.io/cloud
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -929,7 +929,7 @@ entries:
       cluster to Buoyant Cloud, the global platform health dashboard for Linkerd.
     digest: 3fa0bd931ea9780a04f3c909e3247bee6b18ed2c9618da0c0311dbd961212aa2
     home: https://buoyant.io/cloud
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -953,7 +953,7 @@ entries:
       cluster to Buoyant Cloud, the global platform health dashboard for Linkerd.
     digest: ba57872d7b104571249d8428211ae1bc111188786e229cc52800bc27f1721f1f
     home: https://buoyant.io/cloud
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -977,7 +977,7 @@ entries:
       cluster to Buoyant Cloud, the global platform health dashboard for Linkerd.
     digest: 87562d60db3402e6ec6805c02c9714f58fd52f28d5cb83f29f2601df7e00573f
     home: https://buoyant.io/cloud
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -1001,7 +1001,7 @@ entries:
       cluster to Buoyant Cloud, the global platform health dashboard for Linkerd.
     digest: da0415d7f5473e182074ce583730ef64baa0377137e1e8e2018b7b4b8a78b6a5
     home: https://buoyant.io/cloud
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -1025,7 +1025,7 @@ entries:
       cluster to Buoyant Cloud, the global platform health dashboard for Linkerd.
     digest: 56aa250da0a7bc8b81e1b47a84f050b7516f28983d01e83ca866df6b7584fb22
     home: https://buoyant.io/cloud
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -1049,7 +1049,7 @@ entries:
       cluster to Buoyant Cloud, the global platform health dashboard for Linkerd.
     digest: 9f8e153d01f54e69462ae85bea526d8d157a3ed39fbd99ea6f0f037a85d326c0
     home: https://buoyant.io/cloud
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -1073,7 +1073,7 @@ entries:
       cluster to Buoyant Cloud, the global platform health dashboard for Linkerd.
     digest: 43d707636bcca43d291c065553addd666286356464598663b4ff36758a64ac92
     home: https://buoyant.io/cloud
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -1097,7 +1097,7 @@ entries:
       cluster to Buoyant Cloud, the global platform health dashboard for Linkerd.
     digest: 20aa630fa24e5e6c756d7d364f50f9643949c116a960e2ca3ed1c6f8140267cd
     home: https://buoyant.io/cloud
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -1121,7 +1121,7 @@ entries:
       cluster to Buoyant Cloud, the global platform health dashboard for Linkerd.
     digest: b5838816b0481af5947e440b63180ac51a260730d94af0d2fd78d81e29738104
     home: https://buoyant.io/cloud
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -1145,7 +1145,7 @@ entries:
       cluster to Buoyant Cloud, the global platform health dashboard for Linkerd.
     digest: 21d5ef9a8c3a4632136b2ded20724f73db27b53add486bf5c01a41a9fbfc1f30
     home: https://buoyant.io/cloud
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -1169,7 +1169,7 @@ entries:
       cluster to Buoyant Cloud, the global platform health dashboard for Linkerd.
     digest: 1c98c3b89fbc92b62a3153f91e7e2bb12a060a842ecb5675805dd7ed5bc1fb2b
     home: https://buoyant.io/cloud
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -1193,7 +1193,7 @@ entries:
       cluster to Buoyant Cloud, the global platform health dashboard for Linkerd.
     digest: 16e04bac96eeb9d2912d44a41f4e52edff1cf2c670cdd1ccc7aa4c62a8707908
     home: https://buoyant.io/cloud
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -1217,7 +1217,7 @@ entries:
       cluster to Buoyant Cloud, the global platform health dashboard for Linkerd.
     digest: 3b8df1b980eef2446827223d6cf102b091839bb3615ef7c0cd043f2377da8949
     home: https://buoyant.io/cloud
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -1241,7 +1241,7 @@ entries:
       cluster to Buoyant Cloud, the global platform health dashboard for Linkerd.
     digest: c19aa97e683c96fac4390d51cd10fb5160faaabab9bd96366a23af5e86b4e7fa
     home: https://buoyant.io/cloud
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -1265,7 +1265,7 @@ entries:
       cluster to Buoyant Cloud, the global platform health dashboard for Linkerd.
     digest: d0ba58d570c7107d7e28f83251f20920e598398c5d860d71520bc2d3fde10fea
     home: https://buoyant.io/cloud
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -1289,7 +1289,7 @@ entries:
       cluster to Buoyant Cloud, the global platform health dashboard for Linkerd.
     digest: 1d1afc0c43563707aa2ab86db975fecfdfd95c44c5f3a1e75fdbe787db97884c
     home: https://buoyant.io/cloud
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -1313,7 +1313,7 @@ entries:
       cluster to Buoyant Cloud, the global platform health dashboard for Linkerd.
     digest: 0ec994e8144aea9edeb5b14a98afbb31eff3ffda155b836adf0c6a9bb5380c9b
     home: https://buoyant.io/cloud
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -1337,7 +1337,7 @@ entries:
       cluster to Buoyant Cloud, the global platform health dashboard for Linkerd.
     digest: 85573eb738f2123d0bb3f646b9dcce1c930e4966356771a7070dc9b7e18038df
     home: https://buoyant.io/cloud
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -1361,7 +1361,7 @@ entries:
       cluster to Buoyant Cloud, the global platform health dashboard for Linkerd.
     digest: 2c6e193c52c3182e471efe418ca9063e33cfbfa068bd833e3d5d4b3295857e47
     home: https://buoyant.io/cloud
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -1385,7 +1385,7 @@ entries:
       cluster to Buoyant Cloud, the global platform health dashboard for Linkerd.
     digest: 0d5a7d8c74c97ebb741c656fed95e00d648b2b902f687c204d8f8727b19cb279
     home: https://buoyant.io/cloud
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -1409,7 +1409,7 @@ entries:
       cluster to Buoyant Cloud, the global platform health dashboard for Linkerd.
     digest: 476b0d62bd1baddf784b28990b2f8222db483cf303f6dd5d157e1a0e7c767d72
     home: https://buoyant.io/cloud
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -1433,7 +1433,7 @@ entries:
       cluster to Buoyant Cloud, the global platform health dashboard for Linkerd.
     digest: d83bef491c201c95538609eec0f56969a32186737b97b23e870f95075606d963
     home: https://buoyant.io/cloud
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -1457,7 +1457,7 @@ entries:
       cluster to Buoyant Cloud, the global platform health dashboard for Linkerd.
     digest: 8ac47c09ccef5c3019ac8ce38756a4e9d30fbbc4132d20175b0c285621aad0a2
     home: https://buoyant.io/cloud
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -1481,7 +1481,7 @@ entries:
       cluster to Buoyant Cloud, the global platform health dashboard for Linkerd.
     digest: beb425ec2ddb40c9ef167cc4edaabd7ed704e4fd7d6d23ee327d51457aeb3be8
     home: https://buoyant.io/cloud
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -1505,7 +1505,7 @@ entries:
       cluster to Buoyant Cloud, the global platform health dashboard for Linkerd.
     digest: c31a4e14632c3d9d790c6d841a72abdb0d214b117b1961815faf1f512320f493
     home: https://buoyant.io/cloud
-    icon: https://buoyant.io/images/buoyant_logo.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -1529,7 +1529,7 @@ entries:
       cluster to Buoyant Cloud, the global platform health dashboard for Linkerd.
     digest: 73e47eae47e35ab61f2466ae12f7c76232dfd1bc9990c980a46b4482a049fb7a
     home: https://buoyant.io/cloud
-    icon: https://buoyant.io/images/buoyant_logo.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -1557,7 +1557,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: c7d4c0a8dac28684e135968733051959bbbc8bf0063b7217209b732267b546e2
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -1582,7 +1582,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: b5c729ed007c6332cb94a07a9afaef0333e746b60eb423132a5d74a40fd02ab1
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -1607,7 +1607,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: d0cce81ee41e36d0898e9c46cbaeabc8a1a73f82860b6a07adcfeb57fb8d917a
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -1632,7 +1632,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: dd9abc0bb1b66aaf15030e63eb9d3f9002aaa1025294e0492d3ffa9ae9a3eccc
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -1657,7 +1657,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: 1f9b392b1ad7e1c8cf2fda1e8923e9d3a1fc21ade47b944b6f5c28fbe635fd3e
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -1682,7 +1682,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: 958e8410c4db09bae137b42ebf9c3c686c5bb6288c771a46f2589d7b466a2084
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -1707,7 +1707,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: 046e3885956293e07d4cf8923d1d097d69d79759cdd61560c3d41ccc5652df26
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -1732,7 +1732,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: c78951b062d88264eb016873caaa655edc81ec5672bd0dd06580c8edb0ee9be0
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -1757,7 +1757,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: a0860eb9bff00068b993c7e98331353c37d65f71303824b282e0ae0c33f02376
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -1782,7 +1782,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: 6efe98773ccb9f5f3b7587deacc1ecae63d8c322c02a432b7ce2d12e2d23e5fb
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -1807,7 +1807,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: de9ec541c1f591754a4c246e98b85a51e0d95711a1f1f6866c3b713d3c2eb5ef
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -1832,7 +1832,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: 442d6574f26bf2b96fbba3bda6e17e8a848a4102c61aeebb3aac7a5a17c1a285
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -1857,7 +1857,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: f6f6ae49f8b04953e9d4654db3f6c8a8cc18cd41d991ffbe6c3027ec9a2d6e04
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -1882,7 +1882,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: e5fa9e6a067da08aef9788d1db9e8251726d7de0f90c17844133359894a1213e
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -1907,7 +1907,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: 8ddd52fe01adb2572db15455f0fbdfa5ed194584cb8972b4fdf4e1318db450a7
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -1932,7 +1932,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: 99c6ccfafcaa2572a8344d12e64479d46d65da8ebf3976e8c759ab02b244b149
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -1957,7 +1957,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: 62e54b90823a24e676d9b6d90cf74f7fc399c3bce5d8c182228b3e9243647cb4
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -1982,7 +1982,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: 35a41a5d51f2a6b1ecf0fde677bf7aebcf58195775857e153f97ed3ebdd1b1b8
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -2007,7 +2007,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: d913f0ce44afd082dfdec0f46c0741fbbdfe610cca8fd3b792db129540360c94
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -2032,7 +2032,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: ddc5e76d045237775e23ca6256b9de22f48bd22a5c35f2a7cf2c751b0d667308
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -2057,7 +2057,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: 7c0c3c154d090bfa520a28bf49e1057a5a5df2c086fc22df0e95ece50aacbc96
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -2082,7 +2082,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: 3f452f371f753be5f32b3c2ec550c1d3186d1168a0f0c6943dbddc397d838f50
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -2107,7 +2107,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: 52cfc5a462bc6a55c8c59e3ab48ec7a14cddb5e35dbe110fbe3239082b904ea2
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -2132,7 +2132,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: 9925aec8958446e32c0680951331016d5a817955ff0e0e5b071be8eea9ef8161
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -2157,7 +2157,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: c97db7c2cb489c130207d2744522c2f248ba831f6ee6034be170e20ce0b7b081
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -2182,7 +2182,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: c2f87fcae4e5988ec66205b1b4b72b40cb366a974c5e4c1507fe6cd9a37301c6
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -2207,7 +2207,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: 60ae7702e47138235763f01d113ab637b6b083edde889b99d976849527d91ba3
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -2232,7 +2232,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: 4f83e17f7295844deef24ea4d20bbdcbec6d7e8d0cd3788c3ab0fdf0a550fc02
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -2257,7 +2257,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: 6856a8fb2619b5f1ae835bfa005a84882ba1728fbfb8dc7d9e22e2a1216fb281
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -2282,7 +2282,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: 88c021c40aeb45b5ef8cbd424b95f5a38f014ff1d751e797fc06141d377ee5df
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -2307,7 +2307,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: d14ff1ae64fd8a1eb730f2a3fedf266955c938b18c49e6a04e82e358cfc075be
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -2332,7 +2332,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: 77f4224d071a1d2a8ac215bfe641a571d8794c9403160a1b6b1cb9f7d71fb755
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -2357,7 +2357,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: 70698095ae875bfd93a8150ec1b969462791c8eb52f9c7692b48f706cecdb1c6
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -2382,7 +2382,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: df154ced7cf64c22ae564aa8d382260b884977f7362a0438ae5aebfd0197cfa3
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -2408,7 +2408,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: 61de8f525f6ce64061ca678cdca5a72ae13c82bc09a9b2bd1bc685624410e00c
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -2433,7 +2433,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: 5e23eaf0af4befcc760c80e028a29d54808a9729f29855a51041ee09ba804b62
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -2458,7 +2458,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: d6682b39cf4f1f382376bba90cf2ecb9f739bbbf46ed3e39e765d39ef28052e9
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -2483,7 +2483,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: e6ce13cc9b7ff8ffbf756b3e2f6e30186d5faa16453e433223759f7d3744bc33
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -2508,7 +2508,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: cf567496b2f01c8005b6cc4f0a4e4a0f146fd3e609bbb3732f4f14063546ee16
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -2533,7 +2533,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: 95c3ab2d9bedaf8734f74ae03d0bfe11c0481775f9ae2b0e3081184fbb3db7b3
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -2558,7 +2558,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: 4c45acc53719f6afd0faf8812d4fcb5b63b773dea21b705b3b55e261df3c638e
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -2583,7 +2583,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: ade60007d6f5a84f3e43582c443508642aba8a5f89aae3baa9c620235a7ba531
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -2608,7 +2608,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: 157f204252cac3804ca62a4973c769c5ee5f76cac3c1640c95a162836faa19f5
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -2633,7 +2633,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: 5a247b170fb1e3e0f8fbc56eb37c13af131097b6001372a8520fd154916c4f91
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -2658,7 +2658,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: ac2029ae03753673ab92416e8750a94dce0427ac1305a99845d28eaba7f8a4a4
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -2683,7 +2683,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: 31070da5dd98010901f6a87247bd48e91977d8d40dc49146b663044049523426
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -2708,7 +2708,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: ac840cd42aaf0e617a138fea23c824c4076bd7586514462663f3106c431e23d5
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -2733,7 +2733,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: 930076c53ddebf2326286c17e9f943d49085961aa199269345967fd28015e294
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -2758,7 +2758,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: ab8115118a275229a569a0cac9a84f8b15fe9ae17e6b6ddab93a41bd581ca483
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -2783,7 +2783,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: 4d57fd65588968d102feeb8ea4a3005fc08060db2ec2fcae1c69ffb762ee0e26
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -2808,7 +2808,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: f29c19b02dd5419041f79e4e867b7ac8a403fe309af4a7a69ff54bf5005f49ac
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -2833,7 +2833,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: eb8a0fc48a57dc6f1ddd56d82641d9b6110370a99e64bfe1b31f194e4de40585
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -2858,7 +2858,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: b946c3abc148296a0c9ea036f858181f90141bbebe42fcc2a4883aa8cf923f6c
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -2883,7 +2883,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: 69122f351606173b1e89156bba886bae0869df309b13b09c9b9088f52da8ccae
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -2908,7 +2908,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: 7789d6e13401eccd71f059148aa82945b95757738a1dea4df20fd26a61101b1c
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -2933,7 +2933,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: 5c992d119db297654bd4ed87ce05d5cc3b009d2b8ef860c3e82cd6568f9a8f50
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -2958,7 +2958,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: fa0ac13dd0c8bd66785336ab960c7160476c65eb215effb9d7c64c2802bdef23
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -2983,7 +2983,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: 6841b1a95be7fb75d986922a4431355cb9354118d1190953d4b9ce9517eb3b9f
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -3008,7 +3008,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: abc9adce770436658bdc0c52480ef18e2748650f8b2743297dcf13a1b0dada6b
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -3033,7 +3033,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: 31dcef131dc6027e8e7d3ea4a04d65bd52fa42c5dafc3fe49fa45110e32e1583
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -3058,7 +3058,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: adba065fd4be31890e6b7fc231928d7c4b3bdeeced75f7d304e986297d11440e
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -3083,7 +3083,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: 5cb3d8148ee4e78351faf5cc1368f67923fd05e5323c66aeaedde1653206abd0
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -3108,7 +3108,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: 83d341b5680c55b8961fa5db1c0e38dfdffaadc4b9191db7c34149c8389c3b9e
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -3133,7 +3133,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: 70f0985bcb85e85eac8b63d00004dc24d2d2b89f86af76df173e4e2d1b371b37
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -3158,7 +3158,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: 28705cfd2e9ac06a39f1c9a86e44cda6d41d2d6bd37e56a0682d2a5188fc3ec5
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -3183,7 +3183,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: ff69ea6c72c2745960b579db23cba7c645c40c6961b555b68b1d3fbe1154889e
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -3208,7 +3208,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: 28b394f444a3c227fe6b1cfbc7e7c501b24e4003e71bb95fb74e28f3a42e15b2
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -3233,7 +3233,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: ebcc14dfabbcba1e0166df6edb33fab9a2203a0027aaeb89f5ab2b126828e8c9
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -3259,7 +3259,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: ad891bc766d20dd8676435f48d2c9c1965e134d4dedb1ae9bd73b679dfb9ccd0
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -3284,7 +3284,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: 41cce8768f1f486461c63d7eb8d5f0dc1d045ca63d0dbb80860a2eedab51b6bd
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -3309,7 +3309,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: 98c938449bbecbe3e1c42d4f1acb3211e8eb286bff5f54ae6a3646ba5ac3a642
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -3334,7 +3334,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: ace99120d13395f9c48a16b13ab3bbc0c8fca1e8bd262ae4f629ea58b2f4e35e
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -3359,7 +3359,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: 6288d5449f6373dc0202e0a53bb2215f17ba6128b42ebbe40d12504ee4fb4005
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -3384,7 +3384,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: fff2262ef3ee3d1b867a6404807a1dcaa9cd8a75178ee5af16568c1203ee3626
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -3409,7 +3409,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: bbfb178ac88b399b2906207b50347c71edf2860696f9a33756d755ed2f401177
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -3434,7 +3434,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: a85c2ac85f6f2135cb86c005e99ee9a3bb46a83a28fcc905310f239acf6beb3c
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -3459,7 +3459,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: d92ef50b366dd35e9afa7ec71488b15bc452903b7a95a49cfeac3818ac71c01a
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -3484,7 +3484,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: 799aa02ed164a70e83591308780415c2e17dd4054b43d31299a303eaf42cde01
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -3509,7 +3509,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: fecc27c1dc8e49f265dbc90d80c2e43cdbb32f9e40b6f414683a21f0af8cff2b
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -3534,7 +3534,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: e7db3c2a297f08b1505fd4fef8fa3fb36b379a465195d6b02c9133cfa65830cf
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -3559,7 +3559,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: 94b5cf6441833c0d67f6c133265a1c5ee81a4efd5baa7276c253b61dce75a4b5
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -3584,7 +3584,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: 0916e5c4143c8ef3129bbd1a9352130006ddeb9e94deb5cbdcacb2ce9f9bc10f
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -3609,7 +3609,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: 59974f6959f7eaf76034f5b5c5f1b364e336c5d269ec9be417a2f4696e93bbb6
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -3634,7 +3634,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: da48d793826ae39f31d36d0d763bce94ca0564639d4b5b1e15c4d72462a8447a
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -3659,7 +3659,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: 4307217bd2c2d1d24828d7756daa1a1245b6bb3f5f4dc5fd8ec8aee313fae587
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -3684,7 +3684,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: 41421778b709bd4d6cfe1a47d07022b8cdebedbf749131ca40b7cf2f1301d40b
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -3709,7 +3709,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: 9fff96e6660710b2d9e9ea3d585075dfca7128dcd73a784174bda5242d796dd6
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -3734,7 +3734,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: ca4f15a01c93737f01da951c065ac5a8d07ed6c36b0172540c1f9bdb2305f63d
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -3759,7 +3759,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: 3c6828d5f2c98057e5f997a1d777c4ada39b1296df515ec3ed4aeccd0ac24693
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -3784,7 +3784,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: 10be1e0154c00ce4b1e23b7019647ba04f96f31ed9c5287085d1638494bf81f9
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -3809,7 +3809,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: 42197448ac72da4753f9400b59e30bc799fab901916823dd3cce64dd5c989227
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -3834,7 +3834,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: 9dca6c964ffcd4a0dfc2fd1f858a741fd692d73d85020b4428ee4d8e0501f0a0
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -3859,7 +3859,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: d610458f66003ef27729c9804a7688997e54d2f05da597f33be813b543718849
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -3884,7 +3884,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: f271fa0ebf81700f2f1e2d141ac68ef2b60d8a6ed0726fa5fcfa8a49b5eb1255
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -3909,7 +3909,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: 091361a33278d1ae61514598d94d6e9a427f81a7ae401d8313a42a72f22603e8
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -3934,7 +3934,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: 4d6c1ecefd6ae072f142706f22b4ed41ae0944fd149b6db88c8b0a506fa133de
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -3959,7 +3959,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: b5c87936487731269152c365af3a841a9580a859947e81bf06b1722fcbd1a173
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -3984,7 +3984,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: e0e2b5519a9fe51366738fc750239f36e6297d8c68a5ab322cb3a63f37e13f40
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -4009,7 +4009,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: 3afd9e473bf94a9f5986a8c760f6c1996dcedfa704a54328397120856377b9a3
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -4034,7 +4034,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: ae311d884371073fe52fd0955a50ae75010e8dfd65f951ae9098d43755262764
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -4059,7 +4059,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: 7214282c8508ec56a77a9a45b5acc40aad5d97b48e205863e807b3dc2527abe8
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -4084,7 +4084,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: 9ad1be704cb1c567565c9b248c956ceb8f51b18027489c5922ef7e8b68f1a3c9
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -4110,7 +4110,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: 9c9e878d27815be8d6d5221aaa45f558846799498c7301da4901f4e8fe037034
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -4135,7 +4135,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: 7c305c620e12795782a56f8948635d309b2925f2d470ab7a3ccdb01630aee9d6
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -4160,7 +4160,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: 7ed4419a59e140de9eb121bc8cb2a6fde64e0017811d186beb9b8a985301be79
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -4185,7 +4185,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: bc07227cab2972d6aa22c2ffc720cb2abda8bc2f11076bf921c568abca9bfa49
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -4247,7 +4247,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: 7289e748907d8781657827b1413f505cdfbfdf957a1d2c5ce12730f04fe577b2
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -4304,7 +4304,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: 55c112191eedb87367b9c554788a0564e59ec9367f665f70b841a8c39b6dc9ff
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -4329,7 +4329,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: f5c8addc2ce39b528ce1a82629890b4c6fe4c273b0a2240c89b06c2b6a0659d8
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -4386,7 +4386,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: 4b0c94bc7c457fff85eb68e27784e3adc0494f64993a36094662e9d10fc1cea4
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -4411,7 +4411,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: 0a4d1ed01e870f792d683b630ad9ab3198e0f6c90cbe8e2bfbf38bb4e4c7c102
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -4436,7 +4436,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: 28aeab3732b4bc137bea3cdf3c311d2c5ae3ae59f8ed14be653d08d42f262eef
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -4461,7 +4461,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: 9fa975b8e8bbf71df3c1f7c8eefe76d7d857fbd2d2afc0d63116050af0b9341c
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -4486,7 +4486,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: 375bb056a84a369977532e8a121fdf817c47027c241dd1a293798ce5acd8df70
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -4511,7 +4511,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: 8e4fa4aba666dd3bf08dc04364afd445b75bce772f4f6d94c1daf55f1a4a7f4f
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -4536,7 +4536,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: 7d4b05dda2b2e64e30a390d2117e0bd578621c80e2562ee3cad8cd87cf7ef622
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -4561,7 +4561,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: 1177bf6424bcf68d328c037a0fb4581ac18a6c24c3cc6c1dbef7f38178790a3b
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -4586,7 +4586,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: d537ecd5ae5bde4cbe864a31db27aeaa83af15937d12538c607e95d876adf96f
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -4611,7 +4611,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: 8d4333b1b6c66b627ed294b549613cb8b16c14851f378da9d19fc919010301d4
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -4636,7 +4636,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: 2920cee4935a1a2b83225cf7885300ce84b33ebd5091a5caed63541f063fdd8f
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -4661,7 +4661,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: 2feb751f351830f16b246d25a5d64432fad03911f042d237c199444cb2f024dc
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -4686,7 +4686,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: a88fc194daf63c523cda7242819493dd25212afc029ec8a36adf9ab8bf3c725e
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -4711,7 +4711,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: 83d1c744d49921179c7ef3706c65b6e23e05c4586a478e485bf0258beb96fbce
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -4736,7 +4736,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: 3f48dc0af5cd83cee3abe07f2f943a643da4b7df66fbc6dd1ca119b11bde2ce4
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -4761,7 +4761,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: 9219b700c8dad81e25f904cd206553d0ca71b59c5f77551b578ecba46cd53e40
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -4786,7 +4786,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: c25993302c90a005da760c3470636d22793b439fa140e75bae6000ed9b1bd915
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -4811,7 +4811,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: 6dfcf5571a1e0aad4f777da876696e4a76f45a9615b660f7368556e1f193e0ca
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -4836,7 +4836,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: 7518af522b6e6821f9ca49a0e2e46bc17a47c31025c0fbbcbf01c52246dac99d
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -4861,7 +4861,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: d5116029d9ce36f6fc2cacd540372f1efe54260e4cfa4bc266555d801505049e
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -4886,7 +4886,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: 0ae7944e9c9342cf607588a69912f63e5116414c59acf8325c27123ac93b4918
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -4911,7 +4911,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: 4148729359320fa090e18b89cbdbaf483e7f272076297479660d5a7aca8064a4
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -4936,7 +4936,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: 9d8c4cc74d86c7efa31189f4e7a1944ec0682cadaf51b3765938b8e42ac75114
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -4961,7 +4961,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: d090af9898b27184b44f5a2a7e7e63df06c135ffc7b28567cb7d8e20d99668ea
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -4986,7 +4986,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: 0a38bef12cb878ab8ae7afb674e6ce1a747977e14ed3e8b67bdaf11018582a9d
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -5011,7 +5011,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: ceba551a2c815cca684e3a8b051e6b438d1f43cd3c46ee18b24e4daa6b59221e
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -5036,7 +5036,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: a0e7f0a2f009719a837f3692785e1eb6208a9f0129abc5b9c9262d278fee4d76
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -5061,7 +5061,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: c7d7be3d06ed08f0f8e952ce84a84955799f1978087191d4e6f0fb212eda2f64
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -5086,7 +5086,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: c7b4466ea92d50b05fe0a3a0e59953438974e98289c45a41e7cacab63aefe870
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -5111,7 +5111,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: a6c4d8c5770a946389116cd5858eb1a664bca579487f25d35de4d1747c2db6ce
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -5136,7 +5136,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: bbd20a385d3365336a8fe53681b423a0d79a291ea0d1dd6052428abcb786c781
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -5161,7 +5161,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: 96f3c8b69adea4294ea77cd5732fd1b70a61a851a0dba00d95e41261317969b0
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -5186,7 +5186,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: 8e259bbf011bf287a76b9b1a52aeaf7c61b8f87a96be6c55205b72652a77bfce
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -5212,7 +5212,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: 1f61c143b832404914c7ddae252b34fb09aae0c06daa5e90b04278e0739bba7c
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -5237,7 +5237,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: 9bff3a12a9c060d00dc4f66234e386c9b0885fa679800466b37e2e33ca5216c7
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -5262,7 +5262,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: 78e521f0b76b2fe69ff5c358eac0d9c0cca7e844438d6b9ae49a17c49b9e653f
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -5287,7 +5287,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: 0aad1ef4b7595fbedd5a9f42ae47bb8255b385bb779d94eecb686b5fccb3652a
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -5312,7 +5312,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: 42434e5a1cb32f549b45ec3bc97d40cfd02f1cf2ddfdf2b99184eadb76251432
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -5337,7 +5337,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: f10309c8c57bb1de23ccb8b5cd14aab787fc914f486d99f107333cd1f06fdbab
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -5362,7 +5362,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: b64741f8e2fdcd94e1c441491ff2fa93cd8c1b5c7646d5b9d9ddbc21b5a1c3b7
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -5387,7 +5387,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: 5b347c80ae65d9c61caef8ae5e68c288404f5b05eb99e0883da1650b3a5604fb
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -5412,7 +5412,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: bf7f45161e417a323528864415eeb22f0f5a1072216dbfcfcc828ad0748cb6c8
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -5437,7 +5437,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: cad773fa0cc40a9f891ae781b0c0a536aa126f1c4564e45a1b3b2d4cd1e3a94f
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -5462,7 +5462,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: a2a7e3b602e7b54788821a7cb209c2e01ab365982083c7c1f8ed208da7caaeda
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -5487,7 +5487,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: 556e27677d2e1fb016c20ab3ff11454bfd334c8df7a815c89f6479e69ada7c7c
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -5512,7 +5512,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: 247d0e5f51171a9339aedb98c095e6ef5454e18daff7f8fa3637055a4f31c778
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -5537,7 +5537,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: 63e6808191fa3cc0c0fd3cae67fd5f5febb9af2a04bd640f62130ba42db9daa1
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -5562,7 +5562,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: bab1adfa9e1fdfb3ed41aca39ac73c3cf4de5afeb627d9837ef5f363ca12ace5
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -5587,7 +5587,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: 9693ef316a69fc512e7da427966e3731ced4252903f54ae361aac041ffecba0a
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -5612,7 +5612,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: 409ac69738db6c0282c2011a8a7377c8d1656d7178456eae775715682894846d
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -5637,7 +5637,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: 2d2960194e0c5de431bdf633a649c3a824a37a3e2ae02443f7a8d98bc6aa8d0b
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -5662,7 +5662,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: a66a0ab05a8c78f07226f98bfe78a5e056a04bbecd07593597a1abab42b5ddde
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -5687,7 +5687,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: 0613dbeedcc72c328bef39a33d9245be2445d2988d9254e94a687a9f26c1d5b6
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -5712,7 +5712,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: 2a532d4f3eabb84cbe340699bd12b47865fef00f8e4f807116b50955fbc947b4
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -5737,7 +5737,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: c069d8b6ee49ebd8a0898b93a2e55817769c76973a36bdfa3659e25548d95110
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -5762,7 +5762,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: 0e7eb3cbf11c75ebf758e69788b26a7133b1aea4ae1987a90934a8cf730dff45
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -5787,7 +5787,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: 6148190f1a02a9f14edfba576ea2519f4f5723d7f04f056f53c72134802fdf9d
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -5812,7 +5812,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: 61765a661533dd5f5f537bd91c23f0d78fc85acb78d42fc43ecbbc5b4069d8ef
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -5837,7 +5837,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: 09b83c6151dc15eb0ef44e802c3a3e843e56d5eb1e77eeb484bf64737c40f003
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -5862,7 +5862,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: 7b5a356e596ceaef9bfb3df721269719f2a4d7b90bb33829123ed43b8427aff6
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -5887,7 +5887,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: 978b17418c55d481be7888cfcf77a5ccefbf688fe811b952afcbf424c71f091a
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -5912,7 +5912,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: 6454600adc13598db4bbd17a0f6b7dbdce31be277973fbf6d4205b9e5872ec0d
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -5937,7 +5937,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: 71906199edf32f032b2b1005c1c071e9ee9340e293ec0de1611405cdfaa12e6c
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -5962,7 +5962,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: a0806aadad66e2da0f799b00697a324bca48e43a933412db0d2470a90aec56b8
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -5987,7 +5987,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: 63b1ce2ccfe188b9c2cb5c11a5fafb649257005e85c077ec187e0a17481182ed
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -6012,7 +6012,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: e671c29b124e910b779cbfbd29175c6a245c90c0acea143c05ad3a5d8603819d
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -6037,7 +6037,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: 3a9a237f38814591e23bb61c8d9e5f1bd410de952c012e9b09571d3779301c1f
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -6062,7 +6062,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: 436d82c7200ae2154b8109deb73a6aa74c747dc117322dea4d9f5064cea8c754
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -6087,7 +6087,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: a7b59e83cc8914277075ea7083aa23326269b3dc28580f2aa41636f401f1d3a7
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -6112,7 +6112,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: 07399c8610cd0dd757f72c4708dd6531b066c98c1d013367ebd48eaa3ce5959a
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -6137,7 +6137,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: 1e79ba0e2c74f2bfba2dab3d90d8fcb4e9b1d0f60592b8943826278350ed7b71
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -6162,7 +6162,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: a527c9bdf2070a22deaf21a67936e5ea8f4e8c5618697d6561481153a5dbd169
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -6187,7 +6187,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: eb07287cc61a5d4f80d800e1e403a3e82797b61856e6d22d1422a70766f728e1
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -6213,7 +6213,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: 5f1ad06390634f49358cd446c2c9eb1b2ce0fb56a59329b27ed7d538656ec85a
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -6238,7 +6238,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: 3159fcb235666946c1fe629a7355a17f9ee43e8375a6320a77dfb39971447308
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -6263,7 +6263,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: d8883e27a56536a42a7b27ccdb8dfc8588dd95628c9be31fb766ad65654b41d2
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -6288,7 +6288,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: 4cad72ab3e606c1ff1211bee81a3a62bc2975b6fc88fbd98a94f09b2ca48e4e6
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -6322,7 +6322,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: 57cb8f9065ec37b2ecb6b0aea6f6e022f1e31d1c1d10f0b4f16d671fe64fe16a
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -6355,7 +6355,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: cc523c6f0bab6c59cb68e81ba22eae6b6c24669550e8b8fb95e9b512daa9b057
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -6380,7 +6380,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: c6b66870d629c9bee59e630ee87c78635f50d79922c168e83a354da3c5d9de34
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -6413,7 +6413,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: 4ad7bd311c80de2f35a985dbaec8f616f96b4e1cb23065c145b6eea5fa9540f8
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -6438,7 +6438,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: ebdeb7e30a8baf515542505df125fe7147debfa6d3b8ddea492a99ba1f381225
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -6463,7 +6463,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: e8be559b6cdefec4bb5ff77c5a328bd2656c3124da40452cb11706ee328f77bd
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -6488,7 +6488,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: 937c6d0c78eba08b5640eb7fc684bfb78bdefa4114b42c1b0d69c4a447427188
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -6513,7 +6513,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: 903e18cf38bcb367c19a0ab474bfa7151a3d3fec861400038bc1ee4d29d3c5eb
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -6538,7 +6538,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: 51ce7f6a87ea6029f01d649346b1b87d6f1c7a4743a6fc58baa865f42e3e589a
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -6563,7 +6563,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: 0fdf1624dbd475317d5c487befe6a1a7678e6964fe72ae6365890e82ad681829
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -6588,7 +6588,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: a9af28a1e02eae1285755cf84ec2c020c04aa67bfdb5ab2eb896c31c6419570e
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -6613,7 +6613,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: 76fe41c4a6041e29afc9811cc750c9b410f08c6c3041ce60b30bac6c20d4a010
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -6638,7 +6638,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: 9c186e85fde93fb91cdffd74d9b5e4fc01aee4e2ef2059de172d6f85536b4a14
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -6663,7 +6663,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: da4c1e5b1560d8ecf4dd1fb8791e2f1fee37224383e37ae9ab0aa4b5ef4f3f6e
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -6688,7 +6688,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: d65abcbf8b439c504e61c89ec22acc57d57f7d496024e9509c97ce53edbc16bf
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -6713,7 +6713,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: c7059703c26aa9d0686e3dc3ad46860d88daa536ce7761b09c8d8b894601d1b0
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -6738,7 +6738,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: bd14ed22bdc175ccc2476a82e65b7e83fbdcd93cfe13f3f6126b2647f1767031
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -6763,7 +6763,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: c9e0e6498c7ae4182a57a0fe8bebc6311cecf67b7836e74c25b16ccb6e07d1d6
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -6788,7 +6788,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: 5faf909f00ea164a35a66f93ab04853e522f63b9fde2ae4b34b3f7eb97c306f1
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -6813,7 +6813,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: 8e0da198d988b5b05cc28031271c90bca90bb4dc03e1726b7579cb05aef794fb
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -6838,7 +6838,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: a7576dfe431a1c6619f05900d26fc56bd6d4c56bfee1abbca03c06864378259b
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -6863,7 +6863,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: 18d0954707c68b7f390842fcaab6bd02a6d68a525d4721fde5e676b87eaa4d2a
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -6888,7 +6888,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: b942742063b5369430fc0ffedfcd50030a9d28c46bc5e82b519b8ec9ee606288
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -6913,7 +6913,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: 996fd4715e05bdfb0ce3c1a8dc1a4e823c953cac01613f4429cfe4e4f09d06d5
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -6938,7 +6938,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: 067781067132a43c61053537be2c9d65c913f8b6870335e7c5566efc2c63b4c4
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -6963,7 +6963,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: a0c846d506f267733111b74351333ddb6837e9d1e1085d32d76fea008e7243bc
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -6988,7 +6988,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: 4e8e6abdd62f29895921cc6a5da1fc387156e6eb4a3d060ba031c07bcaad45c6
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -7013,7 +7013,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: c872f73747055dd0aee58ec06906adb1c0c5010960fc81c721ab85234d51e0d8
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -7038,7 +7038,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: 26f070d80c564df7e8fd7bd6daa8ff6d3ce392215eb38a0dd646c4a1f811e130
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -7063,7 +7063,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: 3cf04e8b23e07fa0a04b195c8da78eadfc1baf10e4aef42d5539efa21b3ef56a
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -7088,7 +7088,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: a1170ab22b6814cc12d4fe6f4b6b8b2cac09a7f37c8fc7ba0c2e9e1ca85baef3
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -7113,7 +7113,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: a7a1e0fc400fa976c6281a414aba6ed0a1036c5a6cbb7092f6ebb36fab10d9f0
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -7138,7 +7138,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: abe8d6d006e5a8a98a5b66eee0257b2fd70bff7d85160b36f328de517f9b8d96
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -7163,7 +7163,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: 1b6b8655508c4bc229e49724dff71b7699cf316c78b1a74667845bee117a4da0
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -7188,7 +7188,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: 68cfd83311bef3a8767d033e632e244b7c91cf734a643b20761d247f966a0832
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
@@ -7213,7 +7213,7 @@ entries:
     description: Buoyant Enterprise Linkerd
     digest: a74ba8dbaf6ffccd9fa1bce1ae2411525579bd38008816a91dacbc2f2b7ff0ac
     home: https://buoyant.io
-    icon: https://buoyant.io/images/buoyant-icon.svg
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
     keywords:
     - linkerd
     - Buoyant
