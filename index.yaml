@@ -6626,6 +6626,31 @@ entries:
     version: 2.15.0-0
   linkerd-preview-control-plane:
   - apiVersion: v2
+    appVersion: preview-25.4.2
+    created: "2025-04-07T13:10:04.799757709Z"
+    dependencies:
+    - name: partials
+      repository: file://../partials
+      version: 0.1.0
+    description: Buoyant Enterprise Linkerd
+    digest: 067146ac09052c9e2fafe0fb666407710cd6df1cce54c012a62b3c36d0037989
+    home: https://buoyant.io
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
+    keywords:
+    - linkerd
+    - Buoyant
+    - Service Mesh
+    kubeVersion: '>=1.22.0-0'
+    maintainers:
+    - email: info@buoyant.io
+      name: BuoyantIO
+      url: https://buoyant.io
+    name: linkerd-preview-control-plane
+    type: application
+    urls:
+    - https://github.com/BuoyantIO/linkerd-buoyant/releases/download/preview-25.4.2/linkerd-preview-control-plane-25.4.2.tgz
+    version: 25.4.2
+  - apiVersion: v2
     appVersion: preview-25.3.2
     created: "2025-03-26T03:59:40.288355695Z"
     dependencies:
@@ -7978,6 +8003,31 @@ entries:
     version: 24.1.1
   linkerd-preview-crds:
   - apiVersion: v2
+    appVersion: preview-25.4.2
+    created: "2025-04-07T13:10:28.365187639Z"
+    dependencies:
+    - name: partials
+      repository: file://../partials
+      version: 0.1.0
+    description: Buoyant Enterprise Linkerd
+    digest: e310fb84e9d5957b3fc5577a1bd1cb44e74d445380857e963e08e14a812c276a
+    home: https://buoyant.io
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
+    keywords:
+    - linkerd
+    - Buoyant
+    - Service Mesh
+    kubeVersion: '>=1.22.0-0'
+    maintainers:
+    - email: info@buoyant.io
+      name: BuoyantIO
+      url: https://buoyant.io
+    name: linkerd-preview-crds
+    type: application
+    urls:
+    - https://github.com/BuoyantIO/linkerd-buoyant/releases/download/preview-25.4.2/linkerd-preview-crds-25.4.2.tgz
+    version: 25.4.2
+  - apiVersion: v2
     appVersion: preview-25.3.2
     created: "2025-03-26T03:59:57.589308357Z"
     dependencies:
@@ -9228,6 +9278,31 @@ entries:
     - https://github.com/BuoyantIO/linkerd-buoyant/releases/download/preview-24.1.1/linkerd-preview-crds-24.1.1.tgz
     version: 24.1.1
   linkerd-preview-multicluster:
+  - apiVersion: v2
+    appVersion: preview-25.4.2
+    created: "2025-04-07T13:10:50.899192797Z"
+    dependencies:
+    - name: partials
+      repository: file://../partials
+      version: 0.1.0
+    description: Buoyant Enterprise Linkerd
+    digest: f5228fd6b133f817f84d04d9d5ab1cb59dcfda0075bcf38bbf0fe7148119f002
+    home: https://buoyant.io
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
+    keywords:
+    - linkerd
+    - Buoyant
+    - Service Mesh
+    kubeVersion: '>=1.22.0-0'
+    maintainers:
+    - email: info@buoyant.io
+      name: BuoyantIO
+      url: https://buoyant.io
+    name: linkerd-preview-multicluster
+    type: application
+    urls:
+    - https://github.com/BuoyantIO/linkerd-buoyant/releases/download/preview-25.4.2/linkerd-preview-multicluster-25.4.2.tgz
+    version: 25.4.2
   - apiVersion: v2
     appVersion: preview-25.3.2
     created: "2025-03-26T04:00:19.598946596Z"
@@ -10505,6 +10580,31 @@ entries:
     version: 24.1.1
   linkerd-preview-viz:
   - apiVersion: v2
+    appVersion: preview-25.4.2
+    created: "2025-04-07T13:11:21.136534055Z"
+    dependencies:
+    - name: partials
+      repository: file://../partials
+      version: 0.1.0
+    description: Buoyant Enterprise Linkerd
+    digest: 9abf28a6ca4ee0cea84eb43c2d015d3d6925c3789583f189b4f354d87c9481db
+    home: https://buoyant.io
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
+    keywords:
+    - linkerd
+    - Buoyant
+    - Service Mesh
+    kubeVersion: '>=1.22.0-0'
+    maintainers:
+    - email: info@buoyant.io
+      name: BuoyantIO
+      url: https://buoyant.io
+    name: linkerd-preview-viz
+    type: application
+    urls:
+    - https://github.com/BuoyantIO/linkerd-buoyant/releases/download/preview-25.4.2/linkerd-preview-viz-25.4.2.tgz
+    version: 25.4.2
+  - apiVersion: v2
     appVersion: preview-25.3.2
     created: "2025-03-26T04:00:40.620205429Z"
     dependencies:
@@ -10579,4 +10679,4 @@ entries:
     urls:
     - https://github.com/BuoyantIO/linkerd-buoyant/releases/download/preview-25.2.2/linkerd-preview-viz-25.2.2.tgz
     version: 25.2.2
-generated: "2025-03-26T04:00:40.621886655Z"
+generated: "2025-04-07T13:11:21.138194801Z"
