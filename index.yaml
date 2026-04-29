@@ -2,6 +2,31 @@ apiVersion: v1
 entries:
   linkerd-buoyant:
   - apiVersion: v2
+    appVersion: 0.39.1
+    created: "2026-04-29T22:34:04.298777246Z"
+    description: The Buoyant Extension is an aggregate package that includes the Linkerd
+      lifecycle automation operator, the Buoyant Cloud agent, and certain BEL-specific
+      `linkerd` CLI features.
+    digest: be217a33bda717ba5a826c7360a081428e4fdb74a60298ae367639e71fffb92f
+    home: https://buoyant.io
+    icon: https://helm.buoyant.cloud/buoyant-icon.svg
+    keywords:
+    - linkerd
+    - Buoyant
+    - Service Mesh
+    kubeVersion: '>=1.21.0-0'
+    maintainers:
+    - email: info@buoyant.io
+      name: BuoyantIO
+      url: https://buoyant.io
+    name: linkerd-buoyant
+    sources:
+    - https://github.com/BuoyantIO/linkerd-buoyant
+    type: application
+    urls:
+    - https://github.com/BuoyantIO/linkerd-buoyant/releases/download/v0.39.1/linkerd-buoyant-0.39.1.tgz
+    version: 0.39.1
+  - apiVersion: v2
     appVersion: 0.39.0
     created: "2026-03-05T18:28:41.791589723Z"
     description: The Buoyant Extension is an aggregate package that includes the Linkerd
@@ -18179,4 +18204,4 @@ entries:
     urls:
     - https://github.com/BuoyantIO/linkerd-buoyant/releases/download/preview-25.2.2/linkerd-preview-viz-25.2.2.tgz
     version: 25.2.2
-generated: "2026-04-21T20:27:53.423427874Z"
+generated: "2026-04-29T22:34:04.300284839Z"
